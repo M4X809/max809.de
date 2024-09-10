@@ -1,10 +1,12 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import {
 	getServerSession,
+	type Session,
+	type User,
 	type DefaultSession,
 	type NextAuthOptions,
 } from "next-auth";
-import type { Adapter } from "next-auth/adapters";
+import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "~/env";
@@ -30,6 +32,10 @@ declare module "next-auth" {
 			// role: UserRole;
 		} & DefaultSession["user"];
 	}
+	// @ts-ignore
+	interface User extends AdapterUser {
+		limit: number;
+	}
 
 	// interface User {
 	//   // ...other properties
@@ -44,13 +50,21 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
 	callbacks: {
-		session: ({ session, user }) => ({
+		session: ({ session, user }: { session: Session; user: User }) => ({
 			...session,
 			user: {
 				...session.user,
 				id: user.id,
+				limit: user.limit,
 			},
 		}),
+	},
+	theme: {
+		colorScheme: "dark",
+		logo: "/favicon.webp",
+	},
+	session: {
+		maxAge: 10 * 24 * 60 * 60, // 10 days
 	},
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
@@ -62,6 +76,7 @@ export const authOptions: NextAuthOptions = {
 		DiscordProvider({
 			clientId: env.DISCORD_CLIENT_ID,
 			clientSecret: env.DISCORD_CLIENT_SECRET,
+			allowDangerousEmailAccountLinking: false,
 		}),
 		/**
 		 * ...add more providers here.

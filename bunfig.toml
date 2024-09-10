@@ -1,0 +1,13 @@
+
+
+[install.scopes]
+# registry as string
+"@awesome.me" = { token = "$NPM_FONT_AWESOME", url = "https://npm.fontawesome.com" }
+"@fortawesome" = { token = "$NPM_FONT_AWESOME", url = "https://npm.fontawesome.com" }
+
+[install]
+# set default registry as a string
+# registry = "https://registry.npmjs.org"
+# set a token
+# registry = { url = "https://npm.fontawesome.com", token = "$npm_token" }
+# set a username/password

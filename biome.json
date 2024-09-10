@@ -1,0 +1,30 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.6.3/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"formatter": {
+		"enabled": false
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off",
+				"useImportType": "warn",
+				"noParameterAssign": "off"
+			}
+		},
+		"ignore": [
+			"node_modules/**/*",
+			"biome.json",
+			"build/**/*",
+			".next/**/*",
+			"drizzle/**/*"
+		]
+	}
+}

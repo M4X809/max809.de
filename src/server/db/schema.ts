@@ -1,5 +1,8 @@
 import { relations, sql } from "drizzle-orm";
+import { float } from "drizzle-orm/mysql-core";
 import {
+	boolean,
+	doublePrecision,
 	index,
 	integer,
 	pgTableCreator,
@@ -10,6 +13,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
+import QrCode from "~/app/_components/QrCodeContainer";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -40,6 +44,41 @@ export const posts = createTable(
 	}),
 );
 
+export const qrCodes = createTable(
+	"codes",
+	{
+		id: varchar("id", { length: 255 })
+			.notNull()
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		name: varchar("name", { length: 255 }),
+		createdById: varchar("created_by", { length: 255 })
+			.notNull()
+			.references(() => users.id),
+		createdAt: timestamp("created_at", { withTimezone: true })
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+			() => new Date(),
+		),
+		// data: varchar("data", { length: 500 }),
+		qrCode: varchar("qr_code", { length: 4096 }),
+		qrLvl: integer("qr_lvl").default(1),
+		size: integer("size").default(512),
+		color: varchar("color", { length: 255 }).default("#000000"),
+		backgroundColor: varchar("background_color", { length: 255 }).default(
+			"#ffffff",
+		),
+		finderRadius: doublePrecision("finder_radius").default(0),
+		dotRadius: doublePrecision("dot_radius").default(0),
+	},
+	// (example) => ({
+	// createdByIdIdx: index("created_by_idx_codes").on(example.createdById),
+	// nameIndex: index("name_idx_codes").on(example.name),
+	// dataIndex: index("data_idx_codes").on(example.data),
+	// }),
+);
+
 export const users = createTable("user", {
 	id: varchar("id", { length: 255 })
 		.notNull()
@@ -52,6 +91,7 @@ export const users = createTable("user", {
 		withTimezone: true,
 	}).default(sql`CURRENT_TIMESTAMP`),
 	image: varchar("image", { length: 255 }),
+	limit: integer("limit").default(50),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

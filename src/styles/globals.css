@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* @base {
+	body {
+		@apply bg-slate-800;
+	}
+} */
+
+/* .acrylic {
+	padding: 4em 6em !important;
+	position: relative !important;
+	background: rgba(0, 0, 0, 0.5) !important;
+	-webkit-backdrop-filter: blur(100px) !important;
+	backdrop-filter: blur(100px) !important;
+} */
