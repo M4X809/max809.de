@@ -2,7 +2,7 @@
 import type React from 'react'
 import { useEffect } from 'react'
 import QrCodePreview, { QrCodePreviewProps, type QrCodeData } from "./QrCodePreview"
-import { AspectRatio, Container, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core'
+import { AspectRatio, Box, Container, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core'
 import { api } from '~/trpc/react'
 import { useAppStore } from '~/providers/app-store-provider'
 
@@ -16,10 +16,14 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ initial
     const { data: codes = [], isLoading, isError, refetch } = api.codes.getQrCodes.useQuery(undefined, { initialData })
 
     const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
+    const refetchCodes = useAppStore((state) => state.refetchCodes)
 
     useEffect(() => {
-        setRefetchCodes(refetch)
-    }, [refetch, setRefetchCodes])
+        if (!refetchCodes) {
+
+            setRefetchCodes(refetch)
+        }
+    }, [refetch, setRefetchCodes, refetchCodes])
 
 
 
@@ -42,7 +46,9 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ initial
 
                         </Stack>
                     </GridCol>
-                    <GridCol span={"content"} w={100} >
+                    <GridCol span={"content"} mx={20} className='rounded-xl' >
+
+
                         <QrCodePreview data={code} />
 
                     </GridCol>

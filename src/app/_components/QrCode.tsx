@@ -107,7 +107,7 @@ const MyCanvas = ({ ...props }: React.HTMLAttributes<HTMLCanvasElement>) => {
 
         });
         myQR.draw();
-    }, 500);
+    }, 100);
 
 
 

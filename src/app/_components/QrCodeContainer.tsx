@@ -69,6 +69,7 @@ const QrCode = () => {
         // return url || ""
     }
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (isSuccess) {
             setSaveTitle("")
@@ -76,7 +77,7 @@ const QrCode = () => {
             if (refetchCodes) refetchCodes()
 
         }
-    }, [isSuccess, refetchCodes, setSaveTitle, toggle])
+    }, [isSuccess])
 
 
 
