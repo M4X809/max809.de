@@ -49,24 +49,11 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      {/* <Helmet > */}
-      {/* <title>max809.de</title>
-      <meta name="description" content="The Homepage of @max809" />
-      <link rel="icon" href="/max809.webp" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#000000" />
-      <link rel="apple-touch-icon" href="/max809.webp" />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://max809.de" />
-      <meta property="og:title" content="max809.de" />
-      <meta property="og:description" content="The Homepage of @max809" />
-      <meta property="og:image" content="/max809.webp" /> */}
-
-      {/* </Helmet> */}
       <Shell session={session}>
         <Group justify="space-between">
           <Title>
             max809.de
+
           </Title>
           <Link
             href={session ? "/api/auth/signout" : "/api/auth/signin"}
@@ -79,6 +66,8 @@ export default async function Home() {
           <Center>
             <Stack >
               <Title ta={"center"} order={1} fz={50}>Welcome to my Site. </Title>
+              <Text className="text-wrap" ta={"center"} fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
+
               <Title ta={"center"}>Apps On This Site</Title>
               <Container
 

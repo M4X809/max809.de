@@ -122,7 +122,7 @@ const QrCode = () => {
                                 </Button.Group>
                                 {!!session?.user?.id && <Button variant='gradient'
                                     onClick={() => toggle()}
-                                    w={500} className='flex self-center'>
+                                    fullWidth maw={500} className='flex self-center'>
                                     Save QR Code
                                 </Button>}
                                 <Modal

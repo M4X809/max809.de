@@ -1,4 +1,4 @@
-import { Center, Container, Divider, Group, Stack, Title } from "@mantine/core";
+import { Center, Container, Divider, Group, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
 // import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
@@ -54,30 +54,22 @@ export default async function Home() {
   return (
 
     <HydrateClient>
-      {/* <title>Qr Code Generator</title>
-      <meta name="description" content="A simple QR Code Generator with customizable options." />
-      <link rel="icon" href="/favicon-qr.webp" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#000000" />
-      <link rel="apple-touch-icon" href="/favicon-qr.webp" />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://max809.de/qr-code-generator" />
-      <meta property="og:title" content="Qr Code Generator" />
-      <meta property="og:description" content="A simple QR Code Generator with customizable options." />
-      <meta property="og:image" content="/favicon-qr.webp" /> */}
-
       <Shell
         session={session}
       >
-        <Group justify="space-between">
-          <Link href={"/"} prefetch={true}>
-            <Title>
-              QR Code Generator
-            </Title>
-          </Link>
+        <Group justify="space-between" align="start" wrap="nowrap">
+          <Stack gap={0} >
+            <Link href={"/"} prefetch={true}>
+              <Title>
+                QR Code Generator
+              </Title>
+            </Link>
+            <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
+          </Stack>
           <Link
+
             href={session ? "/api/auth/signout" : "/api/auth/signin"}
-            className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20"
+            className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20 text-nowrap"
           >
             {session ? `Sign out: ${session.user?.name}` : "Sign in"}
           </Link>
