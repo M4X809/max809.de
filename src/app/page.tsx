@@ -6,67 +6,63 @@ import { api, HydrateClient } from "~/trpc/server";
 import Shell from "./_components/Shell";
 
 import QrCodePreview, { QrCodeData } from "./_components/QrCodePreview";
+import type { Metadata } from 'next'
 
+// export const metadata: Metadata = {
+
+
+export async function generateMetadata() {
+  return {
+    metadataBase: new URL('https://max809.de'),
+
+    title: "max809.de",
+    description: "The Homepage of @max809",
+    icons: [{ rel: "icon", url: "/max809.webp" }],
+    openGraph: {
+      title: "max809.de",
+      description: "The Homepage of @max809",
+      images: [
+        {
+          url: "/max809.webp",
+          width: 1200,
+          height: 630,
+          alt: "max809.de",
+        },
+      ],
+      type: "website",
+      siteName: "max809.de",
+      url: "https://max809.de/",
+      locale: "en_US",
+    }
+  }
+}
 
 
 export default async function Home() {
-
-
-
-
   const session = await getServerAuthSession();
 
-  // if (session) {
-  //   redirect("/generator");
-  // }
 
 
 
-  // void api.post.getLatest.prefetch();
-
-  // return (
-  //   <HydrateClient>
-  //     <Shell
-  //       session={session}
-  //     >
-  //       <Group justify="space-between">
-  //         <Title>
-  //           QR Code Generator
-  //         </Title>
-  //         <Link
-  //           href={session ? "/api/auth/signout" : "/api/auth/signin"}
-  //           className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20"
-  //         >
-  //           {session ? `Sign out: ${session.user?.name}` : "Sign in"}
-  //         </Link>
-  //       </Group>
-  //       <QrCodeContainer />
-
-  //       {/* <Suspense> */}
-
-  //       <Stack mt={20} >
-  //         <Divider />
-  //         <Title ta={"center"} order={2}>Saved QR Codes</Title>
-
-  //         <Group wrap="wrap" grow justify="center">
-  //           <SavedCodes />
-  //         </Group>
-
-  //       </Stack>
-
-  //       {/* </Suspense> */}
-
-
-
-
-  //     </Shell>
-  //   </HydrateClient>
-  // );
 
 
 
   return (
     <HydrateClient>
+      {/* <Helmet > */}
+      {/* <title>max809.de</title>
+      <meta name="description" content="The Homepage of @max809" />
+      <link rel="icon" href="/max809.webp" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+      <link rel="apple-touch-icon" href="/max809.webp" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://max809.de" />
+      <meta property="og:title" content="max809.de" />
+      <meta property="og:description" content="The Homepage of @max809" />
+      <meta property="og:image" content="/max809.webp" /> */}
+
+      {/* </Helmet> */}
       <Shell session={session}>
         <Group justify="space-between">
           <Title>
