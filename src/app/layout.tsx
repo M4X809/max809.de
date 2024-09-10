@@ -9,10 +9,11 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { AppStoreProvider } from "~/providers/app-store-provider";
 
 
+
 export const metadata: Metadata = {
-  title: "QR Code Generator",
-  description: "QR Code Generator",
-  icons: [{ rel: "icon", url: "/favicon.webp" }],
+  title: "max809.de",
+  description: "The Homepage of @max809",
+  icons: [{ rel: "icon", url: "/max809.webp" }],
 };
 
 export default function RootLayout({
@@ -30,6 +31,7 @@ export default function RootLayout({
       // }}
       >
         <TRPCReactProvider>
+          {/* <HelmetProvider> */}
           <MantineProvider
             defaultColorScheme="dark"
             forceColorScheme="dark"
@@ -42,6 +44,7 @@ export default function RootLayout({
               {children}
             </AppStoreProvider>
           </MantineProvider>
+          {/* </HelmetProvider> */}
         </TRPCReactProvider>
       </body>
     </html>

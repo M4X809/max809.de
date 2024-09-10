@@ -8,10 +8,38 @@ import Shell from "~/app/_components/Shell";
 import QrCodeContainer from "~/app/_components/QrCodeContainer";
 import SavedCodes from "~/app/_components/ServerSavedCodes";
 import { Suspense } from "react";
+
+import type { Metadata } from 'next'
+
+
+
+export async function generateMetadata() {
+  return {
+
+    title: "Qr Code Generator",
+    description: "A simple QR Code Generator with customizable options.",
+    icons: [{ rel: "icon", url: "/favicon-qr.webp" }],
+    openGraph: {
+      title: "Qr Code Generator",
+      description: "A simple QR Code Generator with customizable options.",
+      images: [
+        {
+          url: "/favicon-qr.webp",
+          width: 1200,
+          height: 630,
+          alt: "Qr Code Generator",
+        },
+      ],
+      type: "website",
+      siteName: "Qr Code Generator",
+      url: "https://max809.de/qr-code-generator",
+      locale: "en_US",
+    }
+  }
+}
+
+
 export default async function Home() {
-
-
-
   const session = await getServerAuthSession();
 
   // if (session) {
@@ -25,6 +53,18 @@ export default async function Home() {
   return (
 
     <HydrateClient>
+      {/* <title>Qr Code Generator</title>
+      <meta name="description" content="A simple QR Code Generator with customizable options." />
+      <link rel="icon" href="/favicon-qr.webp" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+      <link rel="apple-touch-icon" href="/favicon-qr.webp" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://max809.de/qr-code-generator" />
+      <meta property="og:title" content="Qr Code Generator" />
+      <meta property="og:description" content="A simple QR Code Generator with customizable options." />
+      <meta property="og:image" content="/favicon-qr.webp" /> */}
+
       <Shell
         session={session}
       >

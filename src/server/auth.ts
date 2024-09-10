@@ -66,6 +66,7 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		maxAge: 10 * 24 * 60 * 60, // 10 days
 	},
+	secret: env.NEXTAUTH_SECRET,
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		accountsTable: accounts,
