@@ -7,13 +7,27 @@ import { api } from '~/trpc/react'
 import { useAppStore } from '~/providers/app-store-provider'
 
 interface QrCodePreviewContainerProps {
-    initialData: QrCodeData[]
+    codes: {
+        id: string; name: string | null;
+        createdById: string;
+        createdAt: Date;
+        updatedAt: Date | null;
+        qrCode: string | null;
+        qrLvl: number | null;
+        size: number | null;
+        color: string | null;
+        backgroundColor: string | null;
+        finderRadius: number | null;
+        dotRadius: number | null;
+        dataUrl: string | null;
+    }[],
+    limits: { current: number, max: number }
     userId: string
 }
 
-const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ initialData, userId }) => {
+const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, limits, userId }) => {
 
-    const { data: codes = [], isLoading, isError, refetch } = api.codes.getQrCodes.useQuery(undefined, { initialData })
+    const { data, isLoading, isError, refetch } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits } })
 
     const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
     const refetchCodes = useAppStore((state) => state.refetchCodes)
@@ -30,9 +44,10 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ initial
 
     if (isLoading) return <div>Loading...</div>
     if (isError) return <div>Error</div>
+    if (!data) return <div>No data</div>
 
 
-    const QrCodes = codes?.map((code) => {
+    const QrCodes = data.codes.map((code) => {
 
         return (
             // <AspectRatio key={code.id} ratio={4 / 1} maw={500} >
@@ -68,7 +83,12 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ initial
 
     return (
         <>
-            {QrCodes}
+            <Text pos={"static"} c={"dimmed"} fz={13} >
+                {limits.current} / {limits.max} Save slots
+            </Text>
+            <Group wrap="wrap" grow justify="center">
+                {QrCodes}
+            </Group>
         </>
     )
 }

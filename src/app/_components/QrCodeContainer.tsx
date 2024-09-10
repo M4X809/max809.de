@@ -12,7 +12,7 @@ import { api } from '~/trpc/react';
 
 const QrCode = () => {
 
-    const { mutate, isPending, isSuccess } = api.codes.createQrCode.useMutation()
+    const { mutate, isPending, isSuccess, error, reset } = api.codes.createQrCode.useMutation()
 
     const session = useAppStore((state) => state.session)
 
@@ -45,11 +45,20 @@ const QrCode = () => {
 
     const refetchCodes = useAppStore((state) => state.refetchCodes)
 
+    const dataUrl = useAppStore((state) => state.dataUrl)
+    const setDataUrl = useAppStore((state) => state.setDataUrl)
+
     const canvasRef = useAppStore((state) => state.canvasRef)
 
 
     const [opened, { toggle }] = useDisclosure(false)
 
+
+
+    const getDataUrl = () => {
+        if (!canvasRef?.current) return ""
+        return canvasRef.current.toDataURL()
+    }
 
 
     const download = (type: "image/png" | "image/webp") => {
@@ -74,6 +83,7 @@ const QrCode = () => {
         if (isSuccess) {
             setSaveTitle("")
             toggle()
+            setDataUrl("")
             if (refetchCodes) refetchCodes()
 
         }
@@ -122,11 +132,15 @@ const QrCode = () => {
                                     </Button>
                                 </Button.Group>
                                 {!!session?.user?.id && <Button variant='gradient'
-                                    onClick={() => toggle()}
+                                    onClick={() => {
+                                        toggle()
+                                        setDataUrl(getDataUrl())
+                                    }}
                                     fullWidth maw={500} className='flex self-center'>
                                     Save QR Code
                                 </Button>}
                                 <Modal
+                                    centered
                                     overlayProps={{
                                         blur: 2,
 
@@ -137,10 +151,14 @@ const QrCode = () => {
                                     }}
                                     opened={opened && !!session?.user}
                                     withCloseButton={false}
-                                    onClose={() => toggle()}
+                                    onClose={() => {
+                                        toggle()
+                                        reset()
+
+                                    }}
 
                                 >
-                                    <Stack gap={2}>
+                                    <Stack gap={5}>
                                         <Title order={2} ta='center' className='text-white'>
                                             Save QR Code
                                         </Title>
@@ -162,8 +180,9 @@ const QrCode = () => {
                                         />
 
                                         <Button
-                                            fullWidth
-                                            // w={500}
+                                            miw={200}
+                                            className='flex self-center'
+                                            w={"80%"}
                                             loading={isPending}
                                             onClick={() => {
                                                 if (!qrCode || !session?.user.id || !saveTitle) return
@@ -177,6 +196,7 @@ const QrCode = () => {
                                                     backgroundColor: backgroundColor,
                                                     finderRadius: finderRadius,
                                                     dotRadius: dotRadius,
+                                                    dataUrl: dataUrl,
                                                 })
                                                 // download("image/png")
                                             }}
@@ -196,6 +216,17 @@ const QrCode = () => {
                                         >
                                             Save
                                         </Button>
+                                        <Box
+
+                                            w={"100%"}
+                                            style={{ borderRadius: "5px" }}
+                                            p={"sm"}
+                                            c={"#fa2113"}
+                                            bg={"#0D1117"}
+                                            hidden={!error}
+                                        >
+                                            {error?.message}
+                                        </Box>
 
                                     </Stack>
 

@@ -55,7 +55,7 @@ export default async function Home() {
       <Shell
         session={session}
       >
-        <Group justify="space-between" align="start" wrap="nowrap">
+        <Group justify="space-between" align="start"  >
           <Stack gap={0} >
             <Link href={"/"} prefetch={true}>
               <Title>
@@ -76,13 +76,13 @@ export default async function Home() {
 
         {/* <Suspense> */}
 
-        <Stack mt={20} >
-          <Divider />
-          <Title ta={"center"} order={2}>Saved QR Codes</Title>
+        <Stack mt={20} gap={0} >
+          <Divider my={15} />
+          <Title pos={"sticky"} ta={"center"} order={2}>Saved QR Codes</Title>
 
-          <Group wrap="wrap" grow justify="center">
-            <SavedCodes />
-          </Group>
+
+          <SavedCodes />
+
 
         </Stack>
 

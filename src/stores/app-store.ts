@@ -38,6 +38,9 @@ export type AppStore = {
 	dotRadius: number;
 	setDotRadius: (dotRadius: number) => void;
 
+	dataUrl: string;
+	setDataUrl: (dataUrl: string) => void;
+
 	refetchCodes: null | (() => void);
 	setRefetchCodes: (refetchCodes: () => void) => void;
 
@@ -93,6 +96,9 @@ export const createAppStore = () => {
 
 		dotRadius: 0,
 		setDotRadius: (dotRadius: number) => set(() => ({ dotRadius })),
+
+		dataUrl: "",
+		setDataUrl: (dataUrl: string) => set(() => ({ dataUrl })),
 
 		refetchCodes: null,
 		setRefetchCodes: (refetchCodes: () => void) => set(() => ({ refetchCodes })),

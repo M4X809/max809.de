@@ -62,6 +62,7 @@ export const qrCodes = createTable(
 			() => new Date(),
 		),
 		// data: varchar("data", { length: 500 }),
+		dataUrl: text("data_url"),
 		qrCode: varchar("qr_code", { length: 4096 }),
 		qrLvl: integer("qr_lvl").default(1),
 		size: integer("size").default(512),
@@ -91,7 +92,7 @@ export const users = createTable("user", {
 		withTimezone: true,
 	}).default(sql`CURRENT_TIMESTAMP`),
 	image: varchar("image", { length: 255 }),
-	limit: integer("limit").default(50),
+	limit: integer("limit").default(25).notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

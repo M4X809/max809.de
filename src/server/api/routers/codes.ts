@@ -7,6 +7,8 @@ import {
 	publicProcedure,
 } from "~/server/api/trpc";
 
+import { TRPCError } from "@trpc/server";
+
 import { qrCodes } from "~/server/db/schema";
 
 export const codesRouter = createTRPCRouter({
@@ -14,7 +16,7 @@ export const codesRouter = createTRPCRouter({
 		.input(
 			z.object({
 				name: z.string().min(1),
-				// data: z.object({
+				dataUrl: z.string().min(1),
 				qrCode: z.string().min(1),
 				qrLvl: z.number().min(0).max(3),
 				size: z.number().min(512).max(4096),
@@ -26,9 +28,32 @@ export const codesRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, ctx.session.user.id),
+			});
+
+			if (!user)
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+
+			const codeCount = await ctx.db.query.qrCodes.findMany({
+				where: (qrCodes, { eq }) => eq(qrCodes.createdById, ctx.session.user.id),
+			});
+
+			if (codeCount.length >= user?.limit) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message:
+						"You have reached the maximum number of saved QR codes. Please delete some before creating a new one.",
+				});
+			}
+
 			await ctx.db.insert(qrCodes).values({
 				name: input.name,
 				createdById: ctx.session.user.id,
+				dataUrl: input.dataUrl,
 				qrCode: input.qrCode,
 				qrLvl: input.qrLvl,
 				size: input.size,
@@ -43,11 +68,37 @@ export const codesRouter = createTRPCRouter({
 	getQrCodes: protectedProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session.user.id;
 
+		const user = await ctx.db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, userId),
+		});
+
 		const result = await ctx.db.query.qrCodes.findMany({
 			where: (qrCodes, { eq }) => eq(qrCodes.createdById, userId),
 			orderBy: (qrCodes, { desc }) => desc(qrCodes.createdAt),
 		});
 
-		return result;
+		return {
+			codes: result,
+			limits: {
+				current: result.length,
+				max: user?.limit,
+			},
+		};
+	}),
+	getLimits: protectedProcedure.query(async ({ ctx }) => {
+		const userId = ctx.session.user.id;
+
+		const result = await ctx.db.query.users.findFirst({
+			where: (qrCodes, { eq }) => eq(qrCodes.id, userId),
+		});
+
+		const count = await ctx.db.query.qrCodes.findMany({
+			where: (qrCodes, { eq }) => eq(qrCodes.createdById, userId),
+		});
+
+		return {
+			current: count.length,
+			max: result?.limit,
+		};
 	}),
 });
