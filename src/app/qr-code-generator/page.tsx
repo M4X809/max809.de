@@ -1,15 +1,13 @@
-import { Center, Container, Divider, Group, Stack, Text, Title } from "@mantine/core";
+import { Divider, Group, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
 // import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 import Shell from "~/app/_components/Shell";
 
 import QrCodeContainer from "~/app/_components/QrCodeContainer";
 import SavedCodes from "~/app/_components/ServerSavedCodes";
-import { Suspense } from "react";
 
-import type { Metadata } from 'next'
 
 
 
