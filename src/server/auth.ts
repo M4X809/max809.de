@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
 	},
 	theme: {
 		colorScheme: "dark",
-		logo: "/favicon.webp",
+		logo: "/max809.webp",
 	},
 	session: {
 		maxAge: 10 * 24 * 60 * 60, // 10 days

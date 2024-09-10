@@ -15,6 +15,7 @@ import type { Metadata } from 'next'
 
 export async function generateMetadata() {
   return {
+    metadataBase: new URL('https://max809.de'),
 
     title: "Qr Code Generator",
     description: "A simple QR Code Generator with customizable options.",

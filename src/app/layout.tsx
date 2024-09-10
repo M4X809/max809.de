@@ -11,9 +11,11 @@ import { AppStoreProvider } from "~/providers/app-store-provider";
 
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://max809.de'),
   title: "max809.de",
   description: "The Homepage of @max809",
   icons: [{ rel: "icon", url: "/max809.webp" }],
+
 };
 
 export default function RootLayout({

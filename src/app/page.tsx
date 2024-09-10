@@ -13,6 +13,7 @@ import type { Metadata } from 'next'
 
 export async function generateMetadata() {
   return {
+    metadataBase: new URL('https://max809.de'),
 
     title: "max809.de",
     description: "The Homepage of @max809",
