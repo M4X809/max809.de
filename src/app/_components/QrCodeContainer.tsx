@@ -105,7 +105,7 @@ const QrCode = () => {
 
     }, [shareable,])
 
-    console.log(dataUrl)
+    // console.log(dataUrl)
 
 
     return (
