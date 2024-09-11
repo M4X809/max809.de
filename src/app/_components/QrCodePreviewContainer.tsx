@@ -5,6 +5,7 @@ import QrCodePreview, { QrCodePreviewProps, type QrCodeData } from "./QrCodePrev
 import { AspectRatio, Box, Container, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core'
 import { api } from '~/trpc/react'
 import { useAppStore } from '~/providers/app-store-provider'
+import Image from 'next/image'
 
 interface QrCodePreviewContainerProps {
     codes: {
@@ -29,17 +30,15 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
 
     const { data, isLoading, isError, refetch } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits } })
 
-    const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
+    // const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
     const refetchCodes = useAppStore((state) => state.refetchCodes)
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (!refetchCodes) {
+        refetch()
+    }, [refetchCodes])
 
-            setRefetchCodes(refetch)
-        }
-    }, [refetch, setRefetchCodes, refetchCodes])
-
-
+    console.log(data)
 
 
     if (isLoading) return <div>Loading...</div>
@@ -66,6 +65,8 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
 
                         <QrCodePreview data={code} />
 
+                        {/* <Image src={code.dataUrl || ""} alt="qr-code" width={100} height={100} /> */}
+
                     </GridCol>
 
                     <Group justify="end" w={"100%"} p={0}>
@@ -84,10 +85,11 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
     return (
         <>
             <Text pos={"static"} c={"dimmed"} fz={13} >
-                {limits.current} / {limits.max} Save slots
+                {data.limits.current} / {data.limits.max} Save slots
             </Text>
             <Group wrap="wrap" grow justify="center">
                 {QrCodes}
+                {/* <QrCodes /> */}
             </Group>
         </>
     )

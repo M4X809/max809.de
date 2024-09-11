@@ -44,6 +44,7 @@ const QrCode = () => {
     const setDotRadius = useAppStore((state) => state.setDotRadius)
 
     const refetchCodes = useAppStore((state) => state.refetchCodes)
+    const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
 
     const dataUrl = useAppStore((state) => state.dataUrl)
     const setDataUrl = useAppStore((state) => state.setDataUrl)
@@ -84,7 +85,7 @@ const QrCode = () => {
             setSaveTitle("")
             toggle()
             setDataUrl("")
-            if (refetchCodes) refetchCodes()
+            setRefetchCodes(refetchCodes + 1)
 
         }
     }, [isSuccess])

@@ -41,8 +41,8 @@ export type AppStore = {
 	dataUrl: string;
 	setDataUrl: (dataUrl: string) => void;
 
-	refetchCodes: null | (() => void);
-	setRefetchCodes: (refetchCodes: () => void) => void;
+	refetchCodes: number;
+	setRefetchCodes: (refetchCodes: number) => void;
 
 	canvasRef: React.MutableRefObject<HTMLCanvasElement | null> | null;
 	setCanvasRef: (
@@ -100,9 +100,8 @@ export const createAppStore = () => {
 		dataUrl: "",
 		setDataUrl: (dataUrl: string) => set(() => ({ dataUrl })),
 
-		refetchCodes: null,
-		setRefetchCodes: (refetchCodes: () => void) => set(() => ({ refetchCodes })),
-
+		refetchCodes: 0,
+		setRefetchCodes: (refetchCodes: number) => set({ refetchCodes }),
 		canvasRef: null,
 		setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) =>
 			set(() => ({ canvasRef })),

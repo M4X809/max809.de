@@ -1,4 +1,4 @@
-import { SQL } from "drizzle-orm";
+import { and, eq, SQL } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -38,32 +38,59 @@ export const codesRouter = createTRPCRouter({
 					message: "You are not authorized to perform this action.",
 				});
 
-			const codeCount = await ctx.db.query.qrCodes.findMany({
+			const codes = await ctx.db.query.qrCodes.findMany({
 				where: (qrCodes, { eq }) => eq(qrCodes.createdById, ctx.session.user.id),
 			});
 
-			if (codeCount.length >= user?.limit) {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message:
-						"You have reached the maximum number of saved QR codes. Please delete some before creating a new one.",
+			const nameExists = codes.find((code) => code.name === input.name);
+
+			// console.log(nameExists);
+
+			if (nameExists) {
+				await ctx.db
+					.update(qrCodes)
+					.set({
+						name: input.name,
+						updatedAt: new Date(),
+						dataUrl: input.dataUrl,
+						backgroundColor: input.backgroundColor,
+						color: input.color,
+						dotRadius: input.dotRadius,
+						finderRadius: input.finderRadius,
+						qrCode: input.qrCode,
+						qrLvl: input.qrLvl,
+						size: input.size,
+					})
+					.where(
+						and(
+							eq(qrCodes.id, nameExists.id),
+							eq(qrCodes.createdById, nameExists.createdById),
+						),
+					);
+			} else {
+				if (codes.length >= user?.limit) {
+					throw new TRPCError({
+						code: "FORBIDDEN",
+						message:
+							"You have reached the maximum number of saved QR codes. Please delete some before creating a new one.",
+					});
+				}
+
+				await ctx.db.insert(qrCodes).values({
+					name: input.name,
+					createdById: ctx.session.user.id,
+					dataUrl: input.dataUrl,
+					qrCode: input.qrCode,
+					qrLvl: input.qrLvl,
+					size: input.size,
+					color: input.color,
+					backgroundColor: input.backgroundColor,
+					finderRadius: input.finderRadius,
+					dotRadius: input.dotRadius,
+
+					// data: JSON.stringify(input.data),
 				});
 			}
-
-			await ctx.db.insert(qrCodes).values({
-				name: input.name,
-				createdById: ctx.session.user.id,
-				dataUrl: input.dataUrl,
-				qrCode: input.qrCode,
-				qrLvl: input.qrLvl,
-				size: input.size,
-				color: input.color,
-				backgroundColor: input.backgroundColor,
-				finderRadius: input.finderRadius,
-				dotRadius: input.dotRadius,
-
-				// data: JSON.stringify(input.data),
-			});
 		}),
 	getQrCodes: protectedProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session.user.id;

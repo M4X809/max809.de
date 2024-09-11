@@ -89,7 +89,7 @@ export const QrCodePreview: React.FC<QrCodePreviewProps> = ({ data, w }) => {
 
 
 
-    }, [])
+    }, [data])
 
     return (
 
