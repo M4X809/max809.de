@@ -8,6 +8,7 @@ import {
 } from "next-auth";
 import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
+import GithubProvider from "next-auth/providers/github";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -58,6 +59,13 @@ export const authOptions: NextAuthOptions = {
 				limit: user.limit,
 			},
 		}),
+		async redirect({ url, baseUrl }) {
+			// Allows relative callback URLs
+			if (url.startsWith("/")) return `${baseUrl}${url}`;
+			// Allows callback URLs on the same origin
+			if (new URL(url).origin === baseUrl) return url;
+			return baseUrl;
+		},
 	},
 	theme: {
 		colorScheme: "dark",
@@ -77,6 +85,11 @@ export const authOptions: NextAuthOptions = {
 		DiscordProvider({
 			clientId: env.DISCORD_CLIENT_ID,
 			clientSecret: env.DISCORD_CLIENT_SECRET,
+			allowDangerousEmailAccountLinking: false,
+		}),
+		GithubProvider({
+			clientId: env.GITHUB_CLIENT_ID,
+			clientSecret: env.GITHUB_CLIENT_SECRET,
 			allowDangerousEmailAccountLinking: false,
 		}),
 		/**

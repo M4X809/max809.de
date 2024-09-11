@@ -23,26 +23,26 @@ import QrCode from "~/app/_components/QrCodeContainer";
  */
 export const createTable = pgTableCreator((name) => `qr-code_${name}`);
 
-export const posts = createTable(
-	"post",
-	{
-		id: serial("id").primaryKey(),
-		name: varchar("name", { length: 256 }),
-		createdById: varchar("created_by", { length: 255 })
-			.notNull()
-			.references(() => users.id),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.default(sql`CURRENT_TIMESTAMP`)
-			.notNull(),
-		updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-			() => new Date(),
-		),
-	},
-	(example) => ({
-		createdByIdIdx: index("created_by_idx").on(example.createdById),
-		nameIndex: index("name_idx").on(example.name),
-	}),
-);
+// export const posts = createTable(
+// 	"post",
+// 	{
+// 		id: serial("id").primaryKey(),
+// 		name: varchar("name", { length: 256 }),
+// 		createdById: varchar("created_by", { length: 255 })
+// 			.notNull()
+// 			.references(() => users.id),
+// 		createdAt: timestamp("created_at", { withTimezone: true })
+// 			.default(sql`CURRENT_TIMESTAMP`)
+// 			.notNull(),
+// 		updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+// 			() => new Date(),
+// 		),
+// 	},
+// 	(example) => ({
+// 		createdByIdIdx: index("created_by_idx").on(example.createdById),
+// 		nameIndex: index("name_idx").on(example.name),
+// 	}),
+// );
 
 export const qrCodes = createTable(
 	"codes",
@@ -115,6 +115,7 @@ export const accounts = createTable(
 		refresh_token: text("refresh_token"),
 		access_token: text("access_token"),
 		expires_at: integer("expires_at"),
+		refresh_token_expires_in: integer("refresh_token_expires_in"),
 		token_type: varchar("token_type", { length: 255 }),
 		scope: varchar("scope", { length: 255 }),
 		id_token: text("id_token"),
