@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Center, ColorInput, Container, Divider, Grid, Group, Modal, NumberInput, SegmentedControl, Slider, Stack, Text, TextInput, Title } from '@mantine/core'
+import { Box, Button, Center, ColorInput, Container, Divider, Grid, Group, Modal, NumberInput, SegmentedControl, Slider, Stack, Switch, Text, TextInput, Title } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 // import QRCode from 'react-qrcode-js'
 
@@ -51,14 +51,22 @@ const QrCode = () => {
 
     const canvasRef = useAppStore((state) => state.canvasRef)
 
+    const shareable = useAppStore((state) => state.shareable)
+    const setShareable = useAppStore((state) => state.setShareable)
+
 
     const [opened, { toggle }] = useDisclosure(false)
 
 
 
     const getDataUrl = () => {
-        if (!canvasRef?.current) return ""
-        return canvasRef.current.toDataURL()
+        if (!canvasRef?.current || !shareable) return ""
+        return canvasRef.current.toDataURL("image/webp", 1)
+
+
+
+        // return url
+
     }
 
 
@@ -90,7 +98,14 @@ const QrCode = () => {
         }
     }, [isSuccess])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (shareable) setDataUrl(getDataUrl())
+        if (!shareable) setDataUrl("")
 
+    }, [shareable,])
+
+    console.log(dataUrl)
 
 
     return (
@@ -179,6 +194,15 @@ const QrCode = () => {
                                             value={saveTitle}
                                             onChange={(e) => setSaveTitle(e.target.value.replaceAll(" ", "_"))}
                                         />
+                                        <Switch
+                                            mt={5}
+                                            w={"100%"}
+                                            label="Public QR Code?"
+                                            description="Make this QR Code accessible by anyone with the link."
+                                            checked={shareable}
+                                            onChange={(e) => setShareable(e.target.checked)}
+                                        />
+
 
                                         <Button
                                             miw={200}
@@ -187,6 +211,9 @@ const QrCode = () => {
                                             loading={isPending}
                                             onClick={() => {
                                                 if (!qrCode || !session?.user.id || !saveTitle) return
+
+                                                // if (shareable && dataUrl === "") setDataUrl(getDataUrl())
+
 
                                                 mutate({
                                                     name: saveTitle,
@@ -198,6 +225,7 @@ const QrCode = () => {
                                                     finderRadius: finderRadius,
                                                     dotRadius: dotRadius,
                                                     dataUrl: dataUrl,
+                                                    shareable: shareable,
                                                 })
                                                 // download("image/png")
                                             }}

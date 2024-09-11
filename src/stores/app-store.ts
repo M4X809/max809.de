@@ -41,6 +41,9 @@ export type AppStore = {
 	dataUrl: string;
 	setDataUrl: (dataUrl: string) => void;
 
+	shareable: boolean;
+	setShareable: (shareable: boolean) => void;
+
 	refetchCodes: number;
 	setRefetchCodes: (refetchCodes: number) => void;
 
@@ -99,6 +102,9 @@ export const createAppStore = () => {
 
 		dataUrl: "",
 		setDataUrl: (dataUrl: string) => set(() => ({ dataUrl })),
+
+		shareable: false,
+		setShareable: (shareable: boolean) => set(() => ({ shareable })),
 
 		refetchCodes: 0,
 		setRefetchCodes: (refetchCodes: number) => set({ refetchCodes }),

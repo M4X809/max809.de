@@ -16,7 +16,7 @@ export const codesRouter = createTRPCRouter({
 		.input(
 			z.object({
 				name: z.string().min(1),
-				dataUrl: z.string().min(1),
+				dataUrl: z.string().optional().default(""),
 				qrCode: z.string().min(1),
 				qrLvl: z.number().min(0).max(3),
 				size: z.number().min(512).max(4096),
@@ -24,6 +24,7 @@ export const codesRouter = createTRPCRouter({
 				backgroundColor: z.string().min(1),
 				finderRadius: z.number().min(0).max(1),
 				dotRadius: z.number().min(0).max(1),
+				shareable: z.boolean().optional().default(false),
 				// }),
 			}),
 		)
@@ -60,6 +61,7 @@ export const codesRouter = createTRPCRouter({
 						qrCode: input.qrCode,
 						qrLvl: input.qrLvl,
 						size: input.size,
+						shareable: input.shareable,
 					})
 					.where(
 						and(
@@ -87,6 +89,7 @@ export const codesRouter = createTRPCRouter({
 					backgroundColor: input.backgroundColor,
 					finderRadius: input.finderRadius,
 					dotRadius: input.dotRadius,
+					shareable: input.shareable,
 
 					// data: JSON.stringify(input.data),
 				});
@@ -128,4 +131,29 @@ export const codesRouter = createTRPCRouter({
 			max: result?.limit,
 		};
 	}),
+	getQrCodeWithID: publicProcedure
+		.input(z.string())
+		.query(async ({ ctx, input }) => {
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq }) => eq(qrCodes.id, input),
+			});
+			if (!code) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No QR Code found with that ID.",
+				});
+			}
+			if (!code.shareable) {
+				return new TRPCError({
+					code: "FORBIDDEN",
+					message: "This QR Code is not shareable.",
+				});
+			}
+
+			const createdBy = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, code.createdById),
+			});
+
+			return { ...code, createdBy: createdBy?.name };
+		}),
 });
