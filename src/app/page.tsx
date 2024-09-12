@@ -37,15 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-
 export default async function Home() {
   const session = await getServerAuthSession();
-
-
-
-
-
-
 
   return (
     <HydrateClient>
