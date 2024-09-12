@@ -5,8 +5,8 @@ import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import Shell from "~/app/_components/Shell";
 
-import QrCodeContainer from "~/app/_components/QrCodeContainer";
-import SavedCodes from "~/app/_components/ServerSavedCodes";
+import QrCodeContainer from "~/app/qr-code-generator/_qr-components/QrCodeContainer";
+import SavedCodes from "~/app/qr-code-generator/_qr-components/ServerSavedCodes";
 
 
 

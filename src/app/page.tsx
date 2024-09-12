@@ -2,16 +2,16 @@ import { Center, Container, Divider, Grid, GridCol, Group, Stack, Text, Title } 
 import Link from "next/link";
 // import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 import Shell from "./_components/Shell";
 
-import QrCodePreview, { QrCodeData } from "./_components/QrCodePreview";
+import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
 
 // export const metadata: Metadata = {
 
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL('https://max809.de'),
 
