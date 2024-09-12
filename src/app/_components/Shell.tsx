@@ -10,15 +10,21 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { faHeart } from '@fortawesome/pro-duotone-svg-icons'
 
 import pkg from "~/../package.json";
+import { usePostHog } from 'posthog-js/react';
+import { usePathname } from 'next/navigation';
 
 
 function Shell({ children, session, ...props }: AppShellProps & { session: Session | null }) {
+    const posthog = usePostHog()
+    const path = usePathname()
+    posthog.capture('page_view', { path: path })
 
     const setSession = useAppStore((state) => state.setSession)
 
     useEffect(() => {
         setSession(session)
-    }, [session, setSession])
+        posthog.identify(session?.user?.id)
+    }, [session, setSession, posthog])
 
 
     return (
