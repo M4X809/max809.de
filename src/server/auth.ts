@@ -10,7 +10,7 @@ import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
 
-import { env } from "~/env";
+// import { env } from "~/env";
 import { db } from "~/server/db";
 import {
 	accounts,
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
 	session: {
 		maxAge: 10 * 24 * 60 * 60, // 10 days
 	},
-	secret: env.NEXTAUTH_SECRET,
+	secret: process.env.NEXTAUTH_SECRET,
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		accountsTable: accounts,
@@ -83,13 +83,13 @@ export const authOptions: NextAuthOptions = {
 	}) as Adapter,
 	providers: [
 		DiscordProvider({
-			clientId: env.DISCORD_CLIENT_ID,
-			clientSecret: env.DISCORD_CLIENT_SECRET,
+			clientId: process.env.DISCORD_CLIENT_ID!,
+			clientSecret: process.env.DISCORD_CLIENT_SECRET!,
 			allowDangerousEmailAccountLinking: false,
 		}),
 		GithubProvider({
-			clientId: env.GITHUB_CLIENT_ID,
-			clientSecret: env.GITHUB_CLIENT_SECRET,
+			clientId: process.env.GITHUB_CLIENT_ID!,
+			clientSecret: process.env.GITHUB_CLIENT_SECRET!,
 			allowDangerousEmailAccountLinking: false,
 		}),
 		/**
