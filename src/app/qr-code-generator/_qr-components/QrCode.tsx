@@ -1,36 +1,37 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { AwesomeQR, QRCodeBrowser } from "@qrcode-js/browser";
-import { useAppStore } from "~/providers/app-store-provider";
+// import { useQrStore } from "~/providers/app-store-provider";
 import { useDebouncedCallback } from '@mantine/hooks';
 import { AspectRatio } from "@mantine/core";
+import { useQrStore } from "~/stores/qr-store";
 // interface MyCanvasProps {
 //    props: 
 // }
 
 
 const MyCanvas = ({ ...props }: React.HTMLAttributes<HTMLCanvasElement>) => {
-    const qrCode = useAppStore((state) => state.qrCode)
-    const qrLvl = useAppStore((state) => state.qrLvl);
-    const size = useAppStore((state) => state.size);
+    const qrCode = useQrStore((state) => state.qrCode)
+    const qrLvl = useQrStore((state) => state.qrLvl);
+    const size = useQrStore((state) => state.size);
 
-    const color = useAppStore((state) => state.color);
-    const backgroundColor = useAppStore((state) => state.backgroundColor);
+    const color = useQrStore((state) => state.color);
+    const backgroundColor = useQrStore((state) => state.backgroundColor);
 
-    // const setDownloading = useAppStore((state) => state.setDownloading);
-    // const canvasState = useAppStore((state) => state.canvasState);
-    const setCanvasState = useAppStore((state) => state.setCanvasState);
+    // const setDownloading = useQrStore((state) => state.setDownloading);
+    // const canvasState = useQrStore((state) => state.canvasState);
+    const setCanvasState = useQrStore((state) => state.setCanvasState);
 
 
     // const workerRef = useRef<Worker | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     // const hasTransferred = useRef<boolean>(false);
-    const setCanvasRef = useAppStore((state) => state.setCanvasRef);
+    const setCanvasRef = useQrStore((state) => state.setCanvasRef);
 
 
-    const finderRadius = useAppStore((state) => state.finderRadius);
+    const finderRadius = useQrStore((state) => state.finderRadius);
 
-    const dotRadius = useAppStore((state) => state.dotRadius);
+    const dotRadius = useQrStore((state) => state.dotRadius);
 
 
     // useEffect(() => {

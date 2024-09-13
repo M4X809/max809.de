@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react'
 import MyCanvas from './QrCode';
 
 import { useAppStore } from "~/providers/app-store-provider";
+import { useQrStore } from "~/stores/qr-store";
+
 import { useDisclosure } from '@mantine/hooks';
 import { api } from '~/trpc/react';
 
@@ -16,43 +18,43 @@ const QrCode = () => {
 
     const session = useAppStore((state) => state.session)
 
-    const saveTitle = useAppStore((state) => state.saveTitle)
-    const setSaveTitle = useAppStore((state) => state.setSaveTitle)
+    const saveTitle = useQrStore((state) => state.saveTitle)
+    const setSaveTitle = useQrStore((state) => state.setSaveTitle)
 
 
-    const qrCode = useAppStore((state) => state.qrCode)
-    const setQrCode = useAppStore((state) => state.setQrCode)
-    // const qrCodeLength = useAppStore((state) => state.qrCodeLength)
-    // const setQrCodeLength = useAppStore((state) => state.setQrCodeLength)
+    const qrCode = useQrStore((state) => state.qrCode)
+    const setQrCode = useQrStore((state) => state.setQrCode)
+    // const qrCodeLength = useQrStore((state) => state.qrCodeLength)
+    // const setQrCodeLength = useQrStore((state) => state.setQrCodeLength)
 
-    const qrLvl = useAppStore((state) => state.qrLvl)
-    const setQrLvl = useAppStore((state) => state.setQrLvl)
+    const qrLvl = useQrStore((state) => state.qrLvl)
+    const setQrLvl = useQrStore((state) => state.setQrLvl)
 
-    const size = useAppStore((state) => state.size)
-    const setSize = useAppStore((state) => state.setSize)
+    const size = useQrStore((state) => state.size)
+    const setSize = useQrStore((state) => state.setSize)
 
-    const color = useAppStore((state) => state.color)
-    const setColor = useAppStore((state) => state.setColor)
+    const color = useQrStore((state) => state.color)
+    const setColor = useQrStore((state) => state.setColor)
 
-    const backgroundColor = useAppStore((state) => state.backgroundColor)
-    const setBackgroundColor = useAppStore((state) => state.setBackgroundColor)
+    const backgroundColor = useQrStore((state) => state.backgroundColor)
+    const setBackgroundColor = useQrStore((state) => state.setBackgroundColor)
 
-    const finderRadius = useAppStore((state) => state.finderRadius)
-    const setFinderRadius = useAppStore((state) => state.setFinderRadius)
+    const finderRadius = useQrStore((state) => state.finderRadius)
+    const setFinderRadius = useQrStore((state) => state.setFinderRadius)
 
-    const dotRadius = useAppStore((state) => state.dotRadius)
-    const setDotRadius = useAppStore((state) => state.setDotRadius)
+    const dotRadius = useQrStore((state) => state.dotRadius)
+    const setDotRadius = useQrStore((state) => state.setDotRadius)
 
-    const refetchCodes = useAppStore((state) => state.refetchCodes)
-    const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
+    const refetchCodes = useQrStore((state) => state.refetchCodes)
+    const setRefetchCodes = useQrStore((state) => state.setRefetchCodes)
 
-    const dataUrl = useAppStore((state) => state.dataUrl)
-    const setDataUrl = useAppStore((state) => state.setDataUrl)
+    const dataUrl = useQrStore((state) => state.dataUrl)
+    const setDataUrl = useQrStore((state) => state.setDataUrl)
 
-    const canvasRef = useAppStore((state) => state.canvasRef)
+    const canvasRef = useQrStore((state) => state.canvasRef)
 
-    const shareable = useAppStore((state) => state.shareable)
-    const setShareable = useAppStore((state) => state.setShareable)
+    const shareable = useQrStore((state) => state.shareable)
+    const setShareable = useQrStore((state) => state.setShareable)
 
 
     const [opened, { toggle }] = useDisclosure(false)

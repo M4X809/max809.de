@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import QrCodePreview, { QrCodePreviewProps, type QrCodeData } from "./QrCodePreview"
 import { AspectRatio, Box, Container, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core'
 import { api } from '~/trpc/react'
-import { useAppStore } from '~/providers/app-store-provider'
+import { useQrStore } from '~/stores/qr-store'
 import Image from 'next/image'
 import { useClipboard } from '@mantine/hooks'
 
@@ -37,13 +37,13 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
 
 
 
-    // const setRefetchCodes = useAppStore((state) => state.setRefetchCodes)
-    const refetchCodes = useAppStore((state) => state.refetchCodes)
+    // const setRefetchCodes = useQrStore((state) => state.setRefetchCodes)
+    const refetchCodes = useQrStore((state) => state.refetchCodes)
 
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        refetch()
+        if (refetchCodes > 0) refetch()
     }, [refetchCodes])
 
     // console.log(data)

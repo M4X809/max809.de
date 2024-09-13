@@ -14,5 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			changeFrequency: "daily",
 			priority: 0.8,
 		},
+		{
+			url: "https://max809.de/color-picker",
+			lastModified: new Date(),
+			changeFrequency: "daily",
+			priority: 0.8,
+		},
 	];
 }
