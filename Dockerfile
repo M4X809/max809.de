@@ -5,7 +5,7 @@ FROM oven/bun:latest as builder
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb ./
+COPY package.json bun.lockb bunfig.toml ./
 # check env
 ARG NPM_FONT_AWESOME
 RUN env
