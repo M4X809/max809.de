@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM oven/bun:latest as builder
+FROM oven/bun:latest AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy package manifests
 COPY package.json bun.lockb bunfig.toml ./
 # check env
-ARG NPM_FONT_AWESOME
+# ARG NPM_FONT_AWESOME
 RUN env
 
 # Install dependencies
