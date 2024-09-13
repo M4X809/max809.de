@@ -1,9 +1,5 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import pkg from "@next/env";
-const { loadEnvConfig } = pkg;
-
-loadEnvConfig(process.cwd(), true);
 
 export const env = createEnv({
 	/**
