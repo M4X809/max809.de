@@ -1,18 +1,20 @@
 # Stage 1: Build the application
-FROM oven/bun:latest as builder
+FROM oven/bun:latest AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb ./
+COPY package.json bun.lockb bunfig.toml ./
+# check env
+ARG NPM_FONT_AWESOME
+RUN env
 
 # Install dependencies
 RUN bun install --no-save
-
 # Copy the rest of the application code
 COPY . .
-
+RUN env
 # Build the Next.js application
 RUN bun run build
 
