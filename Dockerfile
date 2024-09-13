@@ -15,6 +15,8 @@ RUN bun install --no-save
 # Copy the rest of the application code
 COPY . .
 ARG SKIP_ENV_VALIDATION
+ARG NEXT_PUBLIC_POSTHOG_KEY NEXT_PUBLIC_POSTHOG_HOST
+
 RUN env
 # Build the Next.js application
 RUN bun run build
