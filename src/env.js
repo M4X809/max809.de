@@ -1,8 +1,10 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-console.log("next auth url", process.env.NEXTAUTH_URL);
+import pkg from "@next/env";
+const { loadEnvConfig } = pkg;
 
+loadEnvConfig(process.cwd(), true);
 export const env = createEnv({
 	/**
 	 * Specify your server-side environment variables schema here. This way you can ensure the app
