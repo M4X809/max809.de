@@ -14,6 +14,7 @@ RUN env
 RUN bun install --no-save
 # Copy the rest of the application code
 COPY . .
+ARG SKIP_ENV_VALIDATION
 RUN env
 # Build the Next.js application
 RUN bun run build
