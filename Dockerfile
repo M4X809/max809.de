@@ -39,6 +39,7 @@ RUN echo 'DATABASE_URL='$DATABASE_URL >> .env
 RUN env
 # Build the Next.js application
 RUN bun run build
+RUN rm -rf .env
 
 # Stage 2: Run the application
 FROM oven/bun:latest as runner
