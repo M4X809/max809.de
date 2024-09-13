@@ -8,7 +8,7 @@ import { useAppStore } from '~/providers/app-store-provider'
 import Image from 'next/image'
 import { useClipboard } from '@mantine/hooks'
 
-// import { env } from "~/env"
+import { env } from "~/env"
 import LoadQrConfig from './LoadQrConfig'
 
 interface QrCodePreviewContainerProps {
@@ -87,7 +87,7 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                         <Text fz={11} c={copied && copiedName === code.name && code.shareable ? "white" : "dimmed"} td={"underline"} className={code.shareable ? 'cursor-pointer' : ''} onClick={() => {
                             if (!code.shareable) return
                             setCopiedName(code.name)
-                            copy(`${process.env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://max809.de"}/qr-code-generator/${code.id}`)
+                            copy(`${env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://max809.de"}/qr-code-generator/${code.id}`)
                         }}>
                             {code.shareable && <Text fz={11} component='span'> Click to Share</Text>} {code.id}
                         </Text>

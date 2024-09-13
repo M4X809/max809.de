@@ -11,15 +11,11 @@ import { TRPCError } from "@trpc/server";
 import { qrCodes } from "~/server/db/schema";
 
 import { PostHog } from "posthog-node";
-// import { env } from "~/env";
+import { env } from "~/env";
 import { loadManifestWithRetries } from "next/dist/server/load-components";
 
-if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-	throw new Error("NEXT_PUBLIC_POSTHOG_KEY is not set");
-}
-
-const client = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-	host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
+	host: env.NEXT_PUBLIC_POSTHOG_HOST,
 });
 
 export const codesRouter = createTRPCRouter({
