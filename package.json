@@ -11,6 +11,7 @@
     "db:studio": "drizzle-kit studio --verbose  --host 0.0.0.0 --port 5555",
     "dev": "next dev",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "start": "next start"
   },
   "dependencies": {
