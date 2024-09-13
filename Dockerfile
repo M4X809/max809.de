@@ -6,13 +6,13 @@ WORKDIR /app
 
 # Copy package manifests
 COPY package.json bun.lockb ./
-
+RUN env
 # Install dependencies
 RUN bun install --no-save
 
 # Copy the rest of the application code
 COPY . .
-
+RUN env
 # Build the Next.js application
 RUN bun run build
 
