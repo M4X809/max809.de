@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy package manifests
 COPY package.json bun.lockb bunfig.toml ./
 # check env
-# ARG NPM_FONT_AWESOME
+ARG NPM_FONT_AWESOME
 RUN env
 
 # Install dependencies
