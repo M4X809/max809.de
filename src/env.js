@@ -1,7 +1,9 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import pkg from "@next/env";
+const { loadEnvConfig } = pkg;
 
-console.log("next auth url", process.env.NEXTAUTH_URL);
+loadEnvConfig(process.cwd(), true);
 
 export const env = createEnv({
 	/**
