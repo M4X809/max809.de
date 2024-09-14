@@ -27,6 +27,7 @@ export const env = createEnv({
 		GITHUB_CLIENT_SECRET: z.string(),
 
 		NPM_FONT_AWESOME: z.string(),
+		UPLOADTHING_TOKEN: z.string(),
 	},
 
 	/**
@@ -64,6 +65,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
 
 		NPM_FONT_AWESOME: process.env.NPM_FONT_AWESOME,
+		UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

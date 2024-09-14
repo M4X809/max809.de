@@ -15,6 +15,15 @@ const config = {
 		ignoreDuringBuilds: true,
 	},
 	skipTrailingSlashRedirect: true,
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "utfs.io",
+				pathname: "/a/su1pkz07fn/*",
+			},
+		],
+	},
 };
 
 export default config;

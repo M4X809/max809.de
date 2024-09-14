@@ -1,4 +1,4 @@
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -12,7 +12,11 @@ import { qrCodes } from "~/server/db/schema";
 
 import { PostHog } from "posthog-node";
 import { env } from "~/env";
-import { loadManifestWithRetries } from "next/dist/server/load-components";
+import { utapi } from "~/server/uploadthing";
+import { dataURLtoFile } from "image-conversion";
+
+import {} from "uploadthing/server";
+import type { UploadFileResult } from "uploadthing/types";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -26,7 +30,7 @@ export const codesRouter = createTRPCRouter({
 				dataUrl: z.string().optional().default(""),
 				qrCode: z.string().min(1),
 				qrLvl: z.number().min(0).max(3),
-				size: z.number().min(512).max(4096),
+				size: z.number().min(512).max(2048),
 				color: z.string().min(1),
 				backgroundColor: z.string().min(1),
 				finderRadius: z.number().min(0).max(1),
@@ -36,6 +40,7 @@ export const codesRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
+			console.log("input", input);
 			const user = await ctx.db.query.users.findFirst({
 				where: (users, { eq }) => eq(users.id, ctx.session.user.id),
 			});
@@ -72,6 +77,7 @@ export const codesRouter = createTRPCRouter({
 			// console.log(nameExists);
 
 			if (nameExists) {
+				console.log("nameExists", nameExists);
 				client.capture({
 					event: "qr-code-generator-save",
 					distinctId: ctx.session.user.id,
@@ -80,12 +86,49 @@ export const codesRouter = createTRPCRouter({
 						saveCode: false,
 					},
 				});
+				const oldImageKey = nameExists.imageKey;
+
+				let delPromise: Promise<{
+					readonly success: boolean;
+					readonly deletedCount: number;
+				}> = Promise.resolve({ success: true, deletedCount: 1 });
+
+				if (oldImageKey) {
+					delPromise = utapi.deleteFiles([oldImageKey]);
+					// console.log("delPromise", delPromise);
+				}
+
+				let uploadProm = Promise.resolve({
+					error: null,
+					data: true,
+				}) as unknown as Promise<UploadFileResult>;
+
+				if (input.shareable) {
+					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					uploadProm = utapi.uploadFiles(
+						new File([imageFile], `${input.name}-${user.id}.png`, {
+							type: "image/png",
+						}),
+					);
+				}
+
+				const [uploadData, delData] = await Promise.all([uploadProm, delPromise]);
+				console.dir({ uploadData: uploadData, delData: delData });
+
+				if (uploadData.error || !uploadData.data) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+
 				await ctx.db
 					.update(qrCodes)
 					.set({
 						name: input.name,
 						updatedAt: new Date(),
-						dataUrl: input.dataUrl,
+						// dataUrl: data.appUrl,
 						backgroundColor: input.backgroundColor,
 						color: input.color,
 						dotRadius: input.dotRadius,
@@ -94,6 +137,7 @@ export const codesRouter = createTRPCRouter({
 						qrLvl: input.qrLvl,
 						size: input.size,
 						shareable: input.shareable,
+						imageKey: uploadData.data.key,
 					})
 					.where(
 						and(
@@ -129,10 +173,34 @@ export const codesRouter = createTRPCRouter({
 					});
 				}
 
+				let uploadProm = Promise.resolve({
+					error: null,
+					data: true,
+				}) as unknown as Promise<UploadFileResult>;
+
+				if (input.shareable) {
+					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					uploadProm = utapi.uploadFiles(
+						new File([imageFile], `${input.name}-${user.id}.png`, {
+							type: "image/png",
+						}),
+					);
+				}
+
+				const uploadData = await uploadProm;
+
+				if (uploadData.error || !uploadData.data) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+
 				await ctx.db.insert(qrCodes).values({
 					name: input.name,
 					createdById: ctx.session.user.id,
-					dataUrl: input.dataUrl,
+					dataUrl: null,
 					qrCode: input.qrCode,
 					qrLvl: input.qrLvl,
 					size: input.size,
@@ -141,9 +209,11 @@ export const codesRouter = createTRPCRouter({
 					finderRadius: input.finderRadius,
 					dotRadius: input.dotRadius,
 					shareable: input.shareable,
+					// imageKey: uploadData?.data.key || null,
 
 					// data: JSON.stringify(input.data),
 				});
+				return;
 			}
 		}),
 	getQrCodes: protectedProcedure.query(async ({ ctx }) => {
@@ -189,7 +259,7 @@ export const codesRouter = createTRPCRouter({
 				where: (qrCodes, { eq }) => eq(qrCodes.id, input),
 			});
 			if (!code) {
-				throw new TRPCError({
+				return new TRPCError({
 					code: "NOT_FOUND",
 					message: "No QR Code found with that ID.",
 				});
@@ -206,5 +276,55 @@ export const codesRouter = createTRPCRouter({
 			});
 
 			return { ...code, createdBy: createdBy?.name };
+		}),
+
+	uploadQrCodeImage: publicProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq }) => eq(qrCodes.id, input.id),
+			});
+
+			if (!code || !code.dataUrl || code.imageKey || !code.shareable) {
+				return {
+					success: false,
+					keyExists: !!code?.imageKey,
+					shareable: code?.shareable,
+				};
+			}
+
+			const imageFile = await dataURLtoFile(code.dataUrl, "image/png" as any);
+
+			const uploadData = await utapi.uploadFiles(
+				new File([imageFile], `${code.name}-${code.createdById}.png`, {
+					type: "image/png",
+				}),
+			);
+
+			if (uploadData.error || !uploadData.data) {
+				return new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message:
+						"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+				});
+			}
+
+			await ctx.db
+				.update(qrCodes)
+				.set({
+					imageKey: uploadData.data.key,
+					dataUrl: null,
+				})
+				.where(
+					and(eq(qrCodes.id, input.id), eq(qrCodes.createdById, code.createdById)),
+				);
+
+			return {
+				success: true,
+			};
 		}),
 });

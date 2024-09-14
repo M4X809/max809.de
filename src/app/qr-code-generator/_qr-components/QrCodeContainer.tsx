@@ -101,7 +101,6 @@ const QrCode = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (isSuccess) {
-            setSaveTitle("")
             toggle()
             setDataUrl("")
             setRefetchCodes(refetchCodes + 1)
@@ -321,7 +320,7 @@ const QrCode = () => {
                                     stepHoldInterval={100}
                                     step={100}
                                     min={512}
-                                    max={4096}
+                                    max={2048}
                                 />
 
                                 <ColorInput
