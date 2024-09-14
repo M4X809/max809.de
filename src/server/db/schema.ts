@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { float } from "drizzle-orm/mysql-core";
+// import { float } from "drizzle-orm/mysql-core";
 import {
 	boolean,
 	doublePrecision,
@@ -13,7 +13,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
-import QrCode from "~/app/_components/QrCodeContainer";
+// import QrCode from "~/app/qr-code-generator/_qr-components/QrCodeContainer";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
