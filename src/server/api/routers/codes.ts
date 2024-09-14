@@ -30,7 +30,7 @@ export const codesRouter = createTRPCRouter({
 				dataUrl: z.string().optional().default(""),
 				qrCode: z.string().min(1),
 				qrLvl: z.number().min(0).max(3),
-				size: z.number().min(512).max(4096),
+				size: z.number().min(512).max(2048),
 				color: z.string().min(1),
 				backgroundColor: z.string().min(1),
 				finderRadius: z.number().min(0).max(1),
@@ -86,7 +86,7 @@ export const codesRouter = createTRPCRouter({
 						saveCode: false,
 					},
 				});
-				const oldImageKey = nameExists.imageKey; 
+				const oldImageKey = nameExists.imageKey;
 
 				let delPromise: Promise<{
 					readonly success: boolean;
@@ -278,7 +278,7 @@ export const codesRouter = createTRPCRouter({
 			return { ...code, createdBy: createdBy?.name };
 		}),
 
-	uploadQrCodeImage: protectedProcedure
+	uploadQrCodeImage: publicProcedure
 		.input(
 			z.object({
 				id: z.string(),

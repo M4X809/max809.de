@@ -74,7 +74,7 @@ export const createAppStore = () => {
 			if (typeof size === "string") size = Number(size);
 
 			if (size < 512) return set({ size: 512 });
-			if (size > 4096) return set({ size: 4096 });
+			if (size > 2048) return set({ size: 2048 });
 
 			// console.log(size);
 

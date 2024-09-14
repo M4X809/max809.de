@@ -320,7 +320,7 @@ const QrCode = () => {
                                     stepHoldInterval={100}
                                     step={100}
                                     min={512}
-                                    max={4096}
+                                    max={2048}
                                 />
 
                                 <ColorInput
