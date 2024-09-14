@@ -9,6 +9,8 @@ import QrCodeContainer from "~/app/_components/QrCodeContainer";
 import SavedCodes from "~/app/_components/ServerSavedCodes";
 
 
+import { AuthButton } from "../_components/AuthButton";
+
 
 
 export async function generateMetadata() {
@@ -38,16 +40,9 @@ export async function generateMetadata() {
 }
 
 
+
 export default async function Home() {
   const session = await getServerAuthSession();
-
-  // if (session) {
-  //   redirect("/generator");
-  // }
-
-
-
-  // void api.post.getLatest.prefetch();
 
   return (
 
@@ -64,13 +59,8 @@ export default async function Home() {
             </Link>
             <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
           </Stack>
-          <Link
+          <AuthButton session={session} />
 
-            href={session ? "/api/auth/signout" : "/api/auth/signin"}
-            className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20 text-nowrap"
-          >
-            {session ? `Sign out: ${session.user?.name}` : "Sign in"}
-          </Link>
         </Group>
         <QrCodeContainer />
 

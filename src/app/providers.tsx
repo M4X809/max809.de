@@ -10,9 +10,10 @@ if (typeof window !== 'undefined') {
     autocapture: true,
     capture_heatmaps: true,
     enable_heatmaps: true,
-    disable_compression: true,
-    enable_recording_console_log: true,
-
+    disable_compression: false,
+    enable_recording_console_log: false,
+    cross_subdomain_cookie: true,
+    // debug: true,
 
   })
 }

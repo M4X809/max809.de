@@ -7,6 +7,7 @@ import Shell from "./_components/Shell";
 
 import QrCodePreview, { QrCodeData } from "./_components/QrCodePreview";
 import type { Metadata } from 'next'
+import { AuthButton } from "./_components/AuthButton";
 
 // export const metadata: Metadata = {
 
@@ -42,25 +43,20 @@ export default async function Home() {
   const session = await getServerAuthSession();
 
 
-
-
-
-
-
   return (
     <HydrateClient>
       <Shell session={session}>
-        <Group justify="space-between">
-          <Title>
-            max809.de
+        <Group justify="space-between" align="start"  >
+          <Stack gap={0} >
+            {/* <Link href={"/"} prefetch={true}> */}
+            <Title>
+              max809.de
+            </Title>
+            {/* </Link> */}
+            {/* <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text> */}
+          </Stack>
+          <AuthButton session={session} />
 
-          </Title>
-          <Link
-            href={session ? "/api/auth/signout" : "/api/auth/signin"}
-            className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20"
-          >
-            {session ? `Sign out: ${session.user?.name}` : "Sign in"}
-          </Link>
         </Group>
         <Stack>
           <Center>

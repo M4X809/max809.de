@@ -1,6 +1,6 @@
 "use client"
 
-import { AppShell, type AppShellProps, Box, Group, Text } from '@mantine/core'
+import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Text, TextInput } from '@mantine/core'
 import type { Session } from 'next-auth';
 import React, { useEffect } from 'react'
 import { useAppStore } from '~/providers/app-store-provider';
@@ -12,6 +12,7 @@ import { faHeart } from '@fortawesome/pro-duotone-svg-icons'
 import pkg from "~/../package.json";
 import { usePostHog } from 'posthog-js/react';
 import { usePathname } from 'next/navigation';
+import { trackingStore } from '~/stores/tracking-store';
 
 
 function Shell({ children, session, ...props }: AppShellProps & { session: Session | null }) {
@@ -19,12 +20,50 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
     const path = usePathname()
     posthog.capture('page_view', { path: path })
 
+    const trackingBanner = trackingStore((state) => state.trackingBanner)
+    const setTrackingBanner = trackingStore((state) => state.setTrackingBanner)
+
+
     const setSession = useAppStore((state) => state.setSession)
+
+    const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
+        send_event: true,
+    })
+
+    console.log(session)
 
     useEffect(() => {
         setSession(session)
         posthog.identify(session?.user?.id)
+
     }, [session, setSession, posthog])
+
+    useEffect(() => {
+        // console.log("debug posthog", debugPosthog)
+        if (debugPosthog) {
+            posthog.debug(true)
+        } else {
+            if (window.localStorage.getItem("ph_debug") === "true") {
+
+                posthog.debug(false)
+            }
+        }
+    }, [debugPosthog, posthog.debug])
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        window.addEventListener("beforeunload", () => {
+            posthog.debug(false)
+            window.localStorage.setItem("ph_debug", "false")
+        });
+
+        return () => {
+            window.removeEventListener("beforeunload", () => {
+                posthog.debug(false)
+                window.localStorage.setItem("ph_debug", "false")
+            });
+        };
+    }, [])
 
 
     return (
@@ -80,6 +119,24 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
                     </Text>
                 </Group>
             </Box>
+            <Dialog
+                w={500}
+                className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
+                // className='bg-gray-800/80'
+                withBorder
+                opened={trackingBanner} withCloseButton onClose={() => setTrackingBanner(false)} size="lg" radius="md">
+                <Text size="sm" mb="xs" fw={500}>
+                    Cookies and Analytics
+                </Text>
+                <Text fz={13} mb="xs">
+                    This website uses cookies and analytics to improve your experience and are necessary for the website to function properly. <br /> By using this website, you agree to the use of cookies and analytics.
+                </Text>
+                <Button onClick={() => setTrackingBanner(false)} fullWidth size='compact-xs'>
+                    OK
+                </Button>
+
+
+            </Dialog>
         </>
     )
 }
