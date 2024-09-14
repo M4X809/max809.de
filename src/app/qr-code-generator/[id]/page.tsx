@@ -1,8 +1,8 @@
 "use server"
-import { AspectRatio, Center, Image, Stack, Text, Title } from "@mantine/core"
+import { AspectRatio, Center, Stack, Text, Title } from "@mantine/core"
 import { TRPCError } from "@trpc/server"
 import type { Metadata, ResolvingMetadata } from "next"
-// import Image from "next/image"
+import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { api } from "~/trpc/server"
@@ -134,7 +134,7 @@ export default async function Page({ params }: Props) {
                 <Text mb={30} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
                 {!!code.imageKey &&
                     <AspectRatio ratio={1 / 1} maw={400} >
-                        <Image className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt="qr-code" w={400} h={400} />
+                        <Image priority quality={100} className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt="qr-code" width={400} height={400} />
                     </AspectRatio>
                 }
                 {!code.imageKey &&
