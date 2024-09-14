@@ -13,6 +13,8 @@ import { qrCodes } from "~/server/db/schema";
 import { PostHog } from "posthog-node";
 import { env } from "~/env";
 import { loadManifestWithRetries } from "next/dist/server/load-components";
+import { utapi } from "~/server/uploadthing";
+import { dataURLtoFile } from "image-conversion";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -71,6 +73,8 @@ export const codesRouter = createTRPCRouter({
 
 			// console.log(nameExists);
 
+			const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+
 			if (nameExists) {
 				client.capture({
 					event: "qr-code-generator-save",
@@ -80,12 +84,41 @@ export const codesRouter = createTRPCRouter({
 						saveCode: false,
 					},
 				});
+
+				const oldImageKey = nameExists.imageKey;
+				let delPromise: Promise<{
+					readonly success: boolean;
+					readonly deletedCount: number;
+				}> = Promise.resolve({ success: false, deletedCount: 0 });
+
+				if (oldImageKey) {
+					delPromise = utapi.deleteFiles([oldImageKey]);
+					// console.log("delPromise", delPromise);
+				}
+
+				const upPromise = utapi.uploadFiles(
+					new File([imageFile], `${input.name}-${user.id}.png`, {
+						type: "image/png",
+					}),
+				);
+
+				const [uploadData, delData] = await Promise.all([upPromise, delPromise]);
+				console.dir({ uploadData: uploadData, delData: delData });
+
+				if (uploadData.error || !uploadData.data) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+
 				await ctx.db
 					.update(qrCodes)
 					.set({
 						name: input.name,
 						updatedAt: new Date(),
-						dataUrl: input.dataUrl,
+						// dataUrl: data.appUrl,
 						backgroundColor: input.backgroundColor,
 						color: input.color,
 						dotRadius: input.dotRadius,
@@ -94,6 +127,7 @@ export const codesRouter = createTRPCRouter({
 						qrLvl: input.qrLvl,
 						size: input.size,
 						shareable: input.shareable,
+						imageKey: uploadData.data.key,
 					})
 					.where(
 						and(
@@ -129,10 +163,26 @@ export const codesRouter = createTRPCRouter({
 					});
 				}
 
+				const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+
+				const uploadData = await utapi.uploadFiles(
+					new File([imageFile], `${input.name}-${user.id}.png`, {
+						type: "image/png",
+					}),
+				);
+
+				if (uploadData.error || !uploadData.data) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+
 				await ctx.db.insert(qrCodes).values({
 					name: input.name,
 					createdById: ctx.session.user.id,
-					dataUrl: input.dataUrl,
+					// dataUrl: input.dataUrl,
 					qrCode: input.qrCode,
 					qrLvl: input.qrLvl,
 					size: input.size,
@@ -141,6 +191,7 @@ export const codesRouter = createTRPCRouter({
 					finderRadius: input.finderRadius,
 					dotRadius: input.dotRadius,
 					shareable: input.shareable,
+					imageKey: uploadData.data.key,
 
 					// data: JSON.stringify(input.data),
 				});

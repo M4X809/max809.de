@@ -73,6 +73,7 @@ export const qrCodes = createTable(
 		finderRadius: doublePrecision("finder_radius").default(0),
 		dotRadius: doublePrecision("dot_radius").default(0),
 		shareable: boolean("shareable").default(false),
+		imageKey: varchar("image_key", { length: 255 }),
 	},
 	// (example) => ({
 	// createdByIdIdx: index("created_by_idx_codes").on(example.createdById),
