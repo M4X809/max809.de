@@ -8,7 +8,6 @@ import { redirect } from "next/navigation"
 import { api } from "~/trpc/server"
 
 
-import { utapi } from "~/server/uploadthing"
 interface Props {
     params: {
         id: string
@@ -23,12 +22,6 @@ export async function generateMetadata(
 
 
     const code = await api.codes.getQrCodeWithID(params.id)
-
-
-
-
-
-
 
     if (code instanceof TRPCError) {
         return {
@@ -58,14 +51,6 @@ export async function generateMetadata(
     // console.log("head", migrateCode)
 
 
-    // // read route params
-    // const id = params.id
-
-    // // fetch data
-    // const product = await fetch(`https://.../${id}`).then((res) => res.json())
-
-    // // optionally access and extend (rather than replace) parent metadata
-    // const previousImages = (await parent).openGraph?.images || []
 
     return {
         metadataBase: new URL('https://max809.de'),
@@ -130,16 +115,22 @@ export default async function Page({ params }: Props) {
     // console.log(code)
 
     return (
-        <Center className="h-screen w-screen bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white">
+        <Center className="h-screen w-screen bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white select-none">
             <Stack gap={0}>
 
                 <Title>QR Code</Title>
                 <Text c={"dimmed"} component="span" > Name: {code.name}</Text>
-                <Text mb={30} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
+                <Text mb={20} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
+
                 {!!code.imageKey &&
-                    <AspectRatio ratio={1 / 1} maw={400} >
-                        <Image priority loading="eager" quality={100} className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt={`${code.name}-${code.createdBy}`} width={400} height={400} />
-                    </AspectRatio>
+                    <>
+                        <AspectRatio ratio={1 / 1} maw={400} >
+                            <Image priority loading="eager" quality={100} className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt={`${code.name}-${code.createdBy}`} width={400} height={400} />
+                        </AspectRatio>
+                        <Link prefetch href={"/qr-code-generator"} className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20 text-nowrap mt-10 flex justify-center" >
+                            Return to QR Code Generator
+                        </Link>
+                    </>
                 }
                 {!code.imageKey &&
                     <Text>
