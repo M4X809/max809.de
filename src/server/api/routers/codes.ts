@@ -240,7 +240,7 @@ export const codesRouter = createTRPCRouter({
 				where: (qrCodes, { eq }) => eq(qrCodes.id, input),
 			});
 			if (!code) {
-				throw new TRPCError({
+				return new TRPCError({
 					code: "NOT_FOUND",
 					message: "No QR Code found with that ID.",
 				});
@@ -257,5 +257,54 @@ export const codesRouter = createTRPCRouter({
 			});
 
 			return { ...code, createdBy: createdBy?.name };
+		}),
+
+	uploadQrCodeImage: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq }) => eq(qrCodes.id, input.id),
+			});
+
+			if (!code || !code.dataUrl || code.imageKey) {
+				return {
+					success: false,
+					keyExists: !!code?.imageKey,
+				};
+			}
+
+			const imageFile = await dataURLtoFile(code.dataUrl, "image/png" as any);
+
+			const uploadData = await utapi.uploadFiles(
+				new File([imageFile], `${code.name}-${code.createdById}.png`, {
+					type: "image/png",
+				}),
+			);
+
+			if (uploadData.error || !uploadData.data) {
+				return new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message:
+						"There was an error uploading the file. Please try again later. If the problem persists, please contact the administrator.",
+				});
+			}
+
+			await ctx.db
+				.update(qrCodes)
+				.set({
+					imageKey: uploadData.data.key,
+					dataUrl: null,
+				})
+				.where(
+					and(eq(qrCodes.id, input.id), eq(qrCodes.createdById, code.createdById)),
+				);
+
+			return {
+				success: true,
+			};
 		}),
 });

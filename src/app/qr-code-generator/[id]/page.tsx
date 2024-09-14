@@ -54,6 +54,8 @@ export async function generateMetadata(
             }
         }
     }
+    await api.codes.uploadQrCodeImage({ id: params.id })
+    // console.log("head", migrateCode)
 
 
     // // read route params
@@ -96,6 +98,8 @@ export default async function Page({ params }: Props) {
     if (!params.id) {
         redirect("/qr-code-generator")
     }
+    await api.codes.uploadQrCodeImage({ id: params.id })
+    // console.log(migrateCode)
 
     const code = await api.codes.getQrCodeWithID(params.id)
 
@@ -134,7 +138,7 @@ export default async function Page({ params }: Props) {
                 <Text mb={30} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
                 {!!code.imageKey &&
                     <AspectRatio ratio={1 / 1} maw={400} >
-                        <Image priority quality={100} className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt="qr-code" width={400} height={400} />
+                        <Image priority loading="eager" quality={100} className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt={`${code.name}-${code.createdBy}`} width={400} height={400} />
                     </AspectRatio>
                 }
                 {!code.imageKey &&
