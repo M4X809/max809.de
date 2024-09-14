@@ -89,7 +89,7 @@ export const codesRouter = createTRPCRouter({
 				let delPromise: Promise<{
 					readonly success: boolean;
 					readonly deletedCount: number;
-				}> = Promise.resolve({ success: false, deletedCount: 0 });
+				}> = Promise.resolve({ success: true, deletedCount: 1 });
 
 				if (oldImageKey) {
 					delPromise = utapi.deleteFiles([oldImageKey]);
