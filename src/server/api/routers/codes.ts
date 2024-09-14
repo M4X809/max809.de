@@ -209,9 +209,7 @@ export const codesRouter = createTRPCRouter({
 					finderRadius: input.finderRadius,
 					dotRadius: input.dotRadius,
 					shareable: input.shareable,
-					// imageKey: uploadData?.data.key || null,
-
-					// data: JSON.stringify(input.data),
+					imageKey: uploadData?.data.key || null,
 				});
 				return;
 			}

@@ -34,7 +34,7 @@ interface QrCodePreviewContainerProps {
 
 const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, limits, userId }) => {
 
-    const { data, isLoading, isError, refetch } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits } })
+    const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId })
 
 
 
