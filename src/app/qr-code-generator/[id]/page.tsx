@@ -1,8 +1,8 @@
 "use server"
-import { Center, Stack, Text, Title } from "@mantine/core"
+import { AspectRatio, Center, Image, Stack, Text, Title } from "@mantine/core"
 import { TRPCError } from "@trpc/server"
 import type { Metadata, ResolvingMetadata } from "next"
-import Image from "next/image"
+// import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { api } from "~/trpc/server"
@@ -132,7 +132,11 @@ export default async function Page({ params }: Props) {
                 <Title>QR Code</Title>
                 <Text c={"dimmed"} component="span" > Name: {code.name}</Text>
                 <Text mb={30} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
-                {!!code.imageKey && <Image priority className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt="qr-code" width={400} height={400} />}
+                {!!code.imageKey &&
+                    <AspectRatio ratio={1 / 1} maw={400} >
+                        <Image className="flex self-center" src={`https://utfs.io/a/su1pkz07fn/${code.imageKey}`} alt="qr-code" w={400} h={400} />
+                    </AspectRatio>
+                }
                 {!code.imageKey &&
                     <Text>
                         No QR Code data found, this may be because the QR Code was created before this feature was added.
