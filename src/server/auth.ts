@@ -62,19 +62,14 @@ export const authOptions: NextAuthOptions = {
 				user: {
 					...session.user,
 					...user,
-					// id: user.id,
-					// limit: user.limit,
 				},
 			};
 		},
 		async redirect({ url, baseUrl }) {
-			// Allows relative callback URLs
 			if (url.startsWith("/")) return `${baseUrl}${url}`;
-			// Allows callback URLs on the same origin
 			if (new URL(url).origin === baseUrl) return url;
 			return baseUrl;
 		},
-
 		signIn: async ({ user }) => {
 			client.identify({
 				distinctId: user.id,
@@ -88,13 +83,10 @@ export const authOptions: NextAuthOptions = {
 				event: "sign-in",
 				distinctId: user.id,
 			});
-
 			console.log("sign in allowed", signInAllowed, user.id);
-
 			if (!signInAllowed) {
 				return false;
 			}
-
 			client.capture({
 				event: "sign-in",
 				distinctId: user.id,

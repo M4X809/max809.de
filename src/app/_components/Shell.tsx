@@ -39,7 +39,6 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
     }, [session, setSession, posthog])
 
     useEffect(() => {
-        // console.log("debug posthog", debugPosthog)
         if (debugPosthog) {
             posthog.debug(true)
         } else {
@@ -65,41 +64,24 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
         };
     }, [])
 
-
     return (
         <>
             <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 ' style={{
-                // marginBottom: "calc(1.5rem * var(--mantine-scale))",
                 zIndex: "1",
             }} >
                 <div className="flex min-h-screen min-w-full flex-col  justify-center bg-gradient-to-tr from-[#06080f] to-[#122b69]  text-white z-1 " >
-
                     <AppShell
-                        // header={{ height: 40 }}
                         navbar={{
                             width: 300,
                             breakpoint: 'sm',
                             collapsed: { mobile: true, desktop: true },
-
                         }}
-
                         padding="md"
                         {...props}
                     >
-                        {/* <AppShell.Header>
-                </AppShell.Header> */}
-
-                        {/* <AppShell.Navbar
-                            // className='acrylic'
-                            bg={"transparent"}
-                            p="md">Navbar</AppShell.Navbar> */}
-
                         <AppShell.Main  >
                             {children}
-
-
                         </AppShell.Main>
-
                     </AppShell>
                 </div>
 
@@ -112,20 +94,15 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
                         Made with <Text component='span' c={"#ff0000"} > <FontAwesomeIcon icon={faHeart} /></Text> by <Text c={"blue"} component="a" href='https://github.com/m4x809' target='_blank' td={"underline"} >m4x809</Text>
                     </Text>
                     <Text fz={13} c={"dimmed"} component='span'> Version: {pkg.version} </Text>
-
-
                     <Text c={"dimmed"} ta={"right"} fz={13} component="a" target='_blank' href='https://github.com/m4x809/max809.de' td={"underline"}>
                         Source code on <Text c={"blue"} component='span' px={3} ><FontAwesomeIcon color='white' icon={faGithub} /></Text>
                     </Text>
                 </Group>
             </Box>
             <Dialog
-                transitionProps={
-                    { transition: "slide-left", duration: 500 }
-                }
+                transitionProps={{ transition: "slide-left", duration: 500 }}
                 w={600}
                 className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
-                // className='bg-gray-800/80'
                 withBorder
                 opened={trackingBanner} withCloseButton onClose={() => setTrackingBanner(false)} size="lg" radius="md">
                 <Text size="sm" mb="xs" fw={500}>
@@ -137,8 +114,6 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
                 <Button onClick={() => setTrackingBanner(false)} fullWidth size='compact-xs'>
                     OK
                 </Button>
-
-
             </Dialog>
         </>
     )

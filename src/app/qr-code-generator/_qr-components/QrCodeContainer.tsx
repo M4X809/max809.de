@@ -139,12 +139,9 @@ const QrCode = () => {
                                         w={250}
                                         variant="outline"
                                         color="blue"
-
                                     >
                                         Download as PNG
-
                                     </Button>
-
                                     <Button
                                         w={250}
                                         onClick={() => {
@@ -152,7 +149,6 @@ const QrCode = () => {
                                         }}
                                         variant="outline"
                                         color="blue"
-
                                     >
                                         Download as WEBP
                                     </Button>
@@ -169,9 +165,7 @@ const QrCode = () => {
                                     centered
                                     overlayProps={{
                                         blur: 2,
-
                                     }}
-
                                     classNames={{
                                         body: "bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white",
                                     }}
@@ -180,15 +174,12 @@ const QrCode = () => {
                                     onClose={() => {
                                         toggle()
                                         reset()
-
                                     }}
-
                                 >
                                     <Stack gap={5}>
                                         <Title order={2} ta='center' className='text-white'>
                                             Save QR Code
                                         </Title>
-
                                         <TextInput
                                             styles={{
                                                 wrapper: {
@@ -212,8 +203,6 @@ const QrCode = () => {
                                             checked={shareable}
                                             onChange={(e) => setShareable(e.target.checked)}
                                         />
-
-
                                         <Button
                                             miw={200}
                                             className='flex self-center'
@@ -222,10 +211,6 @@ const QrCode = () => {
                                             onClick={() => {
                                                 if (!qrCode || !session?.user.id || !saveTitle) return
                                                 posthog.capture('save-qr-code', { distinctId: session?.user?.id, name: saveTitle, shareable: shareable })
-
-                                                // if (shareable && dataUrl === "") setDataUrl(getDataUrl())
-
-
                                                 mutate({
                                                     name: saveTitle,
                                                     qrCode: qrCode,
@@ -238,19 +223,11 @@ const QrCode = () => {
                                                     dataUrl: dataUrl,
                                                     shareable: shareable,
                                                 })
-                                                // download("image/png")
                                             }}
-                                            // variant=""
-                                            // unstyled
-                                            // bg={"inherit"}
                                             style={{
                                                 "--button-hover": "rgba(255,255,255,0.2)",
                                                 "--button-bg": "rgba(255,255,255,0.1)",
                                             }}
-                                            // classNames={{
-                                            //     root: " bg-red-500 hover:bg-red-700",
-                                            // }}
-                                            // bg={"rgba(255,255,255,0.1)"}
                                             color="blue"
 
                                         >
@@ -267,9 +244,7 @@ const QrCode = () => {
                                         >
                                             {error?.message}
                                         </Box>
-
                                     </Stack>
-
                                 </Modal>
                             </>
                         }
@@ -281,7 +256,6 @@ const QrCode = () => {
                         <Stack className='h-full w-full' >
                             <Stack>
                                 <TextInput
-                                    // bg={"rgba(255,255,255,0.1)"}
                                     styles={{
                                         wrapper: {
                                             background: "transparent",
@@ -327,7 +301,6 @@ const QrCode = () => {
                                     label="Qr Code Color"
                                     value={color}
                                     onChange={setColor}
-                                    // onBlur={(e) => setQRColor(e.target.value)}
                                     styles={{
                                         input: {
                                             background: "rgba(255,255,255,0.05)",
@@ -341,7 +314,6 @@ const QrCode = () => {
                                     label="Background Color"
                                     value={backgroundColor}
                                     onChange={setBackgroundColor}
-                                    // onBlur={(e) => setQRColor(e.target.value)}
                                     styles={{
                                         input: {
                                             background: "rgba(255,255,255,0.05)",
@@ -360,13 +332,10 @@ const QrCode = () => {
                                     <Text c={"dimmed"} fw={500} inline fz={"sm"} >
                                         These options are for advanced users only. Options with * may stop the QR Code from being scanned by some scanners.
                                     </Text>
-
                                     <Stack gap={0} mt={15}>
-
                                         <Text size="sm" fw={500} >
                                             Error Correction Level
                                         </Text>
-
                                         <Text size="xs" fw={500} c={"dimmed"} >
                                             Advanced Option. <Text component='a' inline c={"blue"} td={"underline"} href='https://www.qrcode.com/en/about/error_correction.html' target='_blank'>Learn more</Text>
                                         </Text>
@@ -394,7 +363,6 @@ const QrCode = () => {
                                                 { label: "M", value: "0" },
                                                 { label: "Q", value: "3" },
                                                 { label: "H", value: "2" },
-                                                // { label: "4", value: "4" },
                                             ]}
                                         />
                                     </Stack>
@@ -410,23 +378,13 @@ const QrCode = () => {
                                             <Text size="sm" >
                                                 Value: {finderRadius.toFixed(1)}
                                             </Text>
-                                            {/* <Text size="sm" fw={500} className='text-nowrap'  >
-                                            Error Correction Level <Text c={"red"} fw={900}>*</Text>
-                                        </Text> */}
-
-
-                                            {/* <Text size="xs" fw={500} c={"dimmed"} >
-                                            Advanced Option. <Text component='a' inline c={"blue"} td={"underline"} href='https://www.qrcode.com/en/about/error_correction.html' target='_blank'>Learn more</Text>
-                                        </Text> */}
                                             <Slider
                                                 mt={15}
-                                                // label="Finder Dot Size"
                                                 value={finderRadius}
                                                 onChange={setFinderRadius}
                                                 min={0}
                                                 max={1}
                                                 step={0.1}
-                                            // onChangeEnd={setFinderRadius}
                                             />
                                         </Stack>
                                         <Stack mt={15} gap={0}>
@@ -439,46 +397,21 @@ const QrCode = () => {
                                             <Text size="sm" >
                                                 Value: {finderRadius.toFixed(1)}
                                             </Text>
-                                            {/* <Text size="sm" fw={500} className='text-nowrap'  >
-                                            Error Correction Level <Text c={"red"} fw={900}>*</Text>
-                                        </Text> */}
-
-
-                                            {/* <Text size="xs" fw={500} c={"dimmed"} >
-                                            Advanced Option. <Text component='a' inline c={"blue"} td={"underline"} href='https://www.qrcode.com/en/about/error_correction.html' target='_blank'>Learn more</Text>
-                                        </Text> */}
                                             <Slider
                                                 mt={15}
-                                                // label="Finder Dot Size"
                                                 value={dotRadius}
                                                 onChange={setDotRadius}
                                                 min={0}
                                                 max={1}
                                                 step={0.1}
-                                            // onChangeEnd={setFinderRadius}
                                             />
                                         </Stack>
-
                                     </Group>
-
-
                                 </Stack>
-
                             </Stack>
                         </Stack>
                     </Center>
                 </Grid.Col>
-                {/* <Grid.Col span={{ base: 20, md: 10 }} mt={20} hidden={!session}>
-                    <Center className='h-full w-full'  >
-                        <Stack  >
-
-                            <Title>
-                                Saved QR Codes
-                            </Title>
-
-                        </Stack>
-                    </Center>
-                </Grid.Col> */}
             </Grid>
         </Container >
     )

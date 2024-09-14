@@ -47,15 +47,11 @@ export default async function Home() {
       <Shell session={session}>
         <Group justify="space-between" align="start"  >
           <Stack gap={0} >
-            {/* <Link href={"/"} prefetch={true}> */}
             <Title>
               max809.de
             </Title>
-            {/* </Link> */}
-            {/* <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text> */}
           </Stack>
           <AuthButton session={session} />
-
         </Group>
         <Stack>
           <Center>
@@ -80,11 +76,7 @@ export default async function Home() {
                   <GridCol span={"auto"}>
                     <Stack gap={0}>
                       <Title order={2}>QR Code Generator</Title>
-                      <Text fz={13} > Create / Download / Save Custom QR Codes for your websites and apps.
-
-
-                      </Text>
-
+                      <Text fz={13} > Create / Download / Save Custom QR Codes for your websites and apps.</Text>
                     </Stack>
                   </GridCol>
                   <GridCol span={"content"}>
@@ -102,20 +94,14 @@ export default async function Home() {
                         id: "1",
                         name: "QR Code Generator",
                         createdById: "1",
-
                       }}
                     />
                   </GridCol>
                 </Grid>
-
               </Container>
             </Stack>
           </Center>
         </Stack>
-
-
-
-
       </Shell>
     </HydrateClient>
   )

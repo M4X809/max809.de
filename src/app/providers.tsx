@@ -13,7 +13,6 @@ if (typeof window !== 'undefined') {
     disable_compression: false,
     enable_recording_console_log: false,
     cross_subdomain_cookie: true,
-    // debug: true,
 
   })
 }

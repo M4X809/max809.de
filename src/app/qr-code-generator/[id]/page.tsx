@@ -14,15 +14,10 @@ interface Props {
     }
 }
 
-
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
 ): Promise<Metadata> {
-
-
     const code = await api.codes.getQrCodeWithID(params.id)
-
     if (code instanceof TRPCError) {
         return {
             metadataBase: new URL('https://max809.de'),
@@ -48,10 +43,6 @@ export async function generateMetadata(
         }
     }
     await api.codes.uploadQrCodeImage({ id: params.id })
-    // console.log("head", migrateCode)
-
-
-
     return {
         metadataBase: new URL('https://max809.de'),
 
@@ -77,27 +68,21 @@ export async function generateMetadata(
     }
 }
 
-
-
 export default async function Page({ params }: Props) {
     if (!params.id) {
         redirect("/qr-code-generator")
     }
     await api.codes.uploadQrCodeImage({ id: params.id })
-    // console.log(migrateCode)
-
     const code = await api.codes.getQrCodeWithID(params.id)
 
     if (!code) {
         redirect("/qr-code-generator")
     }
-
     if (code instanceof TRPCError) {
         return (
             <Center className="h-screen w-screen bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white">
                 <Stack gap={0}>
                     <Title>QR Code</Title>
-
                     <Text>
                         This QR Code is not publicly accessible.
                     </Text>
@@ -109,19 +94,12 @@ export default async function Page({ params }: Props) {
         )
     }
 
-
-
-
-    // console.log(code)
-
     return (
         <Center className="h-screen w-screen bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white select-none">
             <Stack gap={0}>
-
                 <Title>QR Code</Title>
                 <Text c={"dimmed"} component="span" > Name: {code.name}</Text>
                 <Text mb={20} c={"dimmed"} component="span" > Created by: {code.createdBy}</Text>
-
                 {!!code.imageKey &&
                     <>
                         <AspectRatio ratio={1 / 1} maw={400} >
