@@ -26,6 +26,7 @@ interface QrCodePreviewContainerProps {
         dotRadius: number | null;
         dataUrl: string | null;
         shareable: boolean | null;
+        imageKey: string | null;
     }[],
     limits: { current: number, max: number }
     userId: string
