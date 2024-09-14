@@ -9,6 +9,7 @@ import {
 import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
+import { PostHog } from "posthog-node";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -18,6 +19,10 @@ import {
 	users,
 	verificationTokens,
 } from "~/server/db/schema";
+
+const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
+	host: env.NEXT_PUBLIC_POSTHOG_HOST,
+});
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -51,20 +56,50 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
 	callbacks: {
-		session: ({ session, user }: { session: Session; user: User }) => ({
-			...session,
-			user: {
-				...session.user,
-				id: user.id,
-				limit: user.limit,
-			},
-		}),
+		async session({ session, user }: { session: Session; user: User }) {
+			return {
+				...session,
+				user: {
+					...session.user,
+					...user,
+					// id: user.id,
+					// limit: user.limit,
+				},
+			};
+		},
 		async redirect({ url, baseUrl }) {
 			// Allows relative callback URLs
 			if (url.startsWith("/")) return `${baseUrl}${url}`;
 			// Allows callback URLs on the same origin
 			if (new URL(url).origin === baseUrl) return url;
 			return baseUrl;
+		},
+
+		signIn: async ({ user }) => {
+			client.identify({
+				distinctId: user.id,
+				properties: {
+					name: `${user.name}${env.NODE_ENV === "development" ? " DEV" : ""}`,
+					id: user.id,
+				},
+			});
+			const signInAllowed = await client.isFeatureEnabled("sign-in", user.id);
+			client.capture({
+				event: "sign-in",
+				distinctId: user.id,
+			});
+
+			console.log("sign in allowed", signInAllowed, user.id);
+
+			if (!signInAllowed) {
+				return false;
+			}
+
+			client.capture({
+				event: "sign-in",
+				distinctId: user.id,
+			});
+			return true;
 		},
 	},
 	theme: {

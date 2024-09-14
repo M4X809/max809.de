@@ -8,8 +8,15 @@ import {
 } from "~/server/api/trpc";
 
 import { TRPCError } from "@trpc/server";
-
 import { qrCodes } from "~/server/db/schema";
+
+import { PostHog } from "posthog-node";
+import { env } from "~/env";
+import { loadManifestWithRetries } from "next/dist/server/load-components";
+
+const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
+	host: env.NEXT_PUBLIC_POSTHOG_HOST,
+});
 
 export const codesRouter = createTRPCRouter({
 	createQrCode: protectedProcedure
@@ -33,11 +40,28 @@ export const codesRouter = createTRPCRouter({
 				where: (users, { eq }) => eq(users.id, ctx.session.user.id),
 			});
 
-			if (!user)
+			if (!user) {
+				client.capture({
+					event: "qr-code-generator-save",
+					distinctId: ctx.session.user.id,
+				});
 				throw new TRPCError({
 					code: "UNAUTHORIZED",
 					message: "You are not authorized to perform this action.",
 				});
+			}
+
+			const enabled = await client.isFeatureEnabled(
+				"qr-code-generator-save",
+				ctx.session.user.id,
+			);
+
+			if (!enabled) {
+				throw new TRPCError({
+					code: "SERVICE_UNAVAILABLE",
+					message: "This feature is not enabled.",
+				});
+			}
 
 			const codes = await ctx.db.query.qrCodes.findMany({
 				where: (qrCodes, { eq }) => eq(qrCodes.createdById, ctx.session.user.id),
@@ -48,6 +72,14 @@ export const codesRouter = createTRPCRouter({
 			// console.log(nameExists);
 
 			if (nameExists) {
+				client.capture({
+					event: "qr-code-generator-save",
+					distinctId: ctx.session.user.id,
+					properties: {
+						updateCode: true,
+						saveCode: false,
+					},
+				});
 				await ctx.db
 					.update(qrCodes)
 					.set({
@@ -70,7 +102,26 @@ export const codesRouter = createTRPCRouter({
 						),
 					);
 			} else {
+				client.capture({
+					event: "qr-code-generator-save",
+					distinctId: ctx.session.user.id,
+					properties: {
+						updateCode: false,
+						saveCode: true,
+					},
+				});
+
 				if (codes.length >= user?.limit) {
+					client.capture({
+						event: "qr-code-generator-save-limit",
+						distinctId: ctx.session.user.id,
+						properties: {
+							updateCode: false,
+							saveCode: true,
+							limit: user?.limit,
+							count: codes.length,
+						},
+					});
 					throw new TRPCError({
 						code: "FORBIDDEN",
 						message:

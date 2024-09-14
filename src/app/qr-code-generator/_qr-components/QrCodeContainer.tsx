@@ -8,9 +8,11 @@ import MyCanvas from './QrCode';
 import { useAppStore } from "~/providers/app-store-provider";
 import { useDisclosure } from '@mantine/hooks';
 import { api } from '~/trpc/react';
+import { useFeatureFlagEnabled, usePostHog } from 'posthog-js/react';
 
 
 const QrCode = () => {
+    const posthog = usePostHog()
 
     const { mutate, isPending, isSuccess, error, reset } = api.codes.createQrCode.useMutation()
 
@@ -55,6 +57,12 @@ const QrCode = () => {
     const setShareable = useAppStore((state) => state.setShareable)
 
 
+    const saveEnabled = useFeatureFlagEnabled("qr-code-generator-save")
+    posthog.capture('$feature_view', { feature_flag: "qr-code-generator-save", })
+
+
+
+
     const [opened, { toggle }] = useDisclosure(false)
 
 
@@ -72,6 +80,9 @@ const QrCode = () => {
 
     const download = (type: "image/png" | "image/webp") => {
         if (!canvasRef?.current) return
+
+        posthog.capture('download-qr-code', { distinctId: session?.user?.id, type: type })
+
         console.log("downloading")
         // setDownloading(true)
         const link = document.createElement("a");
@@ -147,12 +158,12 @@ const QrCode = () => {
                                         Download as WEBP
                                     </Button>
                                 </Button.Group>
-                                {!!session?.user?.id && <Button variant='gradient'
+                                {!!session?.user?.id && !!saveEnabled && <Button variant='gradient'
                                     onClick={() => {
                                         toggle()
                                         setDataUrl(getDataUrl())
                                     }}
-                                    fullWidth maw={500} className='flex self-center'>
+                                    fullWidth maw={500} className=' self-center'>
                                     Save QR Code
                                 </Button>}
                                 <Modal
@@ -211,6 +222,7 @@ const QrCode = () => {
                                             loading={isPending}
                                             onClick={() => {
                                                 if (!qrCode || !session?.user.id || !saveTitle) return
+                                                posthog.capture('save-qr-code', { distinctId: session?.user?.id, name: saveTitle, shareable: shareable })
 
                                                 // if (shareable && dataUrl === "") setDataUrl(getDataUrl())
 
@@ -236,9 +248,9 @@ const QrCode = () => {
                                                 "--button-hover": "rgba(255,255,255,0.2)",
                                                 "--button-bg": "rgba(255,255,255,0.1)",
                                             }}
-                                            classNames={{
-                                                root: " bg-red-500 hover:bg-red-700",
-                                            }}
+                                            // classNames={{
+                                            //     root: " bg-red-500 hover:bg-red-700",
+                                            // }}
                                             // bg={"rgba(255,255,255,0.1)"}
                                             color="blue"
 

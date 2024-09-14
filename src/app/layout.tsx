@@ -1,12 +1,13 @@
 import "~/styles/globals.css";
 import '@mantine/core/styles.css';
-import {  MantineProvider } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { AppStoreProvider } from "~/providers/app-store-provider";
+import { CSPostHogProvider } from "./providers";
 
 
 
@@ -32,22 +33,24 @@ export default function RootLayout({
       //   color: "#fff",
       // }}
       >
-        <TRPCReactProvider>
-          {/* <HelmetProvider> */}
-          <MantineProvider
-            defaultColorScheme="dark"
-            forceColorScheme="dark"
-            theme={{
-              focusRing: "never",
+        <CSPostHogProvider>
+          <TRPCReactProvider>
+            {/* <HelmetProvider> */}
+            <MantineProvider
+              defaultColorScheme="dark"
+              forceColorScheme="dark"
+              theme={{
+                focusRing: "never",
 
-            }}
-          >
-            <AppStoreProvider>
-              {children}
-            </AppStoreProvider>
-          </MantineProvider>
-          {/* </HelmetProvider> */}
-        </TRPCReactProvider>
+              }}
+            >
+              <AppStoreProvider>
+                {children}
+              </AppStoreProvider>
+            </MantineProvider>
+            {/* </HelmetProvider> */}
+          </TRPCReactProvider>
+        </CSPostHogProvider>
       </body>
     </html>
   );

@@ -14,6 +14,7 @@ const config = {
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
+	skipTrailingSlashRedirect: true,
 };
 
 export default config;

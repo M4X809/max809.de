@@ -39,6 +39,9 @@ export const env = createEnv({
 		NEXT_PUBLIC_NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
+
+		NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+		NEXT_PUBLIC_POSTHOG_HOST: z.string(),
 	},
 
 	/**
@@ -56,6 +59,9 @@ export const env = createEnv({
 
 		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
 		GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+
+		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
 
 		NPM_FONT_AWESOME: process.env.NPM_FONT_AWESOME,
 	},
