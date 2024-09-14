@@ -72,12 +72,8 @@ export const createAppStore = () => {
 		size: 2048,
 		setSize: (size: number | string) => {
 			if (typeof size === "string") size = Number(size);
-
 			if (size < 512) return set({ size: 512 });
 			if (size > 2048) return set({ size: 2048 });
-
-			// console.log(size);
-
 			return set({ size });
 		},
 

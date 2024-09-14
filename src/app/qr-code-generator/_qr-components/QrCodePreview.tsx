@@ -18,16 +18,10 @@ export type QrCodeData = {
     finderRadius: number | null;
     dotRadius: number | null;
 }
-
-
-
 export interface QrCodePreviewProps {
     data: QrCodeData
     w?: StyleProp<React.CSSProperties['width']>
 }
-
-
-
 
 export const QrCodePreview: React.FC<QrCodePreviewProps> = ({ data, w }) => {
 
@@ -45,16 +39,10 @@ export const QrCodePreview: React.FC<QrCodePreviewProps> = ({ data, w }) => {
         finderRadius: z.number(),
         dotRadius: z.number(),
     })
-
         .safeParse(data)
-
     if (!code.success || code.error) return <Box>Error Creating preview</Box>
 
-    const { id, name, createdById, createdAt, updatedAt, qrCode, qrLvl, size, color, backgroundColor, finderRadius, dotRadius } = code.data
-
-
-
-
+    const { qrCode, qrLvl, color, backgroundColor, finderRadius, dotRadius } = code.data
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     let myQR: AwesomeQR<HTMLCanvasElement>
@@ -73,9 +61,7 @@ export const QrCodePreview: React.FC<QrCodePreviewProps> = ({ data, w }) => {
                 correctLevel: qrLvl,
                 version: 0,
                 maskPattern: 11
-
             },
-
             dots: {
                 round: dotRadius,
             },
@@ -86,13 +72,9 @@ export const QrCodePreview: React.FC<QrCodePreviewProps> = ({ data, w }) => {
         })
 
         myQR.draw();
-
-
-
     }, [data])
 
     return (
-
         <AspectRatio h={"auto"} w={w ?? 100} ratio={1 / 1} maw={w ?? 100} >
             <canvas style={{ height: "auto", maxWidth: "100%", width: "100%" }} ref={canvasRef} />
         </AspectRatio>

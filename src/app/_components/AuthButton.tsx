@@ -8,18 +8,12 @@ import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 export const AuthButton = ({ session, ...props }: { session: Session | null, props?: ButtonProps }) => {
-
     const [confirmSignOut, setConfirmSignOut] = useState(false)
-
     const { start, clear } = useTimeout(() => {
         setConfirmSignOut(false)
     }, 1500)
-
     const posthog = usePostHog()
-
-
     return (
-
         <Button
             {...props}
             unstyled
@@ -29,13 +23,10 @@ export const AuthButton = ({ session, ...props }: { session: Session | null, pro
                         posthog.capture("sign-out", { distinctId: session.user.id })
                         await signOut()
                         clear()
-                        // setConfirmSignOut(false)
                     } else {
                         start()
                         setConfirmSignOut(true)
                     }
-
-                    // await signOut()
                 } else {
                     await signIn()
                 }

@@ -25,17 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <head>
-        {/* <ColorSchemeScript /> */}
       </head>
       <body
-      // style={{
-      //   backgroundColor: "#242424",
-      //   color: "#fff",
-      // }}
       >
         <CSPostHogProvider>
           <TRPCReactProvider>
-            {/* <HelmetProvider> */}
             <MantineProvider
               defaultColorScheme="dark"
               forceColorScheme="dark"
@@ -48,7 +42,6 @@ export default function RootLayout({
                 {children}
               </AppStoreProvider>
             </MantineProvider>
-            {/* </HelmetProvider> */}
           </TRPCReactProvider>
         </CSPostHogProvider>
       </body>

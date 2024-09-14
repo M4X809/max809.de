@@ -39,13 +39,9 @@ export async function generateMetadata() {
   }
 }
 
-
-
 export default async function Home() {
   const session = await getServerAuthSession();
-
   return (
-
     <HydrateClient>
       <Shell
         session={session}
@@ -60,27 +56,13 @@ export default async function Home() {
             <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
           </Stack>
           <AuthButton session={session} />
-
         </Group>
         <QrCodeContainer />
-
-        {/* <Suspense> */}
-
         <Stack mt={20} gap={0} >
           <Divider my={15} />
           <Title pos={"sticky"} ta={"center"} order={2}>Saved QR Codes</Title>
-
-
           <SavedCodes />
-
-
         </Stack>
-
-        {/* </Suspense> */}
-
-
-
-
       </Shell>
     </HydrateClient>
   );
