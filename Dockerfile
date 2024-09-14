@@ -5,7 +5,7 @@ FROM oven/bun:latest AS builder
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb bunfig.toml next.config.js ./
+COPY package.json bun.lockb bunfig.toml next.config.js src/env.js ./
 # check env
 ARG NPM_FONT_AWESOME
 RUN env
@@ -51,6 +51,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/src/env.js ./src/env.js
 COPY --from=builder /app/next.config.js ./next.config.js
 
 # Expose the port Next.js runs on
