@@ -1,4 +1,4 @@
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -12,9 +12,11 @@ import { qrCodes } from "~/server/db/schema";
 
 import { PostHog } from "posthog-node";
 import { env } from "~/env";
-import { loadManifestWithRetries } from "next/dist/server/load-components";
 import { utapi } from "~/server/uploadthing";
 import { dataURLtoFile } from "image-conversion";
+
+import {} from "uploadthing/server";
+import type { UploadFileResult } from "uploadthing/types";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -38,6 +40,7 @@ export const codesRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
+			console.log("input", input);
 			const user = await ctx.db.query.users.findFirst({
 				where: (users, { eq }) => eq(users.id, ctx.session.user.id),
 			});
@@ -73,9 +76,8 @@ export const codesRouter = createTRPCRouter({
 
 			// console.log(nameExists);
 
-			const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
-
 			if (nameExists) {
+				console.log("nameExists", nameExists);
 				client.capture({
 					event: "qr-code-generator-save",
 					distinctId: ctx.session.user.id,
@@ -84,8 +86,8 @@ export const codesRouter = createTRPCRouter({
 						saveCode: false,
 					},
 				});
+				const oldImageKey = nameExists.imageKey; 
 
-				const oldImageKey = nameExists.imageKey;
 				let delPromise: Promise<{
 					readonly success: boolean;
 					readonly deletedCount: number;
@@ -96,13 +98,21 @@ export const codesRouter = createTRPCRouter({
 					// console.log("delPromise", delPromise);
 				}
 
-				const upPromise = utapi.uploadFiles(
-					new File([imageFile], `${input.name}-${user.id}.png`, {
-						type: "image/png",
-					}),
-				);
+				let uploadProm = Promise.resolve({
+					error: null,
+					data: true,
+				}) as unknown as Promise<UploadFileResult>;
 
-				const [uploadData, delData] = await Promise.all([upPromise, delPromise]);
+				if (input.shareable) {
+					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					uploadProm = utapi.uploadFiles(
+						new File([imageFile], `${input.name}-${user.id}.png`, {
+							type: "image/png",
+						}),
+					);
+				}
+
+				const [uploadData, delData] = await Promise.all([uploadProm, delPromise]);
 				console.dir({ uploadData: uploadData, delData: delData });
 
 				if (uploadData.error || !uploadData.data) {
@@ -163,13 +173,21 @@ export const codesRouter = createTRPCRouter({
 					});
 				}
 
-				const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+				let uploadProm = Promise.resolve({
+					error: null,
+					data: true,
+				}) as unknown as Promise<UploadFileResult>;
 
-				const uploadData = await utapi.uploadFiles(
-					new File([imageFile], `${input.name}-${user.id}.png`, {
-						type: "image/png",
-					}),
-				);
+				if (input.shareable) {
+					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					uploadProm = utapi.uploadFiles(
+						new File([imageFile], `${input.name}-${user.id}.png`, {
+							type: "image/png",
+						}),
+					);
+				}
+
+				const uploadData = await uploadProm;
 
 				if (uploadData.error || !uploadData.data) {
 					throw new TRPCError({
@@ -182,7 +200,7 @@ export const codesRouter = createTRPCRouter({
 				await ctx.db.insert(qrCodes).values({
 					name: input.name,
 					createdById: ctx.session.user.id,
-					// dataUrl: input.dataUrl,
+					dataUrl: null,
 					qrCode: input.qrCode,
 					qrLvl: input.qrLvl,
 					size: input.size,
@@ -191,10 +209,11 @@ export const codesRouter = createTRPCRouter({
 					finderRadius: input.finderRadius,
 					dotRadius: input.dotRadius,
 					shareable: input.shareable,
-					imageKey: uploadData.data.key,
+					// imageKey: uploadData?.data.key || null,
 
 					// data: JSON.stringify(input.data),
 				});
+				return;
 			}
 		}),
 	getQrCodes: protectedProcedure.query(async ({ ctx }) => {
@@ -270,10 +289,11 @@ export const codesRouter = createTRPCRouter({
 				where: (qrCodes, { eq }) => eq(qrCodes.id, input.id),
 			});
 
-			if (!code || !code.dataUrl || code.imageKey) {
+			if (!code || !code.dataUrl || code.imageKey || !code.shareable) {
 				return {
 					success: false,
 					keyExists: !!code?.imageKey,
+					shareable: code?.shareable,
 				};
 			}
 

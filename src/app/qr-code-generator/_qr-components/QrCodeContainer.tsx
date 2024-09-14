@@ -101,7 +101,6 @@ const QrCode = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (isSuccess) {
-            setSaveTitle("")
             toggle()
             setDataUrl("")
             setRefetchCodes(refetchCodes + 1)
