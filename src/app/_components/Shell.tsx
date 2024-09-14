@@ -30,7 +30,7 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
         send_event: true,
     })
 
-    console.log(session)
+    // console.log(session)
 
     useEffect(() => {
         setSession(session)
@@ -120,7 +120,10 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
                 </Group>
             </Box>
             <Dialog
-                w={500}
+                transitionProps={
+                    { transition: "slide-left", duration: 500 }
+                }
+                w={600}
                 className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
                 // className='bg-gray-800/80'
                 withBorder

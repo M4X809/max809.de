@@ -80,6 +80,9 @@ const QrCode = () => {
 
     const download = (type: "image/png" | "image/webp") => {
         if (!canvasRef?.current) return
+
+        posthog.capture('download-qr-code', { distinctId: session?.user?.id, type: type })
+
         console.log("downloading")
         // setDownloading(true)
         const link = document.createElement("a");
@@ -219,6 +222,7 @@ const QrCode = () => {
                                             loading={isPending}
                                             onClick={() => {
                                                 if (!qrCode || !session?.user.id || !saveTitle) return
+                                                posthog.capture('save-qr-code', { distinctId: session?.user?.id, name: saveTitle, shareable: shareable })
 
                                                 // if (shareable && dataUrl === "") setDataUrl(getDataUrl())
 
