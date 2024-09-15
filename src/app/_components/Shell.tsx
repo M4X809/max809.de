@@ -80,7 +80,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                         {...props}
                     >
                         <AppShell.Main  >
-                            <Group justify="space-between" align="start" className='select-none'  >
+                            <Group justify="space-between" align="center" className='select-none'  >
                                 <Stack gap={0}>
                                     {!!redirect && <Link href={redirect.toString()} >
                                         <Title>
