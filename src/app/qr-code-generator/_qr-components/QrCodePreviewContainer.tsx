@@ -123,18 +123,10 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 </Group>
                 <Group justify='space-between' align='center' >
                     <PreviewButtons code={code} baseURL={baseURL} />
-
-                    {/* {!mounted && <Skeleton w={116} h={28} />
-
-                    } */}
                     <Text fz={11} c={"dimmed"} >
                         {code.id}
                     </Text>
                 </Group>
-
-
-
-
 
             </Container>
         )
@@ -158,7 +150,6 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 opened={opened && !!deleteCodeId}
                 withCloseButton={false}
                 onClose={() => {
-                    // toggle()
                     setDeleteCodeId(null)
                     setDeleteName(null)
                     setDeleteToggle()
@@ -200,8 +191,6 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 </Stack>
                 <Box
                     mt={10}
-
-
                     w={"100%"}
                     style={{ borderRadius: "5px" }}
                     p={"sm"}

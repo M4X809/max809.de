@@ -1,6 +1,6 @@
 "use client"
 
-import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Text, TextInput } from '@mantine/core'
+import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Stack, Text, Title } from '@mantine/core'
 import type { Session } from 'next-auth';
 import React, { useEffect } from 'react'
 import { useAppStore } from '~/providers/app-store-provider';
@@ -13,9 +13,11 @@ import pkg from "~/../package.json";
 import { usePostHog } from 'posthog-js/react';
 import { usePathname } from 'next/navigation';
 import { trackingStore } from '~/stores/tracking-store';
+import { AuthButton } from './AuthButton';
+import Link from 'next/link';
 
 
-function Shell({ children, session, ...props }: AppShellProps & { session: Session | null }) {
+function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: AppShellProps & { session: Session | null, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     posthog.capture('page_view', { path: path })
@@ -29,8 +31,6 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
         send_event: true,
     })
-
-    // console.log(session)
 
     useEffect(() => {
         setSession(session)
@@ -80,6 +80,19 @@ function Shell({ children, session, ...props }: AppShellProps & { session: Sessi
                         {...props}
                     >
                         <AppShell.Main  >
+                            <Group justify="space-between" align="center" className='select-none'  >
+                                <Stack gap={0}>
+                                    {!!redirect && <Link href={redirect.toString()} >
+                                        <Title>
+                                            {title}
+                                        </Title>
+                                    </Link>}
+                                    {!redirect && <Title>
+                                        {title}
+                                    </Title>}
+                                </Stack>
+                                {withLoginButton && <AuthButton session={session} />}
+                            </Group>
                             {children}
                         </AppShell.Main>
                     </AppShell>
