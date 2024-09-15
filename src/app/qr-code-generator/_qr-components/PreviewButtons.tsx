@@ -18,22 +18,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
 
     const setDeleteCodeId = useAppStore((state) => state.setDeleteCodeId)
     const setDeleteName = useAppStore((state) => state.setDeleteName)
-
     const setDeleteToggle = useAppStore((state) => state.setDeleteToggle)
-
-    // const [buttons, setButtons] = useState(<div />)
-
-    useEffect(() => {
-        // setButtons(
-
-        // )
-    }, [])
-
-    // return (
-    //     <>
-    //         {buttons}
-    //     </>
-    // )
     return (
         <Group wrap='nowrap' >
             <Tooltip
@@ -71,9 +56,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                 }
             >
 
-                <Box
-                // title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
-                >
+                <Box>
                     <ActionIcon
                         className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
 
@@ -101,7 +84,6 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                         variant='light'
                         color={"red"}
                         onClick={() => {
-                            // console.log("delete", code.id)
                             setDeleteCodeId(code.id)
                             setDeleteName(code.name)
                             setDeleteToggle()
