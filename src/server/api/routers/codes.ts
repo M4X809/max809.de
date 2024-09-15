@@ -234,6 +234,71 @@ export const codesRouter = createTRPCRouter({
 			},
 		};
 	}),
+	deleteQrCode: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!ctx.session?.user?.id) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq }) => eq(qrCodes.id, input.id),
+			});
+
+			if (!code) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No QR Code found with that ID.",
+				});
+			}
+
+			if (code.createdById !== ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			if (code.imageKey) {
+				const response = await utapi.deleteFiles([code.imageKey]);
+				if (!response.success) {
+					console.log("response", response);
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error deleting the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+			}
+
+			try {
+				await ctx.db
+					.delete(qrCodes)
+					.where(
+						and(
+							eq(qrCodes.id, input.id),
+							eq(qrCodes.createdById, ctx.session.user.id),
+						),
+					);
+			} catch (e) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message:
+						"There was an error deleting the QR Code. Please try again later. If the problem persists, please contact the administrator.",
+				});
+			}
+
+			return {
+				success: true,
+			};
+		}),
 	getLimits: protectedProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session.user.id;
 

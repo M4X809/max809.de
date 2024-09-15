@@ -1,4 +1,4 @@
-import { Center, Container, Divider, Grid, GridCol, Group, Stack, Text, Title } from "@mantine/core";
+import { Center, Container, Divider, Grid, GridCol, Group, Stack, Text, Title, Tooltip } from "@mantine/core";
 import Link from "next/link";
 // import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
@@ -75,7 +75,9 @@ export default async function Home() {
                 <Grid columns={5}>
                   <GridCol span={"auto"}>
                     <Stack gap={0}>
-                      <Title order={2}>QR Code Generator</Title>
+                      <Tooltip label='QR Code Generator' transitionProps={{ transition: "fade", }}>
+                        <Title order={2}>QR Code Generator</Title>
+                      </Tooltip>
                       <Text fz={13} > Create / Download / Save Custom QR Codes for your websites and apps.</Text>
                     </Stack>
                   </GridCol>
