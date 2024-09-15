@@ -136,13 +136,11 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                             classNames={{
                                 tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white border border-[#4b4b4b]'
                             }} label={
-                                <>
-                                    code.shareable ? 'Copy QR Code link.' : <Text fz={13} w={200}
-                                        maw={"100dvw"} >
-                                        This QR Code is not shareable. <br />
-                                        Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.
-                                    </Text>
-                                </>
+                                code.shareable ? 'Copy QR Code link.' : <Text fz={13} w={200}
+                                    maw={"100dvw"} >
+                                    This QR Code is not shareable. <br />
+                                    Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.
+                                </Text>
                             }
                         >
                             <ActionIcon
