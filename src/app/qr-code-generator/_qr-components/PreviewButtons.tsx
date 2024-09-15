@@ -36,17 +36,17 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
     // )
     return (
         <Group wrap='nowrap' >
-            <Tooltip
+            {/* <Tooltip
                 id="new1"
                 transitionProps={{ transition: "fade", }}
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
                 }} label={<Text fz={14}>Load QR Code</Text>}
-            >
-                <Box>
-                    <LoadQrConfig data={code} variant='light' />
-                </Box>
-            </Tooltip>
+            > */}
+            <Box title="Load QR Code">
+                <LoadQrConfig data={code} variant='light' />
+            </Box>
+            {/* </Tooltip> */}
             {/* <Tooltip
             w={200}
             maw={"100dvw"}
@@ -70,6 +70,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
         > */}
 
             <Box
+                title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
             >
                 <ActionIcon
                     className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
@@ -90,7 +91,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                 tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
             }}
             transitionProps={{ transition: "fade", }}> */}
-            <Box>
+            <Box title="Delete QR Code">
                 <ActionIcon
                     variant='light'
                     color={"red"}

@@ -116,7 +116,7 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                         >
                             <Text truncate w={350} c={"dimmed"}> Value: {code.qrCode}</Text>
                         </Tooltip>
-                        {/* <Text className='text-nowrap' c={"dimmed"}> Created / Updated At:  <DateElement /></Text> */}
+                        <Text className='text-nowrap' c={"dimmed"}> Created / Updated At:  <DateElement /></Text>
                     </Stack>
                     <QrCodePreview data={code} w={100} />
                 </Group>
