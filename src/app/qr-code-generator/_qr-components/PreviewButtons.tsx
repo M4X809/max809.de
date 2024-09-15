@@ -37,17 +37,18 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
     return (
         <Group wrap='nowrap' >
             <Tooltip
-                id="new1"
+                c={"white"}
                 transitionProps={{ transition: "fade", }}
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
                 }} label={<Text fz={14}>Load QR Code</Text>}
             >
-                <Box title="Load QR Code">
+                <Box >
                     <LoadQrConfig data={code} variant='light' />
                 </Box>
             </Tooltip>
             <Tooltip
+                c={"white"}
                 w={200}
                 maw={"100dvw"}
                 styles={{
@@ -60,7 +61,8 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                 transitionProps={{ transition: "fade", }}
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white '
-                }} label={
+                }}
+                label={
                     <Box>
                         {code.shareable && <Text fz={14}>Share QR Code</Text>}
                         {!code.shareable && <Text fz={14}> This QR Code is not shareable. <br />
@@ -70,7 +72,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
             >
 
                 <Box
-                    title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
+                // title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
                 >
                     <ActionIcon
                         className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
@@ -86,12 +88,15 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                     </ActionIcon>
                 </Box>
             </Tooltip>
-            <Tooltip label='Delete QR Code'
+            <Tooltip
+                c={"white"}
+                label='Delete QR Code'
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
                 }}
-                transitionProps={{ transition: "fade", }}>
-                <Box title="Delete QR Code">
+                transitionProps={{ transition: "fade", }}
+            >
+                <Box>
                     <ActionIcon
                         variant='light'
                         color={"red"}
