@@ -37,7 +37,10 @@ interface QrCodePreviewContainerProps {
 
 const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, limits, userId, baseURL }) => {
 
-    const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId })
+    const [mounted, setMounted] = useState(false)
+
+
+    const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId && mounted })
 
     const { mutate: deleteCode, isPending: isDeleting, isError: isDeleteError, isSuccess: isDeleteSuccess, error: deleteError, reset } = api.codes.deleteQrCode.useMutation()
 
@@ -52,6 +55,10 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
     useEffect(() => {
         refetch()
     }, [refetchCodes])
+    useEffect(() => {
+        setMounted(true)
+        return () => setMounted(false)
+    }, [])
 
     useEffect(() => {
         if (isDeleteSuccess) {
