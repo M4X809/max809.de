@@ -131,12 +131,12 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                                     textWrap: "wrap"
                                 },
                             }}
-                            // events={{ hover: true, focus: true, touch: !code.shareable }}
+                            events={{ hover: true, focus: true, touch: !code.shareable }}
                             transitionProps={{ transition: "fade", }}
                             classNames={{
                                 tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white border border-[#4b4b4b]'
                             }} label={
-                                code.shareable ? 'Copy QR Code link.' : <Text fz={13} w={200}
+                                code.shareable ? 'Copy QR Code link.' : <Text fz={13} w={"auto"}
                                     maw={"100dvw"} >
                                     This QR Code is not shareable. <br />
                                     Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.
