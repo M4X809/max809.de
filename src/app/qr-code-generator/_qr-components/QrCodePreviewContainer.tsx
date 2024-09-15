@@ -2,7 +2,7 @@
 import type React from 'react'
 import { use, useEffect, useState } from 'react'
 import QrCodePreview from "./QrCodePreview"
-import { ActionIcon, Box, Button, Container, Group, Modal, Paper, Pill, Stack, Text, Title, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Button, Container, Group, Modal, Paper, Pill, Skeleton, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { api } from '~/trpc/react'
 import { useAppStore } from '~/providers/app-store-provider'
 import { useClipboard, useDisclosure } from '@mantine/hooks'
@@ -117,8 +117,8 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                     </Stack>
                     <QrCodePreview data={code} w={100} />
                 </Group>
-                <Group id='QR-Code-Actions-Bottom' justify='space-between' align='center' >
-                    <Group id='QR-Code-Actions-Buttons' wrap='nowrap' >
+                <Group justify='space-between' align='center' >
+                    {(mounted && <Group wrap='nowrap' >
                         <Tooltip
                             transitionProps={{ transition: "fade", }}
                             classNames={{
@@ -150,39 +150,45 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                                 </Box>
                             }
                         >
-                            <ActionIcon
-                                variant='light'
-                                className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
-                                disabled={!code.shareable}
-                                onClick={() => {
-                                    setCopiedName(code.name)
-                                    copy(`${baseURL}/qr-code-generator/${code.id}`)
-                                }}>
-                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                            </ActionIcon>
+
+                            <Box>
+                                <ActionIcon
+                                    variant='light'
+                                    className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
+                                    disabled={!code.shareable}
+                                    onClick={() => {
+                                        setCopiedName(code.name)
+                                        copy(`${baseURL}/qr-code-generator/${code.id}`)
+                                    }}>
+                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                                </ActionIcon>
+                            </Box>
                         </Tooltip>
                         <Tooltip label='Delete QR Code'
                             classNames={{
                                 tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
                             }}
                             transitionProps={{ transition: "fade", }}>
-                            <ActionIcon
-
-                                variant='light'
-                                color={"red"}
-                                onClick={() => {
-                                    // console.log("delete", code.id)
-                                    setDeleteCodeId(code.id)
-                                    setDeleteName(code.name)
-                                    toggle()
-                                }}
-
-                            >
-                                <FontAwesomeIcon icon={faTrashCan} />
-                            </ActionIcon>
+                            <Box>
+                                <ActionIcon
+                                    variant='light'
+                                    color={"red"}
+                                    onClick={() => {
+                                        // console.log("delete", code.id)
+                                        setDeleteCodeId(code.id)
+                                        setDeleteName(code.name)
+                                        toggle()
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTrashCan} />
+                                </ActionIcon>
+                            </Box>
                         </Tooltip>
 
-                    </Group>
+                    </Group>) || <Skeleton w={116} h={28} />}
+                    {/* {!mounted && <Skeleton w={116} h={28} />
+
+                    } */}
                     <Text fz={11} c={"dimmed"} >
                         {code.id}
                     </Text>
