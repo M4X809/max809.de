@@ -6,15 +6,17 @@ import type { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export const AuthButton = ({ session, ...props }: { session: Session | null, props?: ButtonProps }) => {
     const [confirmSignOut, setConfirmSignOut] = useState(false)
     const { start, clear } = useTimeout(() => {
         setConfirmSignOut(false)
-    }, 1500)
+    }, 3000)
     const posthog = usePostHog()
     return (
         <Button
+            tabIndex={-1}
             {...props}
             unstyled
             onClick={async () => {
@@ -31,7 +33,7 @@ export const AuthButton = ({ session, ...props }: { session: Session | null, pro
                     await signIn()
                 }
             }}
-            className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20 text-nowrap h-full"
+            className={twMerge("rounded-full bg-white/10 px-8 py-2 font-semibold no-underline  hover:bg-white/20 text-nowrap h-full transition-colors duration-700 ", confirmSignOut ? " bg-blue-500 hover:bg-blue-500 " : "")}
         >
             {session ? confirmSignOut ? "Confirm Sign Out" : `Sign out: ${session.user?.name}` : "Sign in"}
         </Button>
