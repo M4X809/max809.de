@@ -11,6 +11,7 @@ import LoadQrConfig from './LoadQrConfig'
 import { faArrowUpRightFromSquare, faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { twMerge } from 'tailwind-merge'
+import { PreviewButtons } from './PreviewButtons'
 
 
 interface QrCodePreviewContainerProps {
@@ -37,41 +38,43 @@ interface QrCodePreviewContainerProps {
 
 const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, limits, userId, baseURL }) => {
 
-    const [mounted, setMounted] = useState(false)
-
-
-    const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId && mounted })
+    const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId })
 
     const { mutate: deleteCode, isPending: isDeleting, isError: isDeleteError, isSuccess: isDeleteSuccess, error: deleteError, reset } = api.codes.deleteQrCode.useMutation()
 
     const refetchCodes = useAppStore((state) => state.refetchCodes)
 
-    const [opened, { toggle, close }] = useDisclosure(false)
-    const [deleteCodeId, setDeleteCodeId] = useState<string | null>(null)
-    const [deleteName, setDeleteName] = useState<string | null>(null)
+    const opened = useAppStore((state) => state.deleteToggle)
+    const setDeleteToggle = useAppStore((state) => state.setDeleteToggle)
+
+    const setDeleteCodeId = useAppStore((state) => state.setDeleteCodeId)
+    const setDeleteName = useAppStore((state) => state.setDeleteName)
+
+    const deleteCodeId = useAppStore((state) => state.deleteCodeId)
+    const deleteName = useAppStore((state) => state.deleteName)
 
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         refetch()
     }, [refetchCodes])
-    useEffect(() => {
-        setMounted(true)
-        return () => setMounted(false)
-    }, [])
 
+    // useEffect(() => {
+    //     setMounted(true)
+    //     return () => setMounted(false)
+    // }, [])
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (isDeleteSuccess) {
             setDeleteCodeId(null)
             setDeleteName(null)
             refetch()
-            close()
         }
-    }, [close, refetch, isDeleteSuccess])
+    }, [refetch, isDeleteSuccess])
 
 
-    const { copied, copy } = useClipboard({ timeout: 500 })
-    const [copiedName, setCopiedName] = useState<string | null>(null)
+
 
     if (isLoading) return <div>Loading...</div>
     if (isError) return <div>Error</div>
@@ -118,74 +121,8 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                     <QrCodePreview data={code} w={100} />
                 </Group>
                 <Group justify='space-between' align='center' >
-                    {(mounted && <Group wrap='nowrap' >
-                        <Tooltip
-                            transitionProps={{ transition: "fade", }}
-                            classNames={{
-                                tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
-                            }} label={<Text fz={14}>Load QR Code</Text>}
-                        >
-                            <Box>
-                                <LoadQrConfig data={code} variant='light' />
-                            </Box>
-                        </Tooltip>
-                        <Tooltip
-                            w={200}
-                            maw={"100dvw"}
-                            styles={{
-                                tooltip: {
-                                    wordBreak: "break-word",
-                                    textWrap: "wrap"
-                                },
-                            }}
-                            events={{ hover: true, focus: true, touch: !code.shareable }}
-                            transitionProps={{ transition: "fade", }}
-                            classNames={{
-                                tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white '
-                            }} label={
-                                <Box>
-                                    {code.shareable && <Text fz={14}>Share QR Code</Text>}
-                                    {!code.shareable && <Text fz={14}> This QR Code is not shareable. <br />
-                                        Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.</Text>}
-                                </Box>
-                            }
-                        >
+                    <PreviewButtons code={code} baseURL={baseURL} />
 
-                            <Box>
-                                <ActionIcon
-                                    variant='light'
-                                    className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
-                                    disabled={!code.shareable}
-                                    onClick={() => {
-                                        setCopiedName(code.name)
-                                        copy(`${baseURL}/qr-code-generator/${code.id}`)
-                                    }}>
-                                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                                </ActionIcon>
-                            </Box>
-                        </Tooltip>
-                        <Tooltip label='Delete QR Code'
-                            classNames={{
-                                tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
-                            }}
-                            transitionProps={{ transition: "fade", }}>
-                            <Box>
-                                <ActionIcon
-                                    variant='light'
-                                    color={"red"}
-                                    onClick={() => {
-                                        // console.log("delete", code.id)
-                                        setDeleteCodeId(code.id)
-                                        setDeleteName(code.name)
-                                        toggle()
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faTrashCan} />
-                                </ActionIcon>
-                            </Box>
-                        </Tooltip>
-
-                    </Group>) || <Skeleton w={116} h={28} />}
                     {/* {!mounted && <Skeleton w={116} h={28} />
 
                     } */}
@@ -220,7 +157,10 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 opened={opened && !!deleteCodeId}
                 withCloseButton={false}
                 onClose={() => {
-                    toggle()
+                    // toggle()
+                    setDeleteCodeId(null)
+                    setDeleteName(null)
+                    setDeleteToggle()
                     reset()
                 }} >
                 <Stack gap={5}>

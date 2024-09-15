@@ -47,6 +47,15 @@ export type AppStore = {
 	refetchCodes: number;
 	setRefetchCodes: (refetchCodes: number) => void;
 
+	deleteCodeId: string | null;
+	setDeleteCodeId: (deleteCodeId: string | null) => void;
+
+	deleteName: string | null;
+	setDeleteName: (deleteName: string | null) => void;
+
+	deleteToggle: boolean;
+	setDeleteToggle: () => void;
+
 	canvasRef: React.MutableRefObject<HTMLCanvasElement | null> | null;
 	setCanvasRef: (
 		canvasRef: React.MutableRefObject<HTMLCanvasElement | null>,
@@ -104,6 +113,18 @@ export const createAppStore = () => {
 
 		refetchCodes: 0,
 		setRefetchCodes: (refetchCodes: number) => set({ refetchCodes }),
+
+		deleteCodeId: null,
+		setDeleteCodeId: (deleteCodeId: string | null) =>
+			set(() => ({ deleteCodeId })),
+
+		deleteName: null,
+		setDeleteName: (deleteName: string | null) => set(() => ({ deleteName })),
+
+		deleteToggle: false,
+		setDeleteToggle: () =>
+			set((state) => ({ deleteToggle: !state.deleteToggle })),
+
 		canvasRef: null,
 		setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) =>
 			set(() => ({ canvasRef })),
