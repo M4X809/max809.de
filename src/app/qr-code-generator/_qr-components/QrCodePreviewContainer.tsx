@@ -96,7 +96,7 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 <Group justify='space-between' grow gap={0} mah={500} wrap='nowrap'>
                     <Stack gap={0}>
                         <Title order={2}>{code.name}</Title>
-                        <Tooltip bg={"transparent"} position='bottom' label={
+                        {/* <Tooltip bg={"transparent"} position='bottom' label={
                             <Paper
                                 p={15}
                                 w={200}
@@ -115,8 +115,8 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                             </Paper>}
                         >
                             <Text truncate w={350} c={"dimmed"}> Value: {code.qrCode}</Text>
-                        </Tooltip>
-                        <Text className='text-nowrap' c={"dimmed"}> Created / Updated At:  <DateElement /></Text>
+                        </Tooltip> */}
+                        {/* <Text className='text-nowrap' c={"dimmed"}> Created / Updated At:  <DateElement /></Text> */}
                     </Stack>
                     <QrCodePreview data={code} w={100} />
                 </Group>
