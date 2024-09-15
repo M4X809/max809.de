@@ -36,77 +36,77 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
     // )
     return (
         <Group wrap='nowrap' >
-            {/* <Tooltip
+            <Tooltip
                 id="new1"
                 transitionProps={{ transition: "fade", }}
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
                 }} label={<Text fz={14}>Load QR Code</Text>}
-            > */}
-            <Box title="Load QR Code">
-                <LoadQrConfig data={code} variant='light' />
-            </Box>
-            {/* </Tooltip> */}
-            {/* <Tooltip
-            w={200}
-            maw={"100dvw"}
-            styles={{
-                tooltip: {
-                    wordBreak: "break-word",
-                    textWrap: "wrap"
-                },
-            }}
-            // events={{ hover: true, focus: true, touch: !code.shareable }}
-            transitionProps={{ transition: "fade", }}
-            classNames={{
-                tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white '
-            }} label={
-                <Box>
-                    {code.shareable && <Text fz={14}>Share QR Code</Text>}
-                    {!code.shareable && <Text fz={14}> This QR Code is not shareable. <br />
-                        Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.</Text>}
-                </Box>
-            }
-        > */}
-
-            <Box
-                title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
             >
-                <ActionIcon
-                    className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
+                <Box title="Load QR Code">
+                    <LoadQrConfig data={code} variant='light' />
+                </Box>
+            </Tooltip>
+            <Tooltip
+                w={200}
+                maw={"100dvw"}
+                styles={{
+                    tooltip: {
+                        wordBreak: "break-word",
+                        textWrap: "wrap"
+                    },
+                }}
+                // events={{ hover: true, focus: true, touch: !code.shareable }}
+                transitionProps={{ transition: "fade", }}
+                classNames={{
+                    tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white '
+                }} label={
+                    <Box>
+                        {code.shareable && <Text fz={14}>Share QR Code</Text>}
+                        {!code.shareable && <Text fz={14}> This QR Code is not shareable. <br />
+                            Use the arrow button to load it into the QR Code Generator, then save it with sharing enabled.</Text>}
+                    </Box>
+                }
+            >
 
-                    variant='light'
-                    disabled={!code.shareable}
-                    onClick={() => {
-                        setCopiedName(code.name)
-                        copy(`${baseURL}/qr-code-generator/${code.id}`)
-                    }}>
-                    <VisuallyHidden>Share QR Code</VisuallyHidden>
-                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                </ActionIcon>
-            </Box>
-            {/* </Tooltip> */}
-            {/* <Tooltip label='Delete QR Code'
-            classNames={{
-                tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
-            }}
-            transitionProps={{ transition: "fade", }}> */}
-            <Box title="Delete QR Code">
-                <ActionIcon
-                    variant='light'
-                    color={"red"}
-                    onClick={() => {
-                        // console.log("delete", code.id)
-                        setDeleteCodeId(code.id)
-                        setDeleteName(code.name)
-                        setDeleteToggle()
-                    }}
+                <Box
+                    title={code.shareable ? "Share QR Code" : "This QR Code is not shareable."}
                 >
-                    <VisuallyHidden>Delete QR Code</VisuallyHidden>
-                    <FontAwesomeIcon icon={faTrashCan} />
-                </ActionIcon>
-            </Box>
-            {/* </Tooltip> */}
+                    <ActionIcon
+                        className={twMerge("transition-colors duration-500", copied && copiedName === code.name && code.shareable ? "bg-green-800 text-green-200 hover:bg-green-800 hover:text-green-200" : "")}
+
+                        variant='light'
+                        disabled={!code.shareable}
+                        onClick={() => {
+                            setCopiedName(code.name)
+                            copy(`${baseURL}/qr-code-generator/${code.id}`)
+                        }}>
+                        <VisuallyHidden>Share QR Code</VisuallyHidden>
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                    </ActionIcon>
+                </Box>
+            </Tooltip>
+            <Tooltip label='Delete QR Code'
+                classNames={{
+                    tooltip: 'bg-gradient-to-tr from-[darkred] to-[darkorange] text-white '
+                }}
+                transitionProps={{ transition: "fade", }}>
+                <Box title="Delete QR Code">
+                    <ActionIcon
+                        variant='light'
+                        color={"red"}
+                        onClick={() => {
+                            // console.log("delete", code.id)
+                            setDeleteCodeId(code.id)
+                            setDeleteName(code.name)
+                            setDeleteToggle()
+                        }}
+                    >
+                        <VisuallyHidden>Delete QR Code</VisuallyHidden>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                    </ActionIcon>
+                </Box>
+            </Tooltip>
 
         </Group>
     )

@@ -36,6 +36,12 @@ interface QrCodePreviewContainerProps {
     baseURL: string
 }
 
+// const DateElement = (code:any) => {
+//     if (!code.createdById) return <Text c={"dimmed"}>Unknown</Text>
+//     const date = new Date(code.updatedAt as any)
+//     return <Text component='span' c={"dimmed"}>{date.toLocaleTimeString("de-DE")}</Text>
+// }
+
 const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, limits, userId, baseURL }) => {
 
     const { data, isLoading, isError, refetch, } = api.codes.getQrCodes.useQuery(undefined, { initialData: { codes, limits }, enabled: !!userId })
@@ -74,8 +80,6 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
     }, [refetch, isDeleteSuccess])
 
 
-
-
     if (isLoading) return <div>Loading...</div>
     if (isError) return <div>Error</div>
     if (!data) return <div>No data</div>
@@ -83,11 +87,6 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
     const QrCodes = data.codes.map((code) => {
 
 
-        const DateElement = () => {
-            if (!code.createdById) return <Text c={"dimmed"}>Unknown</Text>
-            const date = new Date(code.updatedAt as any)
-            return <Text component='span' c={"dimmed"}>{date.toLocaleTimeString("de-DE")}</Text>
-        }
 
         return (
             <Container key={code.id} bg={"rgba(255,255,255,0.1)"} p={20} size={"sm"} w={500} maw={"100dvw"} className="rounded-lg">
