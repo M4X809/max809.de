@@ -2,7 +2,7 @@
 
 import { faArrowUpRightFromSquare, faTrashCan } from "@fortawesome/pro-duotone-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Group, Box, ActionIcon, VisuallyHidden } from "@mantine/core"
+import { Group, Box, ActionIcon, VisuallyHidden, Tooltip, Text } from "@mantine/core"
 import { twMerge } from "tailwind-merge"
 import LoadQrConfig from "./LoadQrConfig"
 import { useClipboard } from "@mantine/hooks"
@@ -36,16 +36,17 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
     // )
     return (
         <Group wrap='nowrap' >
-            {/* <Tooltip
-            transitionProps={{ transition: "fade", }}
-            classNames={{
-                tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
-            }} label={<Text fz={14}>Load QR Code</Text>}
-        > */}
-            <Box>
-                <LoadQrConfig data={code} variant='light' />
-            </Box>
-            {/* </Tooltip> */}
+            <Tooltip
+                id="new1"
+                transitionProps={{ transition: "fade", }}
+                classNames={{
+                    tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
+                }} label={<Text fz={14}>Load QR Code</Text>}
+            >
+                <Box>
+                    <LoadQrConfig data={code} variant='light' />
+                </Box>
+            </Tooltip>
             {/* <Tooltip
             w={200}
             maw={"100dvw"}
