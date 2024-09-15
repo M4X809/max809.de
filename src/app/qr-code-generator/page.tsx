@@ -44,19 +44,10 @@ export default async function Home() {
   return (
     <HydrateClient>
       <Shell
-        session={session}
+        session={session} title="QR Code Generator" redirect={"/"}
+        withLoginButton={true}
       >
-        <Group justify="space-between" align="start"  >
-          <Stack gap={0} >
-            <Link href={"/"} prefetch={true}>
-              <Title>
-                QR Code Generator
-              </Title>
-            </Link>
-            <Text className="text-wrap" fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
-          </Stack>
-          <AuthButton session={session} />
-        </Group>
+
         <QrCodeContainer />
         <Stack mt={20} gap={0} >
           <Divider my={15} />

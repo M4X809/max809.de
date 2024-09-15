@@ -1,4 +1,4 @@
-import { Center, Container, Divider, Grid, GridCol, Group, Stack, Text, Title, Tooltip } from "@mantine/core";
+import { AspectRatio, Box, Center, Container, Group, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
 // import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
@@ -7,7 +7,6 @@ import Shell from "./_components/Shell";
 
 import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
-import { AuthButton } from "./_components/AuthButton";
 
 // export const metadata: Metadata = {
 
@@ -44,63 +43,84 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <Shell session={session}>
-        <Group justify="space-between" align="start"  >
-          <Stack gap={0} >
-            <Title>
-              max809.de
-            </Title>
-          </Stack>
-          <AuthButton session={session} />
-        </Group>
+      <Shell session={session}
+        title="max809.de"
+        withLoginButton
+      >
         <Stack>
           <Center>
             <Stack >
               <Title ta={"center"} order={1} fz={50}>Welcome to my Site. </Title>
-              <Text className="text-wrap" ta={"center"} fw={900} c={"darkred"} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
+              <Text className="text-wrap text-red-800/40" ta={"center"} fw={900} component="span" > This Site is not intended for public use. Use at your own risk.</Text>
 
-              <Title ta={"center"}>Apps On This Site</Title>
-              <Container
-
-                component={Link}
-                // @ts-ignore
-                href={"/qr-code-generator"}
-                prefetch={true}
-                size={"sm"}
-                p={20}
-                bg={"rgba(255,255,255,0.1)"}
-                w={450}
-                className="rounded-lg"
-              >
-                <Grid columns={5}>
-                  <GridCol span={"auto"}>
-                    <Stack gap={0}>
-                      <Tooltip label='QR Code Generator' transitionProps={{ transition: "fade", }}>
-                        <Title order={2}>QR Code Generator</Title>
-                      </Tooltip>
-                      <Text fz={13} > Create / Download / Save Custom QR Codes for your websites and apps.</Text>
+              <Group wrap="wrap" grow justify="center">
+                {/* Qr Code Generator */}
+                <Container bg={"rgba(255,255,255,0.1)"} p={20} size={"sm"} w={500} mah={180} mih={180} maw={"100dvw"} className="rounded-lg"
+                  component={Link}
+                  // @ts-ignore
+                  href={"/qr-code-generator"}
+                  prefetch={true}
+                >
+                  <Group justify='space-between' align="stretch" grow gap={0} mah={500} wrap='nowrap'>
+                    <Stack gap={0} miw={300}>
+                      <Title order={2}>Qr Code Generator</Title>
+                      <Box className="h-full  my-2 py-3 w-full">
+                        <Text fz={13} >
+                          This is a QR Code Generator. It allows you to create QR Codes with customizable options. You can save them to your account and share them with others.
+                        </Text>
+                      </Box>
                     </Stack>
-                  </GridCol>
-                  <GridCol span={"content"}>
-                    <QrCodePreview
-                      data={{
-                        color: "rgba(255,255,255,1)",
-                        backgroundColor: "rgba(0,0,0,0)",
-                        finderRadius: 0,
-                        dotRadius: 0,
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                        qrCode: "https://max809.de/qr-code-generator",
-                        qrLvl: 0,
-                        size: 512,
-                        id: "1",
-                        name: "QR Code Generator",
-                        createdById: "1",
-                      }}
-                    />
-                  </GridCol>
-                </Grid>
-              </Container>
+                    <Group justify="end" align="center">
+                      <AspectRatio ratio={1 / 1} maw={100} >
+                        <QrCodePreview
+                          data={{
+                            color: "rgba(255,255,255,1)",
+                            backgroundColor: "rgba(0,0,0,0)",
+                            finderRadius: 0,
+                            dotRadius: 0,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                            qrCode: "https://max809.de/qr-code-generator",
+                            qrLvl: 0,
+                            size: 512,
+                            id: "1",
+                            name: "QR Code Generator",
+                            createdById: "1",
+                          }} w={100} />
+                      </AspectRatio>
+                    </Group>
+                  </Group>
+
+                </Container>
+                {/* Timezone Converter */}
+                <Container bg={"rgba(255,255,255,0.1)"} p={20} size={"sm"} w={500} mah={180} mih={180} maw={"100dvw"} className="rounded-lg"
+                  component={Link}
+                  // @ts-ignore
+                  href={"/timezone-converter"}
+                  prefetch={true}
+                >
+                  <Group justify='space-between' align="stretch" grow gap={0} mah={500} wrap='nowrap'>
+                    <Stack gap={0} miw={300} h={"100%"} >
+                      <Title order={2}>Timezone Converter</Title>
+                      <Box className="h-full  my-2 py-3 w-full">
+                        <Text fz={13} >
+                          This is a simple tool to convert time zones between different formats.
+                          <Text c={"dimmed"} fz={13} component="span">
+                            <br />
+                            <br />
+                            This page is still under development.
+                          </Text>
+                        </Text>
+                      </Box>
+                    </Stack>
+                    <Group justify="end" align="center">
+                      <AspectRatio ratio={1 / 1} maw={100} >
+                        <Box h={"auto"} w={100} />
+                      </AspectRatio>
+                    </Group>
+                  </Group>
+                </Container>
+              </Group>
             </Stack>
           </Center>
         </Stack>

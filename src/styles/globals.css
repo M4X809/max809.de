@@ -15,3 +15,7 @@
 	-webkit-backdrop-filter: blur(100px) !important;
 	backdrop-filter: blur(100px) !important;
 } */
+p > p {
+	border: 1px solid red !important;
+	@apply animate-pulse;
+}
