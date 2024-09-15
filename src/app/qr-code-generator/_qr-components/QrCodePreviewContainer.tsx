@@ -95,23 +95,25 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
                 <Group justify='space-between' grow gap={0} mah={500} wrap='nowrap'>
                     <Stack gap={0}>
                         <Title order={2}>{code.name}</Title>
-                        <Tooltip bg={"transparent"} position='bottom' label={
-                            <Paper
-                                p={15}
-                                w={200}
-                                h={"auto"}
-                                withBorder
-                                className='rounded-xl bg-gradient-to-tr from-[#222840] to-[#2347a1]'
-                                c={"white"}
+                        <Tooltip
+                            events={{ hover: true, focus: true, touch: !code.shareable }}
+                            bg={"transparent"} position='bottom' label={
+                                <Paper
+                                    p={15}
+                                    w={200}
+                                    h={"auto"}
+                                    withBorder
+                                    className='rounded-xl bg-gradient-to-tr from-[#222840] to-[#2347a1]'
+                                    c={"white"}
 
-                                styles={{
-                                    root: {
-                                        wordBreak: "break-all",
-                                        textWrap: "wrap"
-                                    },
-                                }}>
-                                {code.qrCode}
-                            </Paper>}
+                                    styles={{
+                                        root: {
+                                            wordBreak: "break-all",
+                                            textWrap: "wrap"
+                                        },
+                                    }}>
+                                    {code.qrCode}
+                                </Paper>}
                         >
                             <Text truncate w={350} c={"dimmed"}> Value: {code.qrCode}</Text>
                         </Tooltip>

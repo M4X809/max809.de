@@ -42,7 +42,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                         textWrap: "wrap"
                     },
                 }}
-                // events={{ hover: true, focus: true, touch: !code.shareable }}
+                events={{ hover: true, focus: true, touch: !code.shareable }}
                 transitionProps={{ transition: "fade", }}
                 classNames={{
                     tooltip: 'bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white '
