@@ -21,32 +21,39 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/bun.lockb ./bun.lockb
 COPY --from=deps /app/bunfig.toml ./bunfig.toml
+COPY --from=deps /app/next.config.js ./next.config.js
+COPY --from=deps /app/src/env.js ./src/env.js
+COPY --from=deps /app/package-lock.json ./package-lock.json
 
 # Copy the rest of the application code
 COPY . .
 
 # Set build environment variables
 ARG NEXT_PUBLIC_POSTHOG_KEY
-RUN echo 'NEXT_PUBLIC_POSTHOG_KEY='$NEXT_PUBLIC_POSTHOG_KEY >> .env 
 ARG NEXT_PUBLIC_POSTHOG_HOST
-RUN echo 'NEXT_PUBLIC_POSTHOG_HOST='$NEXT_PUBLIC_POSTHOG_HOST >> .env 
 ARG NEXTAUTH_URL
-RUN echo 'NEXTAUTH_URL='$NEXTAUTH_URL >> .env
 ARG NEXTAUTH_SECRET
-RUN echo 'NEXTAUTH_SECRET='$NEXTAUTH_SECRET >> .env
 ARG DISCORD_CLIENT_ID
-RUN echo 'DISCORD_CLIENT_ID='$DISCORD_CLIENT_ID >> .env
 ARG DISCORD_CLIENT_SECRET
-RUN echo 'DISCORD_CLIENT_SECRET='$DISCORD_CLIENT_SECRET >> .env
 ARG GITHUB_CLIENT_ID
-RUN echo 'GITHUB_CLIENT_ID='$GITHUB_CLIENT_ID >> .env
 ARG GITHUB_CLIENT_SECRET
-RUN echo 'GITHUB_CLIENT_SECRET='$GITHUB_CLIENT_SECRET >> .env
-ARG DATABASE_URL 
-RUN echo 'DATABASE_URL='$DATABASE_URL >> .env
+ARG DATABASE_URL
+
+RUN echo 'NEXT_PUBLIC_POSTHOG_KEY='$NEXT_PUBLIC_POSTHOG_KEY >> .env && \
+    echo 'NEXT_PUBLIC_POSTHOG_HOST='$NEXT_PUBLIC_POSTHOG_HOST >> .env && \
+    echo 'NEXTAUTH_URL='$NEXTAUTH_URL >> .env && \
+    echo 'NEXTAUTH_SECRET='$NEXTAUTH_SECRET >> .env && \
+    echo 'DISCORD_CLIENT_ID='$DISCORD_CLIENT_ID >> .env && \
+    echo 'DISCORD_CLIENT_SECRET='$DISCORD_CLIENT_SECRET >> .env && \
+    echo 'GITHUB_CLIENT_ID='$GITHUB_CLIENT_ID >> .env && \
+    echo 'GITHUB_CLIENT_SECRET='$GITHUB_CLIENT_SECRET >> .env && \
+    echo 'DATABASE_URL='$DATABASE_URL >> .env
 
 # Build the Next.js application using npm
 RUN npm run build
+
+# Check the build output
+RUN ls -la .next
 
 # Stage 3: Run the application with node/npm
 FROM node:21 AS runner
