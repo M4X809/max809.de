@@ -1,4 +1,5 @@
 # Stage 1: Build the application
+FROM oven/bun:latest AS builder
 FROM node:21 AS builder
 
 # Set the working directory inside the container
@@ -11,7 +12,7 @@ ARG NPM_FONT_AWESOME
 RUN env
 
 # Install dependencies
-RUN npm install --no-save
+RUN bun install --no-save
 # Copy the rest of the application code
 COPY . .
 
