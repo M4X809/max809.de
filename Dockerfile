@@ -1,17 +1,17 @@
 # Stage 1: Build the application
-FROM oven/bun:latest AS builder
+FROM node:21 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb bunfig.toml next.config.js src/env.js ./
+COPY package.json bun.lockb bunfig.toml next.config.js src/env.js package-lock.json ./
 # check env
 ARG NPM_FONT_AWESOME
 RUN env
 
 # Install dependencies
-RUN bun install --no-save
+RUN npm install --no-save
 # Copy the rest of the application code
 COPY . .
 
@@ -38,10 +38,10 @@ RUN echo 'DATABASE_URL='$DATABASE_URL >> .env
 
 RUN env
 # Build the Next.js application
-RUN bun run build
+RUN npm run build
 
 # Stage 2: Run the application
-FROM oven/bun:latest as runner
+FROM node:21 as runner
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -58,4 +58,4 @@ COPY --from=builder /app/next.config.js ./next.config.js
 EXPOSE 3000
 
 # Run the Next.js application
-CMD ["bun", "run", "next", "start"]
+CMD ["npm", "run", "next", "start"]
