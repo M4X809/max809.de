@@ -5,7 +5,7 @@ FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb bunfig.toml next.config.js src/env.js package-lock.json ./
+COPY package.json bun.lockb bunfig.toml next.config.js ./src/env.js package-lock.json ./
 
 # Install dependencies with bun
 RUN bun install --no-save
