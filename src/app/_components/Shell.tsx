@@ -17,7 +17,7 @@ import { AuthButton } from './AuthButton';
 import Link from 'next/link';
 
 
-function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: AppShellProps & { session: Session | null, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
+function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: AppShellProps & { session?: Session | null, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     posthog.capture('page_view', { path: path })
@@ -33,6 +33,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
     })
 
     useEffect(() => {
+        if (!session) return
         setSession(session)
         posthog.identify(session?.user?.id)
 
@@ -91,7 +92,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                         {title}
                                     </Title>}
                                 </Stack>
-                                {withLoginButton && <AuthButton session={session} />}
+                                {withLoginButton && !!session && <AuthButton session={session} />}
                             </Group>
                             {children}
                         </AppShell.Main>
