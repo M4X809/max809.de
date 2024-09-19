@@ -1,6 +1,7 @@
 # Stage 1: Build the application
 FROM oven/bun:latest AS builder
-FROM node:21 AS builder
+
+FROM node:21 
 
 # Set the working directory inside the container
 WORKDIR /app
