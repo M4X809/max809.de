@@ -22,8 +22,7 @@ COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/bun.lockb ./bun.lockb
 COPY --from=deps /app/bunfig.toml ./bunfig.toml
 COPY --from=deps /app/next.config.js ./next.config.js
-COPY --from=deps /app/src/env.js ./src/env.js
-COPY --from=deps /app/package-lock.json ./package-lock.json
+
 
 # Copy the rest of the application code
 COPY . .
