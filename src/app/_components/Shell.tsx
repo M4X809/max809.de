@@ -105,7 +105,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                 className='h-[calc(2rem*var(--mantine-scale))] fixed bottom-0 left-0 right-0 z-0  bg-gradient-to-br from-[#06080f] to-[#122b69] '>
                 <Group h={"100%"} align='center' justify='space-between' px={10} >
                     <Text c={"dimmed"} fz={13}>
-                        Made with <Text component='span' c={"#ff0000"} > <FontAwesomeIcon icon={faHeart} /></Text> by <Text c={"blue"} component="a" href='https://github.com/m4x809' target='_blank' td={"underline"} >m4x809</Text>
+                        Made with <Text component='span' c={"#ff0000"} > <FontAwesomeIcon icon={faHeart} /></Text> by <Text c={"blue"} component="a" href='https://github.com/m4x809' target='_blank' td={"underline"} >@M4X809</Text>
                     </Text>
                     <Text fz={13} c={"dimmed"} component='span'> Version: {pkg.version} </Text>
                     <Text c={"dimmed"} ta={"right"} fz={13} component="a" target='_blank' href='https://github.com/m4x809/max809.de' td={"underline"}>
