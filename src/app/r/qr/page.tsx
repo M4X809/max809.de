@@ -28,5 +28,5 @@ export async function generateMetadata() {
 
 
 export default async function QrCodeGeneratorRedirect() {
-    redirect("/qr-code-generator", RedirectType.replace)
+    redirect("/qr-code-generator")
 }
