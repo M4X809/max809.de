@@ -1,5 +1,5 @@
-import { permanentRedirect, RedirectType } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async function QrCodeGeneratorRedirect() {
-    permanentRedirect("/qr-code-generator", RedirectType.replace)
+    redirect("/qr-code-generator", RedirectType.replace)
 }

@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server"
 import type { Metadata } from "next"
-import { permanentRedirect, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { api } from "~/trpc/server"
 
 interface Props {
