@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
@@ -26,6 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
         }
     }
 }
+
+export const dynamic = 'force-dynamic'
 
 export default async function NoteMarkRedirect() {
     redirect("/note-mark")

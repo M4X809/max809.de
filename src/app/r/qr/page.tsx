@@ -1,4 +1,4 @@
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata() {
     return {
@@ -26,6 +26,7 @@ export async function generateMetadata() {
     }
 }
 
+export const dynamic = 'force-dynamic'
 
 export default async function QrCodeGeneratorRedirect() {
     redirect("/qr-code-generator")
