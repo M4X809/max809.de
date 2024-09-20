@@ -9,10 +9,6 @@ import QrCodeContainer from "~/app/qr-code-generator/_qr-components/QrCodeContai
 import SavedCodes from "~/app/qr-code-generator/_qr-components/ServerSavedCodes";
 
 
-import { AuthButton } from "../_components/AuthButton";
-
-
-
 export async function generateMetadata() {
   return {
     metadataBase: new URL('https://max809.de'),
