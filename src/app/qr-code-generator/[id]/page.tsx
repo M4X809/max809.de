@@ -62,7 +62,7 @@ export async function generateMetadata(
             ],
             type: "website",
             siteName: "Qr Code Generator",
-            url: "https://max809.de/qr-code-generator",
+            url: `https://max809.de/qr-code-generator${code?.id ? `/${code.id}` : ""}`,
             locale: "en_US",
         }
     }

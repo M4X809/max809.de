@@ -64,7 +64,7 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
                         disabled={!code.shareable}
                         onClick={() => {
                             setCopiedName(code.name)
-                            copy(`${baseURL}/qr-code-generator/${code.id}`)
+                            copy(`${baseURL}/r/qr/${code.id}`)
                         }}>
                         <VisuallyHidden>Share QR Code</VisuallyHidden>
                         <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
