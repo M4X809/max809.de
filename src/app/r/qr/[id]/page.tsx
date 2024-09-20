@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server"
 import type { Metadata } from "next"
-import { permanentRedirect } from "next/navigation"
+import { permanentRedirect, redirect } from "next/navigation"
 import { api } from "~/trpc/server"
 
 interface Props {
@@ -64,7 +64,7 @@ export async function generateMetadata(
 
 export default async function QRCodeGeneratorRedirect({ params }: Props) {
     if (!params.id) {
-        permanentRedirect("/qr-code-generator")
+        redirect("/qr-code-generator")
     }
-    return permanentRedirect(`/qr-code-generator/${params.id}`)
+    return redirect(`/qr-code-generator/${params.id}`)
 }
