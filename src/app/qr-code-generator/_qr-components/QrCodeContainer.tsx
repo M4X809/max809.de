@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Center, ColorInput, Container, Divider, Grid, Group, Modal, NumberInput, SegmentedControl, Slider, Stack, Switch, Text, TextInput, Title } from '@mantine/core'
+import { Box, Button, Center, ColorInput, Container, Divider, Grid, Group, Image, Modal, NumberInput, SegmentedControl, Slider, Stack, Switch, Text, TextInput, Title } from '@mantine/core'
 import React, { useEffect, useState } from 'react'
 // import QRCode from 'react-qrcode-js'
 
@@ -10,6 +10,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { api } from '~/trpc/react';
 import { useFeatureFlagEnabled, usePostHog } from 'posthog-js/react';
 
+
+import ImportButton from './ImportButton';
 
 const QrCode = () => {
     const posthog = usePostHog()
@@ -24,8 +26,6 @@ const QrCode = () => {
 
     const qrCode = useAppStore((state) => state.qrCode)
     const setQrCode = useAppStore((state) => state.setQrCode)
-    // const qrCodeLength = useAppStore((state) => state.qrCodeLength)
-    // const setQrCodeLength = useAppStore((state) => state.setQrCodeLength)
 
     const qrLvl = useAppStore((state) => state.qrLvl)
     const setQrLvl = useAppStore((state) => state.setQrLvl)
@@ -57,24 +57,24 @@ const QrCode = () => {
     const setShareable = useAppStore((state) => state.setShareable)
 
 
+
     const saveEnabled = useFeatureFlagEnabled("qr-code-generator-save")
     posthog.capture('$feature_view', { feature_flag: "qr-code-generator-save", })
 
-
+    const importEnabled = useFeatureFlagEnabled("qr-code-generator-import")
+    posthog.capture('$feature_view', { feature_flag: "qr-code-generator-import", })
 
 
     const [opened, { toggle }] = useDisclosure(false)
 
 
 
+
+
+
     const getDataUrl = () => {
         if (!canvasRef?.current || !shareable) return ""
         return canvasRef.current.toDataURL("image/webp", 1)
-
-
-
-        // return url
-
     }
 
 
@@ -115,6 +115,8 @@ const QrCode = () => {
 
     }, [shareable,])
 
+
+
     // console.log(dataUrl)
 
 
@@ -131,8 +133,9 @@ const QrCode = () => {
                         </Center>
                         {canvasRef?.current &&
                             <>
-                                <Button.Group className='w-[500] flex justify-center'  >
+                                <Button.Group className='w-[500] flex justify-center rounded-full'  >
                                     <Button
+                                        className='rounded-l-full'
                                         onClick={() => {
                                             download("image/png")
                                         }}
@@ -143,6 +146,7 @@ const QrCode = () => {
                                         Download as PNG
                                     </Button>
                                     <Button
+                                        className='rounded-r-full'
                                         w={250}
                                         onClick={() => {
                                             download("image/webp")
@@ -158,9 +162,12 @@ const QrCode = () => {
                                         toggle()
                                         setDataUrl(getDataUrl())
                                     }}
-                                    fullWidth maw={500} className=' self-center'>
+                                    fullWidth maw={500} className=' self-center rounded-full'>
                                     Save QR Code
                                 </Button>}
+
+                                {!!session?.user.id && importEnabled && <ImportButton />}
+
                                 <Modal
                                     centered
                                     overlayProps={{

@@ -1,6 +1,4 @@
 import { Divider, Group, Stack, Text, Title } from "@mantine/core";
-import Link from "next/link";
-// import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import Shell from "~/app/_components/Shell";

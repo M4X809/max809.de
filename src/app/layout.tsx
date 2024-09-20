@@ -1,5 +1,6 @@
 import "~/styles/globals.css";
 import '@mantine/core/styles.css';
+import '@mantine/dropzone/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 

@@ -1,5 +1,6 @@
 // src/stores/app-store.ts
 import type { Session } from "next-auth";
+import type QrcodeDecoder from "qrcode-decoder";
 import type React from "react";
 import { createStore } from "zustand/vanilla";
 
@@ -60,6 +61,18 @@ export type AppStore = {
 	setCanvasRef: (
 		canvasRef: React.MutableRefObject<HTMLCanvasElement | null>,
 	) => void;
+
+	// DECODER
+
+	QrcodeDecoder: QrcodeDecoder | null;
+	setQrcodeDecoder: (qrcodeDecoder: QrcodeDecoder | null) => void;
+
+	fileAccepted: boolean;
+	setFileAccepted: (fileAccepted: boolean) => void;
+
+	fileRejected: React.ReactNode;
+	setFileRejected: (fileRejected: React.ReactNode) => void;
+
 };
 
 export const createAppStore = () => {
@@ -128,5 +141,17 @@ export const createAppStore = () => {
 		canvasRef: null,
 		setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) =>
 			set(() => ({ canvasRef })),
+
+		// DECODER
+
+		QrcodeDecoder: null,
+		setQrcodeDecoder: (qrcodeDecoder: QrcodeDecoder | null) =>
+			set(() => ({ QrcodeDecoder: qrcodeDecoder })),
+		
+		fileAccepted: false,
+		setFileAccepted: (fileAccepted: boolean) => set(() => ({ fileAccepted })),
+
+		fileRejected: "",
+		setFileRejected: (fileRejected: React.ReactNode) => set(() => ({ fileRejected })),
 	}));
 };
