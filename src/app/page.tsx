@@ -1,6 +1,5 @@
 import { AspectRatio, Box, Center, Container, Grid, GridCol, Group, Pill, Stack, Text, Title } from "@mantine/core";
 import Link from "next/link";
-// import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import Shell from "./_components/Shell";
@@ -8,8 +7,6 @@ import Shell from "./_components/Shell";
 import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
 import Image from "next/image";
-
-// export const metadata: Metadata = {
 
 
 export async function generateMetadata(): Promise<Metadata> {

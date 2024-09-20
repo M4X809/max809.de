@@ -38,8 +38,6 @@ export async function generateMetadata(): Promise<Metadata> {
         }
     }
 }
-// export const dynamic = 'error'
-
 export const revalidate = 60
 
 export default async function NoteMark() {
