@@ -36,7 +36,8 @@ const ImportButton = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         if (file && myQrcodeDecoder) {
-            // console.log("file", file)
+            setFileAccepted(true)
+            console.log("file", file)
             const imageUrl = URL.createObjectURL(file);
             myQrcodeDecoder.decodeFromImage(imageUrl).then((result) => {
                 if (result) {
@@ -50,6 +51,7 @@ const ImportButton = () => {
 
                 } else {
                     // console.log("no result")
+                    setFileRejected("No QR Code found in this image.")
                     setFileAccepted(false)
                     setFile(null)
                 }
@@ -61,8 +63,7 @@ const ImportButton = () => {
         }
 
         return () => {
-            setFileAccepted(false)
-            setFileRejected("")
+            console.log("RETURNED")
             setFile(null)
 
         }
@@ -101,6 +102,10 @@ const ImportButton = () => {
                 opened={openedDropzone}
                 onClose={() => {
                     toggleDropzone()
+                    setFileAccepted(false)
+                    setFileRejected("")
+                    setFile(null)
+
                 }}
                 withCloseButton={false}
                 size="xl"
