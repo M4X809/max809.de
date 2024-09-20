@@ -17,6 +17,9 @@
 				"noNonNullAssertion": "off",
 				"useImportType": "warn",
 				"noParameterAssign": "off"
+			},
+			"a11y": {
+				"useKeyWithClickEvents": "off"
 			}
 		},
 		"ignore": [

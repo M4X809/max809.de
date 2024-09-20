@@ -9,9 +9,6 @@ const config = {
 	experimental: {
 		optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
 	},
-	productionBrowserSourceMaps: true,
-	// productionBrowserSourceMaps: true,
-	// output: "export",
 	eslint: {
 		ignoreDuringBuilds: true,
 	},

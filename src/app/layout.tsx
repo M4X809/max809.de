@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
 
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
@@ -39,7 +40,11 @@ export default function RootLayout({
               }}
             >
               <AppStoreProvider>
-                {children}
+                <ModalsProvider>
+
+                  {children}
+                </ModalsProvider>
+
               </AppStoreProvider>
             </MantineProvider>
           </TRPCReactProvider>
