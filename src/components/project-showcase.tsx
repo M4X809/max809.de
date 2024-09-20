@@ -16,7 +16,8 @@ export function ProjectShowcase({ projectImages, downloadUrl, version }: { proje
   return (
     <div className="container mx-auto p-4">
       {/* <h1 className="text-3xl font-bold mb-4"></h1> */}
-      <p className="text-lg text-muted-foreground mb-6">NoteMark is a simple desktop note taking app, utilizing the power of Markdown, Build with Electron.</p>
+      <p className="text-lg text-muted-foreground ">NoteMark is a simple desktop note taking app, utilizing the power of Markdown, Build with Electron.</p>
+      <p className="text-md text-red-900 mb-6"> This app is still in development, and may not work as expected / may be unstable. Use at your own risk.</p>
 
 
       <div
