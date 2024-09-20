@@ -15,8 +15,10 @@ import { env } from "~/env";
 import { utapi } from "~/server/uploadthing";
 import { dataURLtoFile } from "image-conversion";
 
-import {} from "uploadthing/server";
+// import {} from "uploadthing/server";
 import type { UploadFileResult } from "uploadthing/types";
+import {File }from "node:buffer"
+
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -104,8 +106,9 @@ export const codesRouter = createTRPCRouter({
 				}) as unknown as Promise<UploadFileResult>;
 
 				if (input.shareable) {
-					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					const imageFile = new Blob([await dataURLtoFile(input.dataUrl, "image/png" as any)], { type: "image/png" });
 					uploadProm = utapi.uploadFiles(
+						// @ts-ignore
 						new File([imageFile], `${input.name}-${user.id}.png`, {
 							type: "image/png",
 						}),
@@ -179,8 +182,9 @@ export const codesRouter = createTRPCRouter({
 				}) as unknown as Promise<UploadFileResult>;
 
 				if (input.shareable) {
-					const imageFile = await dataURLtoFile(input.dataUrl, "image/png" as any);
+					const imageFile = new Blob([await dataURLtoFile(input.dataUrl, "image/png" as any)], { type: "image/png" });
 					uploadProm = utapi.uploadFiles(
+						// @ts-ignore
 						new File([imageFile], `${input.name}-${user.id}.png`, {
 							type: "image/png",
 						}),
@@ -360,13 +364,22 @@ export const codesRouter = createTRPCRouter({
 				};
 			}
 
-			const imageFile = await dataURLtoFile(code.dataUrl, "image/png" as any);
+			// const imageFile = await dataURLtoFile(code.dataUrl, "image/png" as any);
 
-			const uploadData = await utapi.uploadFiles(
-				new File([imageFile], `${code.name}-${code.createdById}.png`, {
-					type: "image/png",
-				}),
-			);
+			// const uploadData = await utapi.uploadFiles(
+			// 	new File([imageFile], `${code.name}-${code.createdById}.png`, {
+			// 		type: "image/png",
+			// 	}),
+			// );
+
+
+			const imageFile = new Blob([await dataURLtoFile(code.dataUrl, "image/png" as any)], { type: "image/png" });
+			const uploadData= await utapi.uploadFiles(
+						// @ts-ignore
+						new File([imageFile], `${code.name}-${code.id}.png`, {
+							type: "image/png",
+						}),
+					);
 
 			if (uploadData.error || !uploadData.data) {
 				return new TRPCError({
