@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Button, Modal, Group, Box, Text } from "@mantine/core"
 import { Dropzone, type FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone"
 import { useDisclosure } from "@mantine/hooks"
+import { usePostHog } from "posthog-js/react"
 // @ts-ignore
 import QrcodeDecoder from "qrcode-decoder/dist/index.esm"
 import { useState, useEffect } from "react"
@@ -14,7 +15,9 @@ import { useAppStore } from "~/providers/app-store-provider"
 
 
 const ImportButton = () => {
+    const posthog = usePostHog()
 
+    const session = useAppStore((state) => state.session)
     const setQrCode = useAppStore((state) => state.setQrCode)
 
     const myQrcodeDecoder = useAppStore((state) => state.QrcodeDecoder)
@@ -37,35 +40,26 @@ const ImportButton = () => {
     useEffect(() => {
         if (file && myQrcodeDecoder) {
             setFileAccepted(true)
-            console.log("file", file)
             const imageUrl = URL.createObjectURL(file);
             myQrcodeDecoder.decodeFromImage(imageUrl).then((result) => {
                 if (result) {
-                    // console.log(result)
                     setQrCode(result.data)
                     toggleDropzone()
                     setFileAccepted(false)
                     setFile(null)
                     setFileRejected("")
-
-
                 } else {
-                    // console.log("no result")
                     setFileRejected("No QR Code found in this image.")
                     setFileAccepted(false)
                     setFile(null)
                 }
             }).catch((_err) => {
-                // console.log(err)
+                posthog.capture('import-qr-code-from-image', { distinctId: session?.user?.id, error: "Error decoding QR Code from image." })
+
             })
-
-
         }
-
         return () => {
-            console.log("RETURNED")
             setFile(null)
-
         }
 
 
@@ -105,12 +99,10 @@ const ImportButton = () => {
                     setFileAccepted(false)
                     setFileRejected("")
                     setFile(null)
-
                 }}
                 withCloseButton={false}
                 size="xl"
                 radius="md"
-                // className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
                 classNames={{
                     body: "bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white",
                 }}
@@ -123,11 +115,9 @@ const ImportButton = () => {
                     onDrop={(val) => {
                         if (!val || !val[0]) return console.log("no file")
                         setFileAccepted(true)
-                        // console.log(val)
                         setFile(val[0])
                     }}
                     onReject={(files) => {
-                        // console.log("rejected files", files)
                         const names = files.map((file) => <Box key={file.file.name}>
                             <Text size="md" c={"#ff0000"} inline>
                                 {file.file.name}: {file.errors.map((err, index) => <Text component="span" c={"#ff0000"} inline key={err.code}>{err.code.split("-").join(" ")} {file.errors.length && index < file.errors.length - 1 ? " / " : ""}</Text>)}
@@ -143,7 +133,6 @@ const ImportButton = () => {
                         setFileRejected(names)
                     }}
                     maxSize={5 * 1024 ** 2}
-                    // maxSize={1}
                     maxFiles={1}
                     accept={IMAGE_MIME_TYPE}
                 >
@@ -151,29 +140,23 @@ const ImportButton = () => {
 
                         <Dropzone.Reject >
                             <Group mih={50}>
-                                <FontAwesomeIcon icon={faBan} />
-
+                                <FontAwesomeIcon fontSize={50} icon={faBan} />
                                 <div>
                                     <Text size="xl" inline>
                                         Only images are allowed. Max one file.
                                     </Text>
-                                    {/* <Text size="sm" c="dimmed" inline mt={7}>
-                                                                    Attach Max 1 File (Max 5 MB)
-                                                                </Text> */}
                                 </div>
                             </Group>
-                            {/* <Text fz={13} c={"red"}></Text> */}
                         </Dropzone.Reject >
                         <Dropzone.Accept >
                             <Group mih={50}>
-                                <FontAwesomeIcon icon={faCheckSquare} />
+                                <FontAwesomeIcon fontSize={50} icon={faCheckSquare} />
                                 <Text size="xl" inline c={"green"}> Let Go to Upload </Text>
                             </Group>
                         </Dropzone.Accept>
                         <Dropzone.Idle>
                             <Group mih={50}>
-                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-
+                                <FontAwesomeIcon fontSize={50} icon={faArrowUpRightFromSquare} />
                                 <div>
                                     <Text size="xl" inline>
                                         Drag image here or click to select file.
