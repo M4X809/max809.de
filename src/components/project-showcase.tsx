@@ -18,17 +18,22 @@ export function ProjectShowcase({ projectImages, downloadUrl, version }: { proje
       {/* <h1 className="text-3xl font-bold mb-4"></h1> */}
       <p className="text-lg text-muted-foreground mb-6">NoteMark is a simple desktop note taking app, utilizing the power of Markdown, Build with Electron.</p>
 
-      <Button mb={20}
-        component="a"
-        href={downloadUrl ?? "https://github.com/m4x809/note-mark/releases/latest"}
-        download={downloadUrl ? "" : ""}
-        target={downloadUrl ? "" : "_blank"}
-        leftSection={<FontAwesomeIcon icon={faDownload} />}
+
+      <div
+        className="flex items-center justify-center gap-4"
       >
+        <Button mb={20}
+          component="a"
+          href={downloadUrl ?? "https://github.com/m4x809/note-mark/releases/latest"}
+          download={downloadUrl ? "" : ""}
+          target={downloadUrl ? "" : "_blank"}
+          leftSection={<FontAwesomeIcon icon={faDownload} />}
+        >
 
-        Download NoteMark (v{version})
+          Download NoteMark (v{version})
 
-      </Button>
+        </Button>
+      </div>
 
       <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
         {projectImages.map((image, index) => (
