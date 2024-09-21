@@ -17,7 +17,7 @@ import { AuthButton } from './AuthButton';
 import Link from 'next/link';
 
 
-function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: AppShellProps & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
+function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     posthog.capture('page_view', { path: path })

@@ -3,7 +3,7 @@ import { Box, type BoxProps } from "@mantine/core"
 
 
 
-const ErrorBox = ({ value, visible = false, ...props }: { value: React.ReactNode, visible: boolean } & BoxProps) => {
+const ErrorBox = ({ value, visible = false, ...props }: { value: React.ReactNode, visible: boolean } & Omit<BoxProps, "bg" | "c" | "p" | "w" | "hidden" | "children">) => {
     return (
         <Box
             {...props}

@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
 			if (new URL(url).origin === baseUrl) return url;
 			return baseUrl;
 		},
-		signIn: async ({ user }) => {
+		async signIn({ user }) {
 			client.identify({
 				distinctId: user.id,
 				properties: {

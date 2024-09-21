@@ -8,7 +8,7 @@ import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-export const AuthButton = ({ session, ...props }: { session: Session | null | undefined, props?: ButtonProps }) => {
+export const AuthButton = ({ session, ...props }: { session: Session | null | undefined, props?: Omit<ButtonProps, "children" | "onClick" | "className" | "unstyled" | "tabIndex"> }) => {
     const [confirmSignOut, setConfirmSignOut] = useState(false)
     const { start, clear } = useTimeout(() => {
         setConfirmSignOut(false)

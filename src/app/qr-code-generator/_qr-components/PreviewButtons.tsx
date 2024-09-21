@@ -6,7 +6,7 @@ import { Group, Box, ActionIcon, VisuallyHidden, Tooltip, Text } from "@mantine/
 import { twMerge } from "tailwind-merge"
 import LoadQrConfig from "./LoadQrConfig"
 import { useClipboard } from "@mantine/hooks"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useAppStore } from "~/providers/app-store-provider"
 
 
