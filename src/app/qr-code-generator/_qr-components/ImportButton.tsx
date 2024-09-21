@@ -9,6 +9,7 @@ import { usePostHog } from "posthog-js/react"
 import QrcodeDecoder from "qrcode-decoder/dist/index.esm"
 import { useState, useEffect } from "react"
 import ErrorBox from "~/app/_components/ErrorBox"
+import { useQrCodeStore } from "~/providers/qr-code-provider"
 import { useAppStore } from "~/providers/app-store-provider"
 
 
@@ -18,21 +19,21 @@ const ImportButton = () => {
     const posthog = usePostHog()
 
     const session = useAppStore((state) => state.session)
-    const setQrCode = useAppStore((state) => state.setQrCode)
+    const setQrCode = useQrCodeStore((state) => state.setQrCode)
 
-    const myQrcodeDecoder = useAppStore((state) => state.QrcodeDecoder)
-    const setQrcodeDecoder = useAppStore((state) => state.setQrcodeDecoder)
+    const myQrcodeDecoder = useQrCodeStore((state) => state.QrcodeDecoder)
+    const setQrcodeDecoder = useQrCodeStore((state) => state.setQrcodeDecoder)
 
 
     const [openedDropzone, { toggle: toggleDropzone }] = useDisclosure(false)
 
     const [file, setFile] = useState<FileWithPath | null>(null)
 
-    const fileAccepted = useAppStore((state) => state.fileAccepted)
-    const setFileAccepted = useAppStore((state) => state.setFileAccepted)
+    const fileAccepted = useQrCodeStore((state) => state.fileAccepted)
+    const setFileAccepted = useQrCodeStore((state) => state.setFileAccepted)
 
-    const fileRejected = useAppStore((state) => state.fileRejected)
-    const setFileRejected = useAppStore((state) => state.setFileRejected)
+    const fileRejected = useQrCodeStore((state) => state.fileRejected)
+    const setFileRejected = useQrCodeStore((state) => state.setFileRejected)
 
 
 

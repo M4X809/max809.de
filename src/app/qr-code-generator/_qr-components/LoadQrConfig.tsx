@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { ActionIcon, type ActionIconProps, VisuallyHidden } from "@mantine/core"
 import { useWindowScroll } from "@mantine/hooks"
 // import { z } from "zod"
-import { useAppStore } from "~/providers/app-store-provider"
+import { useQrCodeStore } from "~/providers/qr-code-provider"
 
 type data = {
     id: string; name: string | null;
@@ -29,16 +29,16 @@ interface QrCodeData {
 }
 const LoadQrConfig = ({ data, ...props }: ActionIconProps & QrCodeData) => {
 
-    const setSaveTitle = useAppStore((state) => state.setSaveTitle)
-    const setQrCode = useAppStore((state) => state.setQrCode)
-    const setQrLvl = useAppStore((state) => state.setQrLvl)
-    const setSize = useAppStore((state) => state.setSize)
-    const setColor = useAppStore((state) => state.setColor)
-    const setBackgroundColor = useAppStore((state) => state.setBackgroundColor)
-    const setFinderRadius = useAppStore((state) => state.setFinderRadius)
-    const setDotRadius = useAppStore((state) => state.setDotRadius)
-    const setDataUrl = useAppStore((state) => state.setDataUrl)
-    const setShareable = useAppStore((state) => state.setShareable)
+    const setSaveTitle = useQrCodeStore((state) => state.setSaveTitle)
+    const setQrCode = useQrCodeStore((state) => state.setQrCode)
+    const setQrLvl = useQrCodeStore((state) => state.setQrLvl)
+    const setSize = useQrCodeStore((state) => state.setSize)
+    const setColor = useQrCodeStore((state) => state.setColor)
+    const setBackgroundColor = useQrCodeStore((state) => state.setBackgroundColor)
+    const setFinderRadius = useQrCodeStore((state) => state.setFinderRadius)
+    const setDotRadius = useQrCodeStore((state) => state.setDotRadius)
+    const setDataUrl = useQrCodeStore((state) => state.setDataUrl)
+    const setShareable = useQrCodeStore((state) => state.setShareable)
 
     const [_scroll, scrollTo] = useWindowScroll();
 

@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react'
 import QrCodePreview from "./QrCodePreview"
 import { ActionIcon, Box, Button, Container, Group, Modal, Paper, Pill, Skeleton, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { api } from '~/trpc/react'
-import { useAppStore } from '~/providers/app-store-provider'
+import { useQrCodeStore } from '~/providers/qr-code-provider'
 import { useClipboard, useDisclosure } from '@mantine/hooks'
 
 import LoadQrConfig from './LoadQrConfig'
@@ -48,16 +48,16 @@ const QrCodePreviewContainer: React.FC<QrCodePreviewContainerProps> = ({ codes, 
 
     const { mutate: deleteCode, isPending: isDeleting, isError: isDeleteError, isSuccess: isDeleteSuccess, error: deleteError, reset } = api.codes.deleteQrCode.useMutation()
 
-    const refetchCodes = useAppStore((state) => state.refetchCodes)
+    const refetchCodes = useQrCodeStore((state) => state.refetchCodes)
 
-    const opened = useAppStore((state) => state.deleteToggle)
-    const setDeleteToggle = useAppStore((state) => state.setDeleteToggle)
+    const opened = useQrCodeStore((state) => state.deleteToggle)
+    const setDeleteToggle = useQrCodeStore((state) => state.setDeleteToggle)
 
-    const setDeleteCodeId = useAppStore((state) => state.setDeleteCodeId)
-    const setDeleteName = useAppStore((state) => state.setDeleteName)
+    const setDeleteCodeId = useQrCodeStore((state) => state.setDeleteCodeId)
+    const setDeleteName = useQrCodeStore((state) => state.setDeleteName)
 
-    const deleteCodeId = useAppStore((state) => state.deleteCodeId)
-    const deleteName = useAppStore((state) => state.deleteName)
+    const deleteCodeId = useQrCodeStore((state) => state.deleteCodeId)
+    const deleteName = useQrCodeStore((state) => state.deleteName)
 
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>

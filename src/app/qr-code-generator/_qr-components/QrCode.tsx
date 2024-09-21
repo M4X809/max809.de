@@ -1,22 +1,22 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { QRCodeBrowser } from "@qrcode-js/browser";
-import { useAppStore } from "~/providers/app-store-provider";
+import { useQrCodeStore } from "~/providers/qr-code-provider";
 import { useDebouncedCallback } from '@mantine/hooks';
 import { AspectRatio } from "@mantine/core";
 
 const MyCanvas = ({ ...props }: React.HTMLAttributes<HTMLCanvasElement>) => {
-    const qrCode = useAppStore((state) => state.qrCode)
-    const qrLvl = useAppStore((state) => state.qrLvl);
-    const size = useAppStore((state) => state.size);
+    const qrCode = useQrCodeStore((state) => state.qrCode)
+    const qrLvl = useQrCodeStore((state) => state.qrLvl);
+    const size = useQrCodeStore((state) => state.size);
 
-    const color = useAppStore((state) => state.color);
-    const backgroundColor = useAppStore((state) => state.backgroundColor);
+    const color = useQrCodeStore((state) => state.color);
+    const backgroundColor = useQrCodeStore((state) => state.backgroundColor);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const setCanvasRef = useAppStore((state) => state.setCanvasRef);
-    const finderRadius = useAppStore((state) => state.finderRadius);
-    const dotRadius = useAppStore((state) => state.dotRadius);
+    const setCanvasRef = useQrCodeStore((state) => state.setCanvasRef);
+    const finderRadius = useQrCodeStore((state) => state.finderRadius);
+    const dotRadius = useQrCodeStore((state) => state.dotRadius);
 
     const updateQrCode = useDebouncedCallback(async () => {
         if (!canvasRef.current) return;
