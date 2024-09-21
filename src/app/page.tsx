@@ -7,6 +7,8 @@ import Shell from "./_components/Shell";
 import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube } from "@fortawesome/pro-duotone-svg-icons";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,7 +76,7 @@ export default async function Home() {
                       </Box>
                     </Stack>
                     <Group justify="end" align="center"  >
-                      <AspectRatio ratio={1 / 1} maw={100}  >
+                      <AspectRatio ratio={1 / 1} maw={100} h={"auto"}  >
                         <QrCodePreview
                           data={{
                             color: "rgba(255,255,255,1)",
@@ -119,6 +121,35 @@ export default async function Home() {
                     <Group justify="end" align="center">
                       <AspectRatio ratio={1 / 1} maw={100} >
                         <Box h={"auto"} w={100} />
+                      </AspectRatio>
+                    </Group>
+                  </Group>
+                </Container>
+                <Container bg={"rgba(255,255,255,0.1)"} p={20} size={"sm"} w={500} mah={180} mih={180} maw={"100dvw"} className="rounded-lg"
+                  component={Link}
+                  // @ts-ignore
+                  href={"/cube-timer"}
+                  prefetch={true}
+                >
+                  <Group justify='space-between' align="stretch" grow gap={0} mah={500} wrap='nowrap'>
+                    <Stack gap={0} miw={300} h={"100%"} >
+                      <Title order={2}>Cube Timer</Title>
+                      <Box className="h-full  w-full">
+                        <Text fz={13} >
+                          A SpeedCubing timer. Generate scrambles, Calculate Averages and more.
+                          <Text c={"dimmed"} fz={13} component="span">
+                            <br />
+                            <br />
+                            This page is still under development.
+                          </Text>
+                        </Text>
+                      </Box>
+                    </Stack>
+                    <Group justify="end" align="center">
+                      <AspectRatio ratio={1 / 1} maw={100} >
+                        {/* <Box h={"auto"} w={100} /> */}
+                        <FontAwesomeIcon icon={faCube} size="10x" height={100} width={100} />
+
                       </AspectRatio>
                     </Group>
                   </Group>

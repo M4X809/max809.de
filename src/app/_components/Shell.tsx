@@ -15,6 +15,7 @@ import { usePathname } from 'next/navigation';
 import { trackingStore } from '~/stores/tracking-store';
 import { AuthButton } from './AuthButton';
 import Link from 'next/link';
+import { twMerge } from 'tailwind-merge';
 
 
 function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
@@ -27,6 +28,8 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
 
 
     const setSession = useAppStore((state) => state.setSession)
+
+    const hideHeader = useAppStore((state) => state.hideHeader)
 
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
         send_event: true,
@@ -81,7 +84,8 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                         {...props}
                     >
                         <AppShell.Main  >
-                            <Group justify="space-between" align="center" className='select-none'  >
+                            {/* {!timerRunning &&  */}
+                            <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                 <Stack gap={0}>
                                     {!!redirect && <Link href={redirect.toString()} >
                                         <Title>
@@ -94,6 +98,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                 </Stack>
                                 {withLoginButton && <AuthButton session={session} />}
                             </Group>
+                            {/* // } */}
                             {children}
                         </AppShell.Main>
                     </AppShell>
