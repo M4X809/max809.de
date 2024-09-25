@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import { fontFamily, animation, keyframes } from "tailwindcss/defaultTheme";
 
 export default {
 	darkMode: ["class"],
@@ -55,6 +55,28 @@ export default {
 					"3": "hsl(var(--chart-3))",
 					"4": "hsl(var(--chart-4))",
 					"5": "hsl(var(--chart-5))",
+				},
+			},
+		},
+		screens: {
+			xs: "29em",
+			sm: "47em",
+			md: "63em",
+			lg: "73em",
+			xl: "89em",
+		},
+		animation: {
+			...animation,
+			"pules-fast": "fast-pulse 0.5s ease-in-out infinite",
+		},
+		keyframes: {
+			...keyframes,
+			"fast-pulse": {
+				"0%, 100%": {
+					opacity: "1",
+				},
+				"50%": {
+					opacity: "0.5",
 				},
 			},
 		},

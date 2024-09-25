@@ -1,8 +1,18 @@
 import type { Metadata } from "next";
 import { getServerAuthSession } from "~/server/auth";
-import { HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import Shell from "../_components/Shell";
 import { MainTimer } from "./_cube-timer-components/MainTimer";
+// import CubeTimerContainer from "./_cube-timer-components/CubeTimerContainer";
+import { Box, Center, Grid, GridCol, Stack, Text, Title } from "@mantine/core";
+import { twMerge } from "tailwind-merge";
+import CubeScrambleBox from "./_cube-timer-components/CubeScrambleBox";
+import CubeTimerHistory from "./_cube-timer-components/CubeTimerHistory";
+import { AuthButton } from "../_components/AuthButton";
+import type { CubeHistory } from "./_cubeTimerTypes";
+import CubeTimerStats from "./_cube-timer-components/CubeTimerStats";
+
+
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
@@ -40,6 +50,15 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CubeTimer() {
     const session = await getServerAuthSession();
 
+    let history: CubeHistory | undefined = undefined
+
+    if (session?.user.id) {
+        history = await api.cube.getCubeTimeHistory({ cubeSize: "333", page: 1 })
+    }
+
+
+
+
 
     return (
         <HydrateClient>
@@ -48,7 +67,54 @@ export default async function CubeTimer() {
                 redirect={"/"}
                 withLoginButton
             >
-                <MainTimer />
+                {/* <CubeTimerContainer session={session} /> */}
+                <Box className="flex flex-col flex-grow">
+
+                    <Grid columns={9} mt={20} className="flex flex-col flex-grow"
+                        classNames={{
+                            inner: "flex-grow",
+                        }}
+                    >
+                        <GridCol span={{ base: 9, md: 2.75 }} order={{ base: 3, md: 1 }}>
+                            {!!session?.user.id &&
+                                <CubeTimerHistory
+                                    history={history}
+                                    className={twMerge("transition-opacity duration-500  h-full")}
+                                />
+                            }
+                            {
+                                !session?.user.id &&
+                                <Center className="h-auto w-full bg-[rgba(255,255,255,0.1)]  rounded-xl">
+                                    <Stack>
+                                        <Title order={4}>Sign in to see your History.</Title>
+                                        <AuthButton session={session} onlySignIn />
+                                    </Stack>
+                                </Center>
+                            }
+                        </GridCol>
+                        <GridCol span={{ base: 9, md: 3.5 }} order={{ base: 1, md: 2 }} className={"flex flex-col h-auto"}>
+                            {/* <Stack > */}
+                            {/* <Box className="flex-grow">
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                    index
+                                ))}
+                            </Box> */}
+                            <MainTimer />
+
+                            {/* </Stack> */}
+                        </GridCol>
+                        <GridCol span={{ base: 9, md: 2.75 }} order={{ base: 1, md: 3 }}>
+                            <Stack className="max-h-[calc(100dvh-100px)] flex flex-col h-full">
+
+                                <CubeScrambleBox className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%] ")} />
+                                <CubeTimerStats className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%]  ")} />
+
+                            </Stack>
+
+                        </GridCol>
+                    </Grid>
+
+                </Box>
             </Shell>
         </HydrateClient>
     )

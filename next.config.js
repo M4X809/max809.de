@@ -14,6 +14,10 @@ const config = {
 	},
 
 	skipTrailingSlashRedirect: true,
+	devIndicators: {
+		buildActivity: true,
+		buildActivityPosition: "bottom-right",
+	},
 	images: {
 		remotePatterns: [
 			{

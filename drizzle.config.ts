@@ -7,6 +7,7 @@ export default {
 	dialect: "postgresql",
 	dbCredentials: {
 		url: env.DATABASE_URL,
+		database: "max809",
 	},
 	tablesFilter: ["qr-code_*"],
 } satisfies Config;

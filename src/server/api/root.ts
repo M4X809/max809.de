@@ -1,5 +1,6 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { codesRouter } from "./routers/codes";
+import { cubeRouter } from "./routers/cube";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { codesRouter } from "./routers/codes";
  */
 export const appRouter = createTRPCRouter({
 	codes: codesRouter,
+	cube: cubeRouter,
 	// post: postRouter,
 });
 
