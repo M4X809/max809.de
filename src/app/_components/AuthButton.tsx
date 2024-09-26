@@ -8,12 +8,14 @@ import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-export const AuthButton = ({ session, ...props }: { session: Session | null | undefined, props?: Omit<ButtonProps, "children" | "onClick" | "className" | "unstyled" | "tabIndex"> }) => {
+export const AuthButton = ({ session, onlySignIn = false, ...props }: { session: Session | null | undefined, onlySignIn?: boolean, props?: Omit<ButtonProps, "children" | "onClick" | "className" | "unstyled" | "tabIndex"> }) => {
     const [confirmSignOut, setConfirmSignOut] = useState(false)
     const { start, clear } = useTimeout(() => {
         setConfirmSignOut(false)
     }, 3000)
     const posthog = usePostHog()
+    if (onlySignIn && session?.user.id) return <></>
+
     return (
         <Button
             tabIndex={-1}

@@ -10,8 +10,7 @@ import type { Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
-
-
+import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
@@ -41,11 +40,11 @@ export default function RootLayout({
               }}
             >
               <AppStoreProvider>
-                <ModalsProvider>
-
-                  {children}
-                </ModalsProvider>
-
+                <QrCodeStoreProvider>
+                  <ModalsProvider>
+                    {children}
+                  </ModalsProvider>
+                </QrCodeStoreProvider>
               </AppStoreProvider>
             </MantineProvider>
           </TRPCReactProvider>

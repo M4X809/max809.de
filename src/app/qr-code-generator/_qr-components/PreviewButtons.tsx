@@ -7,7 +7,7 @@ import { twMerge } from "tailwind-merge"
 import LoadQrConfig from "./LoadQrConfig"
 import { useClipboard } from "@mantine/hooks"
 import { useState } from "react"
-import { useAppStore } from "~/providers/app-store-provider"
+import { useQrCodeStore } from "~/providers/qr-code-provider"
 
 
 
@@ -16,9 +16,9 @@ export const PreviewButtons = ({ code, baseURL }: { code: any, baseURL: string }
     const { copied, copy } = useClipboard({ timeout: 500 })
     const [copiedName, setCopiedName] = useState<string | null>(null)
 
-    const setDeleteCodeId = useAppStore((state) => state.setDeleteCodeId)
-    const setDeleteName = useAppStore((state) => state.setDeleteName)
-    const setDeleteToggle = useAppStore((state) => state.setDeleteToggle)
+    const setDeleteCodeId = useQrCodeStore((state) => state.setDeleteCodeId)
+    const setDeleteName = useQrCodeStore((state) => state.setDeleteName)
+    const setDeleteToggle = useQrCodeStore((state) => state.setDeleteToggle)
     return (
         <Group wrap='nowrap' >
             <Tooltip

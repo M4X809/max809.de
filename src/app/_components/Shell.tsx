@@ -15,18 +15,25 @@ import { usePathname } from 'next/navigation';
 import { trackingStore } from '~/stores/tracking-store';
 import { AuthButton } from './AuthButton';
 import Link from 'next/link';
+import { twMerge } from 'tailwind-merge';
+import { useOs } from '@mantine/hooks';
 
 
 function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
+    const os = useOs()
+
     posthog.capture('page_view', { path: path })
 
     const trackingBanner = trackingStore((state) => state.trackingBanner)
     const setTrackingBanner = trackingStore((state) => state.setTrackingBanner)
 
+    const setOs = useAppStore((state) => state.setOs)
+
 
     const setSession = useAppStore((state) => state.setSession)
+    const hideHeader = useAppStore((state) => state.hideHeader)
 
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
         send_event: true,
@@ -38,6 +45,11 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
         posthog.identify(session?.user?.id)
 
     }, [session, setSession, posthog])
+
+    useEffect(() => {
+        if (os === "undetermined") return
+        setOs(os)
+    }, [os, setOs])
 
     useEffect(() => {
         if (debugPosthog) {
@@ -80,8 +92,9 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                         padding="md"
                         {...props}
                     >
-                        <AppShell.Main  >
-                            <Group justify="space-between" align="center" className='select-none'  >
+                        <AppShell.Main className='h-full flex flex-col'  >
+                            {/* {!timerRunning &&  */}
+                            <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                 <Stack gap={0}>
                                     {!!redirect && <Link href={redirect.toString()} >
                                         <Title>
@@ -94,6 +107,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                 </Stack>
                                 {withLoginButton && <AuthButton session={session} />}
                             </Group>
+                            {/* // } */}
                             {children}
                         </AppShell.Main>
                     </AppShell>
