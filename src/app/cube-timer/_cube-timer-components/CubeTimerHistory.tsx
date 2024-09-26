@@ -11,7 +11,7 @@ import { api } from "~/trpc/react"
 import { useEffect, useState } from "react"
 import { usePagination, useMounted } from "@mantine/hooks"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight } from "@fortawesome/pro-duotone-svg-icons"
+import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight, faTrashCan } from "@fortawesome/pro-duotone-svg-icons"
 import { formatTime } from "~/lib/cUtils"
 
 import ReactTimeAgo from 'react-time-ago'
@@ -37,6 +37,14 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
     const { data, refetch, isFetching, isRefetching } = api.cube.getCubeTimeHistory.useQuery({ cubeSize: scrambleType, page: page }, {
         initialData: undefined, enabled: !!session?.user.id,
     },)
+
+    const [deleteId, setDeleteId] = useState<string | null>(null)
+    const { mutate: deleteCodeId, isPending: isDeleting, } = api.cube.deleteCubeTime.useMutation({
+        onSuccess: () => {
+            refetch()
+            setDeleteId(null)
+        }
+    })
 
     useEffect(() => {
         if (refetchCounter > 0) {
@@ -82,10 +90,30 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         <Title style={{ fontFamily: "lcd-2" }} c={"white"} fw={500}  >
                             {formatTime(data.time)}
                         </Title>
-                        <Text c={"dimmed"} fw={500}  >
-                            {/* {data.cubeSize} */}
-                            {isMounted && <ReactTimeAgo date={data.createdAt} locale="en-US" timeStyle={"round"} />}
-                        </Text>
+                        <Group justify="space-between" align="baseline">
+                            <Text c={"dimmed"} fw={500}  >
+                                {/* {data.cubeSize} */}
+                                {isMounted && <ReactTimeAgo date={data.createdAt} locale="en-US" timeStyle={"round"} />}
+                            </Text>
+                            <ActionIcon
+                                disabled={!isMounted || isFetching || isRefetching}
+                                // variant={"gradient"}
+                                // gradient={{ from: "red", to: "orange" }}
+                                className="bg-red-500/50 hover:bg-red-500/75 text-white"
+                                size={"sm"}
+                                loading={isDeleting && deleteId === data.id}
+                                onClick={() => {
+                                    setDeleteId(data.id)
+                                    deleteCodeId({ id: data.id })
+                                }}
+                                style={{
+                                    "--fa-secondary-opacity": "0.5",
+                                }}
+                            >
+                                <VisuallyHidden>Delete QR Code</VisuallyHidden>
+                                <FontAwesomeIcon icon={faTrashCan} />
+                            </ActionIcon>
+                        </Group>
                     </Box>
                 })}
                 {!historyState.history.length && <Center

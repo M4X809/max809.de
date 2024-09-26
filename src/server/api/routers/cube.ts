@@ -80,4 +80,23 @@ export const cubeRouter = createTRPCRouter({
 				total: total.length,
 			};
 		}),
+	deleteCubeTime: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const code = await ctx.db.delete(cubeTimes).where(and(eq(cubeTimes.id, input.id), eq(cubeTimes.createdById, ctx.session.user.id))).execute();
+			if (!code) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No QR Code found with that ID.",
+				});
+			}
+
+			return {
+				success: true,
+			};
+		}),
 });
