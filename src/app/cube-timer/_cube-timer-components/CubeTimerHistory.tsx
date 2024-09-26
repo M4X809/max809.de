@@ -94,7 +94,7 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         </Title>
                         <Text c={"dimmed"} fw={500}  >
                             {/* {data.cubeSize} */}
-                            {isMounted && <ReactTimeAgo date={data.createdAt} locale="en-US" />}
+                            {isMounted && <ReactTimeAgo date={data.createdAt} locale="en-US" timeStyle={"round"} />}
                         </Text>
                     </Box>
                 })}
