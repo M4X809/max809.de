@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Combobox, Container, Input, InputBase, Text, Title, useCombobox, type ContainerProps } from "@mantine/core"
+import { Box, Center, Combobox, Container, Input, InputBase, Text, Title, useCombobox, type ContainerProps } from "@mantine/core"
 import { twMerge } from "tailwind-merge"
 import { useAppStore } from "~/providers/app-store-provider"
 
@@ -12,33 +12,11 @@ import { useCubeStore } from "~/providers/cube-timer-provider";
 
 import { Scrambow } from "scrambow";
 
-const useRandomNumber = (max: number) => {
-    const [randomNumber, setRandomNumber] = useState<number | null>(null);
-
-    useEffect(() => {
-        const generateRandomNumber = (max: number) => {
-            if (typeof window !== 'undefined' && window.crypto) {
-                const array = new Uint32Array(1);
-                window.crypto.getRandomValues(array);
-                return array[0]! % max;
-            }
-            // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
-            const crypto = require('crypto');
-            return crypto.randomInt(0, max);
-        };
-
-        setRandomNumber(generateRandomNumber(max));
-    }, [max]);
-
-    return randomNumber;
-};
 
 
 
 const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
     const isMounted = useMounted()
-    const randomNumber = useRandomNumber(1000000000000000)
-    // console.log("isMounted", isMounted)
 
     const scramble = useCubeStore((state) => state.scramble)
     const setScramble = useCubeStore((state) => state.setScramble)
@@ -125,15 +103,15 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
 
 
     const options = scrambleTypes.map((item) => (
-        <Combobox.Option value={item.value} key={item.value}>
+        <Combobox.Option value={item.value} key={item.value} className="bg-[rgba(255,255,255,0.1)]  hover:bg-[rgba(255,255,255,0.12)] text-white mb-1 last:mb-0 ">
             <Text c={"gray"} fz={13} >
                 {item.label}
             </Text>
         </Combobox.Option>
     ));
 
-
     const hideHeader = useAppStore((state) => state.hideHeader)
+
     return (
         <Container className={twMerge("max-h-[50%] min-h-[50%]  w-full bg-[rgba(255,255,255,0.1)] rounded-xl", props.className, hideHeader && "opacity-0")} >
             <Combobox
@@ -147,7 +125,17 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
             >
                 <Combobox.Target>
                     <InputBase
+                        styles={{
+                            wrapper: {
+                                background: "transparent",
+                                "--input-bd-focus": "var(--input-bd)",
+                            },
+                            input: {
+                                background: "rgba(0,0,0,0.15)",
+                            }
+                        }}
                         component="button"
+                        className="my-2"
                         type="button"
                         pointer
                         rightSection={<Combobox.Chevron />}
@@ -158,25 +146,17 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
                     </InputBase>
                 </Combobox.Target>
 
-                <Combobox.Dropdown mah={250} className="overflow-auto">
+                <Combobox.Dropdown mah={250} className="overflow-auto bg-gradient-to-tr from-[#06080f] to-[#122b69] text-white border-none">
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            {!!scramble && <Box maw={"100%"} className="flex flex-col">
-                <Title c={"white"} className="font-mono text-center flex-grow h-full" >
+            {!!scramble && <Center maw={"100%"} className="flex flex-col h-[calc(100%-100px)]">
+                <Title c={"white"} className="font-mono text-center " >
                     {scramble}
                 </Title>
-                {/* {scramble.state} */}
-            </Box>
+            </Center>
             }
-            {/* {seeded_scramble.map((scramble, index) => {
-                return <Box key={index} mah={"10%"} h={"10%"} maw={"100%"} >
-                    <Title c={"white"} fw={500}  >
-                        {scramble.scramble_string}
-                    </Title>
-                    {scramble.state}
-                </Box>
-            })} */}
+
         </Container>
     )
 }

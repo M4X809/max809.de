@@ -61,8 +61,15 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
         }
     }, [isFetching, isRefetching])
 
+    const disabled = () => {
+        if (isFetching || isRefetching) return true
+        if (page < 1) return true
+        if (historyState?.totalPages <= 1) return true
+        return false
+    }
 
-    const { active, first, last, range, next, previous } = usePagination({
+
+    const { active, first, last, next, previous } = usePagination({
         total: data?.totalPages ?? 1, page: page, onChange(page) {
             setPage(page)
         },
@@ -78,7 +85,7 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
         <Container className={twMerge("h-full w-full bg-[rgba(255,255,255,0.1)] max-h-[calc(100dvh-100px)]  flex flex-col rounded-xl", props.className, hideHeader && "opacity-0")} >
 
             <Box className="flex-grow pt-1">
-                {historyState.history.map((data, index) => {
+                {!!historyState.history.length && historyState.history.map((data) => {
                     return <Box mah={"10%"} h={"10%"} maw={"100%"} key={data.id}
                         className={twMerge("static top-0 left-0 transition-opacity duration-250", (isFetching || isRefetching) ? "animate-pules-fast " : "")}
                     >
@@ -91,21 +98,32 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         </Text>
                     </Box>
                 })}
+
+                {!historyState.history.length && <Center
+                    className={twMerge("static top-0 left-0 transition-opacity duration-250 h-full", (isFetching || isRefetching) ? "animate-pules-fast " : "")}
+                >
+                    <Title c={"white"} fw={500}  >
+                        No Data
+                    </Title>
+                </Center>}
             </Box>
             <Group py={10} wrap="nowrap" justify="space-between">
                 <Group>
                     <Text fz={13} fw={500} c={"dimmed"}>
-                        Page {page} of {historyState?.totalPages}
+                        Page {page} of {historyState?.totalPages > 0 ? historyState?.totalPages : 1}
                     </Text>
                 </Group>
                 <Group justify="end" gap={5}>
                     <ActionIcon
+                        disabled={disabled()}
                         onClick={() => first()}
                     >
                         <FontAwesomeIcon icon={faChevronsLeft} />
                         <VisuallyHidden>First</VisuallyHidden>
                     </ActionIcon>
                     <ActionIcon
+                        disabled={disabled()}
+
                         style={{
                             "--fa-secondary-opacity": "1",
                         }}
@@ -115,6 +133,8 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         <VisuallyHidden>Previous</VisuallyHidden>
                     </ActionIcon>
                     <ActionIcon
+                        disabled={disabled()}
+
                         style={{
                             "--fa-secondary-opacity": "1",
                         }}
@@ -124,6 +144,8 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         <VisuallyHidden>Next</VisuallyHidden>
                     </ActionIcon>
                     <ActionIcon
+                        disabled={disabled()}
+
                         onClick={() => last()}
                     >
                         <FontAwesomeIcon icon={faChevronsRight} />

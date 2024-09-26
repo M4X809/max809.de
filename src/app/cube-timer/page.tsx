@@ -84,7 +84,7 @@ export default async function CubeTimer() {
                             }
                             {
                                 !session?.user.id &&
-                                <Center className="h-auto w-full bg-[rgba(255,255,255,0.1)]  rounded-xl">
+                                <Center className="h-full w-full bg-[rgba(255,255,255,0.1)]  rounded-xl">
                                     <Stack>
                                         <Title order={4}>Sign in to see your History.</Title>
                                         <AuthButton session={session} onlySignIn />
@@ -93,21 +93,16 @@ export default async function CubeTimer() {
                             }
                         </GridCol>
                         <GridCol span={{ base: 9, md: 3.5 }} order={{ base: 1, md: 2 }} className={"flex flex-col h-auto"}>
-                            {/* <Stack > */}
-                            {/* <Box className="flex-grow">
-                                {Array.from({ length: 3 }).map((_, index) => (
-                                    index
-                                ))}
-                            </Box> */}
+
                             <MainTimer />
 
-                            {/* </Stack> */}
+
                         </GridCol>
                         <GridCol span={{ base: 9, md: 2.75 }} order={{ base: 1, md: 3 }}>
                             <Stack className="max-h-[calc(100dvh-100px)] flex flex-col h-full">
 
                                 <CubeScrambleBox className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%] ")} />
-                                <CubeTimerStats className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%]  ")} />
+                                <CubeTimerStats session={session} className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%]  ")} />
 
                             </Stack>
 
