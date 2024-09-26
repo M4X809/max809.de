@@ -1,44 +1,27 @@
 "use client"
 
-import { Badge, Box, Button, Center, type CenterProps, Group, NumberInput, Stack, Text, Title } from "@mantine/core"
+import { useEffect, useState } from "react";
+import { useHotkeys, isHotkeyPressed } from "react-hotkeys-hook";
+import { Box, Button, Center, type CenterProps, Group, Stack, Text, Title } from "@mantine/core"
+import { useMounted } from "@mantine/hooks";
 
 import { useCubeStore } from "~/providers/cube-timer-provider"
-import { useTimer, useStopwatch, TimerRenderer } from 'react-use-precision-timer';
+import { useTimer, TimerRenderer } from 'react-use-precision-timer';
 
-// import { _lcdFont as lcdFont } from "~/app/cube-timer/layout"
-
-
-
-
-import { useCallback, useEffect, useMemo, useState } from "react";
-
-import { useHotkeys, isHotkeyPressed } from "react-hotkeys-hook";
-import { Key } from 'ts-key-enum'
 import { useAppStore } from "~/providers/app-store-provider";
+import { api } from '~/trpc/react'
+import { formatTime } from "~/lib/cUtils";
+import { modals } from "@mantine/modals";
+
+import { useRouter } from "next/navigation";
+import type { Session } from "next-auth";
 import { twMerge } from "tailwind-merge";
 
-import { api } from '~/trpc/react'
-import localFont from "next/font/local";
-import { formatTime } from "~/lib/cUtils";
-import { useMounted, useOs } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
-import { redirect, useRouter } from "next/navigation";
-import Link from "next/link";
-
-
-
-
-
-export const MainTimer = ({ ...props }: Omit<CenterProps, "children">) => {
+export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> & { session: Session | null | undefined }) => {
 
     const router = useRouter()
+    const { mutate, isPending, isSuccess } = api.cube.createCubeTime.useMutation()
 
-
-    const { mutate, isPending, isSuccess, error, reset } = api.cube.createCubeTime.useMutation()
-
-
-    // The callback will be called every 1000 milliseconds.
-    // const timer = useStopwatch();
     const setHideHeader = useAppStore((state) => state.setHideHeader)
     const os = useAppStore((state) => state.os)
     const timer = useCubeStore((state) => state.timer())
@@ -47,26 +30,17 @@ export const MainTimer = ({ ...props }: Omit<CenterProps, "children">) => {
     const [holding, setHolding] = useState(false);
     const [runTimerFinished, setRunTimerFinished] = useState(false);
     const [finishedLetGo, setFinishedLetGo] = useState(true);
-    const [renderRate, setRenderRate] = useState(100);
-
+    const [renderRate] = useState<number>(100);
     const increaseRefetchCounter = useCubeStore((state) => state.increaseRefetchCounter)
-
     const scrambleType = useCubeStore((state) => state.scrambleType)
     const scramble = useCubeStore((state) => state.scramble)
-
     const increaseNewScrambleCounter = useCubeStore((state) => state.increaseNewScrambleCounter)
-
     const [endTime, setEndTime] = useState(0);
-
     const isMounted = useMounted();
-
-
-
 
     const runTimer = useTimer({ delay: 500, runOnce: true }, () => {
         setRunTimerFinished(true)
-    }
-    );
+    });
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -108,11 +82,13 @@ export const MainTimer = ({ ...props }: Omit<CenterProps, "children">) => {
             timer.pause()
             const elapsedTime = timer.getElapsedRunningTime()
             setEndTime(elapsedTime)
-            mutate({
-                cubeSize: scrambleType,
-                scramble: scramble,
-                time: elapsedTime,
-            })
+            if (session?.user.id) {
+                mutate({
+                    cubeSize: scrambleType,
+                    scramble: scramble,
+                    time: elapsedTime,
+                })
+            }
             timer.stop()
 
             return
@@ -161,8 +137,6 @@ export const MainTimer = ({ ...props }: Omit<CenterProps, "children">) => {
             }
         }
     }
-
-    // console.log("os", os)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {

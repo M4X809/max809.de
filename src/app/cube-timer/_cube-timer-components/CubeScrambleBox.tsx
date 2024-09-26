@@ -113,7 +113,7 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
     const hideHeader = useAppStore((state) => state.hideHeader)
 
     return (
-        <Container className={twMerge("max-h-[50%] min-h-[50%]  w-full bg-[rgba(255,255,255,0.1)] rounded-xl", props.className, hideHeader && "opacity-0")} >
+        <Container className={twMerge("md:max-h-[50%] md:min-h-[50%] max-h-fit min-h-fit  w-full bg-[rgba(255,255,255,0.1)] rounded-xl", props.className, hideHeader && "opacity-0")} >
             <Combobox
                 store={combobox}
                 onOptionSubmit={(val) => {
@@ -150,7 +150,7 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
                     <Combobox.Options>{options}</Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>
-            {!!scramble && <Center maw={"100%"} className="flex flex-col h-[calc(100%-100px)]">
+            {!!scramble && <Center maw={"100%"} className="flex flex-col md:h-[calc(100%-100px)]">
                 <Title c={"white"} className="font-mono text-center " >
                     {scramble}
                 </Title>
