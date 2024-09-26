@@ -44,14 +44,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CubeTimer() {
     const session = await getServerAuthSession();
-
     let history: CubeHistory | undefined = undefined
-
     if (session?.user.id) {
         history = await api.cube.getCubeTimeHistory({ cubeSize: "333", page: 1 })
     }
-
-
     return (
         <HydrateClient>
             <Shell session={session}
@@ -59,9 +55,7 @@ export default async function CubeTimer() {
                 redirect={"/"}
                 withLoginButton
             >
-                {/* <CubeTimerContainer session={session} /> */}
                 <Box className="flex flex-col flex-grow">
-
                     <Grid columns={9} mt={20} className="flex flex-col flex-grow"
                         classNames={{
                             inner: "flex-grow",
@@ -74,28 +68,18 @@ export default async function CubeTimer() {
                                     className={twMerge("transition-opacity duration-500 h-full")}
                                 />
                             }
-                            {
-                                !session?.user.id &&
-                                <CubeSignIn session={session} />
-                            }
+                            {!session?.user.id && <CubeSignIn session={session} />}
                         </GridCol>
                         <GridCol span={{ base: 9, md: 3.5 }} order={{ base: 1, md: 2 }} className={"flex flex-col h-auto"}>
-
                             <MainTimer session={session} />
-
-
                         </GridCol>
                         <GridCol span={{ base: 9, md: 2.75 }} order={{ base: 1, md: 3 }}>
                             <Stack className="max-h-[calc(100dvh-100px)] flex flex-col h-full">
-
                                 <CubeScrambleBox className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%] ")} />
                                 <CubeTimerStats session={session} className={twMerge("transition-opacity duration-500 overflow-auto max-h-[50%]")} />
-
                             </Stack>
-
                         </GridCol>
                     </Grid>
-
                 </Box>
             </Shell>
         </HydrateClient>

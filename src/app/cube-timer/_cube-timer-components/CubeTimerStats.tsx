@@ -1,6 +1,6 @@
 "use client"
 
-import { Center, Container, type ContainerProps, Overlay, Stack, Text, Title } from "@mantine/core"
+import { Center, Container, type ContainerProps, Stack, Text, Title } from "@mantine/core"
 import { useElementSize } from "@mantine/hooks"
 import type { Session } from "next-auth"
 import { twMerge } from "tailwind-merge"
@@ -33,9 +33,7 @@ const CubeTimerStats = ({ session, ...props }: Omit<ContainerProps, "children"> 
                 </Center>
             </Container>
         )
-
     }
-
 
     return (
         <Container ref={ref} className={twMerge("max-h-[50%] h-full  w-full bg-[rgba(255,255,255,0.1)] rounded-xl", props.className, hideHeader && "opacity-0", width < 350 && "h-full")} >

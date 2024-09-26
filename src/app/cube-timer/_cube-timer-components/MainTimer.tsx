@@ -104,7 +104,6 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
 
     }, { keydown: true, preventDefault: true, keyup: true, },
         [holding, finishedLetGo, runTimerFinished, timer, isHotkeyPressed, setHolding, setRunTimerFinished, setFinishedLetGo, setEndTime, mutate, endTime]
-
     )
 
     const counterDisplay = (type: "timeColor" | "hintText") => {
@@ -167,15 +166,11 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                                 onClick={() => {
                                     modals.closeAll()
                                 }}
-
                             >
                                 Continue anyway.
                             </Button>
                             <Button
                                 size="compact-sm"
-                                // component={Link}
-                                // href={"/"}
-                                // prefetch
                                 onClick={() => {
                                     modals.closeAll()
                                     router.prefetch("/")
@@ -184,50 +179,32 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                             >
                                 Return to Homepage
                             </Button>
-
                         </Group>
-
                     </Box>
                 ),
-
-
-
-                // labels: { confirm: "Continue anyway", cancel: "Return to Homepage" },
             })
-
-
         }
-
         return () => {
             modals.close("os-warning")
         }
-
-
-
     }, [os, isMounted])
 
     return (
         <Center className={twMerge(" w-full  flex-grow", props.className)} >
-
-
             <Stack >
                 {timer.isRunning() &&
                     <TimerRenderer
                         timer={timer}
                         renderRate={renderRate}
                         render={(t) => (
-                            // <Badge bg={t.isStarted() ? 'success' : 'danger'} className="font-monospace">
-                            // </Badge>
                             <Title ta={"center"}
                                 fz={80}
                                 fw={500}
                                 c={counterDisplay("timeColor")}
-                                // className={"lcdFont.className"}
                                 style={{
                                     fontFamily: "lcd-2",
                                 }}
                             >
-                                {/* {`${(t.getElapsedRunningTime() / 1000).toFixed(1)}`} */}
                                 {formatTime(t.getElapsedRunningTime())}
                             </Title>
                         )}
@@ -237,14 +214,11 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                         style={{
                             fontFamily: "lcd-2",
                         }}
-                        // className={lcdFont.className}
                         ta={"center"}
                         c={counterDisplay("timeColor")}
                         fz={80}
-                        // size={80} 
                         fw={500}
                     >
-                        {/* {`${(endTime / 1000).toFixed(3).padStart(6, "0")}`} */}
                         {formatTime(endTime)}
                     </Title>
                 }
@@ -256,15 +230,7 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                     Saving
 
                 </Text>
-                {/* <Button tabIndex={-1} onClick={() => timer.start()}>
-                    Start
-                </Button>
-                <Button tabIndex={-1} onClick={() => { timer.pause(); setEndTime(timer.getElapsedRunningTime()); timer.stop(); }}>
-                    End
-                </Button> */}
             </Stack>
-
-
         </Center>
     )
 }

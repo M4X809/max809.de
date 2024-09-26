@@ -1,21 +1,17 @@
 "use client"
 
-import { ActionIcon, Box, Button, Center, Container, Group, Pagination, Skeleton, Text, Title, VisuallyHidden, type ContainerProps } from "@mantine/core"
-import type { Session } from "next-auth"
+import { ActionIcon, Box, Center, Container, Group, Text, Title, VisuallyHidden, type ContainerProps } from "@mantine/core"
 import { twMerge } from "tailwind-merge"
 import { useAppStore } from "~/providers/app-store-provider"
 import { useCubeStore } from "~/providers/cube-timer-provider"
 
-// import { getHistory } from "../actions"
 import type { CubeHistory } from "../_cubeTimerTypes"
-// import { useEffect } from "react"
 
 import { api } from "~/trpc/react"
 import { useEffect, useState } from "react"
-import { usePagination, useId, useMounted } from "@mantine/hooks"
+import { usePagination, useMounted } from "@mantine/hooks"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight } from "@fortawesome/pro-duotone-svg-icons"
-import { useQuery } from "@tanstack/react-query"
 import { formatTime } from "~/lib/cUtils"
 
 import ReactTimeAgo from 'react-time-ago'
@@ -38,13 +34,9 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
     const refetchCounter = useCubeStore((state) => state.refetchCounter)
 
     const [historyState, setHistoryState] = useState<CubeHistory>(history ?? { history: [], totalPages: 1, page: 1, total: 1 })
-
-
     const { data, refetch, isFetching, isRefetching } = api.cube.getCubeTimeHistory.useQuery({ cubeSize: scrambleType, page: page }, {
         initialData: undefined, enabled: !!session?.user.id,
     },)
-
-
 
     useEffect(() => {
         if (refetchCounter > 0) {
@@ -68,7 +60,6 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
         return false
     }
 
-
     const { active, first, last, next, previous } = usePagination({
         total: data?.totalPages ?? 1, page: page, onChange(page) {
             setPage(page)
@@ -83,7 +74,6 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
 
     return (
         <Container className={twMerge("h-full w-full bg-[rgba(255,255,255,0.1)] max-h-[calc(100dvh-100px)]  flex flex-col rounded-xl", props.className, hideHeader && "opacity-0")} >
-
             <Box className="flex-grow pt-1">
                 {!!historyState.history.length && historyState.history.map((data) => {
                     return <Box mah={"10%"} h={"10%"} maw={"100%"} key={data.id}
@@ -98,7 +88,6 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                         </Text>
                     </Box>
                 })}
-
                 {!historyState.history.length && <Center
                     className={twMerge("static top-0 left-0 transition-opacity duration-250 h-full", (isFetching || isRefetching) ? "animate-pules-fast " : "")}
                 >
@@ -123,7 +112,6 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                     </ActionIcon>
                     <ActionIcon
                         disabled={disabled()}
-
                         style={{
                             "--fa-secondary-opacity": "1",
                         }}
@@ -134,7 +122,6 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                     </ActionIcon>
                     <ActionIcon
                         disabled={disabled()}
-
                         style={{
                             "--fa-secondary-opacity": "1",
                         }}
@@ -145,17 +132,13 @@ const CubeTimerHistory = ({ history, ...props }: Omit<ContainerProps, "children"
                     </ActionIcon>
                     <ActionIcon
                         disabled={disabled()}
-
                         onClick={() => last()}
                     >
                         <FontAwesomeIcon icon={faChevronsRight} />
                         <VisuallyHidden>Last</VisuallyHidden>
                     </ActionIcon>
                 </Group>
-
-
             </Group>
-
         </Container>
     )
 }

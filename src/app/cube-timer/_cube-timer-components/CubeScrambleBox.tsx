@@ -27,11 +27,9 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
     const newScrambleCounter = useCubeStore((state) => state.newScrambleCounter)
     const increaseNewScrambleCounter = useCubeStore((state) => state.increaseNewScrambleCounter)
 
-
     const increaseRefetchCounter = useCubeStore((state) => state.increaseRefetchCounter)
 
-
-
+    const hideHeader = useAppStore((state) => state.hideHeader)
 
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
@@ -68,7 +66,6 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
         // { value: "zz", label: "zz" },
         // { value: "zzll", label: "zzll" },
         // { value: "zzlsll", label: "zzlsll" },
-
         // { value: "clock", label: "clock" },
         // { value: "fto", label: "fto" },
         // { value: "minx", label: "minx" },
@@ -77,15 +74,6 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
         // { value: "sq1", label: "sq1" },
         // { value: "clockoptimal", label: "clockoptimal" },
     ]
-
-
-    useEffect(() => {
-        if (isMounted) {
-            // csTimer.setSeed("250")
-        }
-
-    }, [isMounted,])
-
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
@@ -100,8 +88,6 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
         }
     }, [newScrambleCounter, increaseNewScrambleCounter, isMounted])
 
-
-
     const options = scrambleTypes.map((item) => (
         <Combobox.Option value={item.value} key={item.value} className="bg-[rgba(255,255,255,0.1)]  hover:bg-[rgba(255,255,255,0.12)] text-white mb-1 last:mb-0 ">
             <Text c={"gray"} fz={13} >
@@ -110,7 +96,6 @@ const CubeScrambleBox = ({ ...props }: Omit<ContainerProps, "children">) => {
         </Combobox.Option>
     ));
 
-    const hideHeader = useAppStore((state) => state.hideHeader)
 
     return (
         <Container className={twMerge("md:max-h-[50%] md:min-h-[50%] max-h-fit min-h-fit  w-full bg-[rgba(255,255,255,0.1)] rounded-xl", props.className, hideHeader && "opacity-0")} >

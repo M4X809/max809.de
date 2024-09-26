@@ -9,7 +9,6 @@ import { useAppStore } from '~/providers/app-store-provider'
 const CubeSignIn = ({ session }: { session: Session | null | undefined }) => {
     const hideHeader = useAppStore((state) => state.hideHeader)
 
-
     return (
         <Center className={twMerge("h-full w-full bg-[rgba(255,255,255,0.1)]  rounded-xl transition-opacity duration-500", hideHeader && "opacity-0")} >
             <Stack>
