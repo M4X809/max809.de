@@ -28,6 +28,9 @@ export default function RootLayout({
       <head>
       </head>
       <body
+        style={{
+          background: "linear-gradient(to top, #06080f, #122b69)"
+        }}
       >
         <CSPostHogProvider>
           <TRPCReactProvider>

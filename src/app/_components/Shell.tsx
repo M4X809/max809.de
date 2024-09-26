@@ -79,7 +79,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
 
     return (
         <>
-            <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 ' style={{
+            <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 bg-gradient-to-tr from-[#06080f] to-[#122b69] ' style={{
                 zIndex: "1",
             }} >
                 <div className="flex min-h-screen min-w-full flex-col  justify-center bg-gradient-to-tr from-[#06080f] to-[#122b69]  text-white z-1 " >

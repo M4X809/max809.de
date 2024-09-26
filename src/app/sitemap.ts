@@ -14,5 +14,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			changeFrequency: "daily",
 			priority: 0.8,
 		},
+		{
+			url: "https://max809.de/cube-timer",
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 0.8,
+		}
 	];
 }
