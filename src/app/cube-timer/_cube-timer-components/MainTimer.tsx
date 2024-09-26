@@ -30,7 +30,7 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
     const [holding, setHolding] = useState(false);
     const [runTimerFinished, setRunTimerFinished] = useState(false);
     const [finishedLetGo, setFinishedLetGo] = useState(true);
-    const [renderRate] = useState<number>(100);
+    const [renderRate] = useState<number>(1);
     const increaseRefetchCounter = useCubeStore((state) => state.increaseRefetchCounter)
     const scrambleType = useCubeStore((state) => state.scrambleType)
     const scramble = useCubeStore((state) => state.scramble)
@@ -95,9 +95,11 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
         }
 
         if (!isHotkeyPressed("space") && timer.isStopped() && !finishedLetGo) {
+
             setHolding(false)
             setRunTimerFinished(false)
             setFinishedLetGo(true)
+            increaseNewScrambleCounter()
             runTimer.stop()
             return
         }
@@ -132,7 +134,7 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                 case isHotkeyPressed("space") && !finishedLetGo:
                     return "Let Go"
                 default:
-                    return "Hold Space to Start"
+                    return <Text component="span">Hold space to start! <br /> Tap space to get a new scramble.</Text> as unknown as string
             }
         }
     }
@@ -222,7 +224,7 @@ export const MainTimer = ({ session, ...props }: Omit<CenterProps, "children"> &
                         {formatTime(endTime)}
                     </Title>
                 }
-                <Text ta={"center"} >
+                <Text ta={"center"} className={twMerge("h-20")} >
                     {counterDisplay("hintText")}
                 </Text>
                 <Text ta={"center"} className={twMerge("text-red-500 text-opacity-50 text-sm transition-opacity duration-250", !isPending && "opacity-0 animate-bounce")} >
