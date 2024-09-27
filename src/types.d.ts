@@ -28,3 +28,14 @@
 // imageSize = 75,
 // copyToClipboard = true,
 // downloadable = false,
+
+
+export type {}
+
+declare global {
+  interface CustomJwtSessionClaims {
+    metadata: {
+      limit?: number;
+    }
+  }
+}

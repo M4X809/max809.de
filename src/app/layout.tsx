@@ -12,6 +12,9 @@ import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { dark } from '@clerk/themes'
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
   title: "max809.de",
@@ -24,6 +27,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+
     <html lang="en" className={`${GeistSans.variable}`}>
       <head>
       </head>
@@ -32,26 +36,36 @@ export default function RootLayout({
           background: "linear-gradient(to top, #06080f, #122b69)"
         }}
       >
-        <CSPostHogProvider>
-          <TRPCReactProvider>
-            <MantineProvider
-              defaultColorScheme="dark"
-              forceColorScheme="dark"
-              theme={{
-                focusRing: "never",
+        <ClerkProvider
+          appearance={{ baseTheme: dark }}
+        >
+          <CSPostHogProvider>
+            <TRPCReactProvider>
+              <MantineProvider
+                defaultColorScheme="dark"
+                forceColorScheme="dark"
+                theme={{
+                  focusRing: "never",
 
-              }}
-            >
-              <AppStoreProvider>
-                <QrCodeStoreProvider>
-                  <ModalsProvider>
-                    {children}
-                  </ModalsProvider>
-                </QrCodeStoreProvider>
-              </AppStoreProvider>
-            </MantineProvider>
-          </TRPCReactProvider>
-        </CSPostHogProvider>
+                }}
+              >
+                <AppStoreProvider>
+                  <QrCodeStoreProvider>
+                    <ModalsProvider>
+                      {/* <SignedOut>
+                        <SignInButton />
+                      </SignedOut>
+                      <SignedIn>
+                        <UserButton />
+                      </SignedIn> */}
+                      {children}
+                    </ModalsProvider>
+                  </QrCodeStoreProvider>
+                </AppStoreProvider>
+              </MantineProvider>
+            </TRPCReactProvider>
+          </CSPostHogProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

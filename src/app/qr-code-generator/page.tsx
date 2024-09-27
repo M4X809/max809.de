@@ -5,6 +5,7 @@ import Shell from "~/app/_components/Shell";
 
 import QrCodeContainer from "~/app/qr-code-generator/_qr-components/QrCodeContainer";
 import SavedCodes from "~/app/qr-code-generator/_qr-components/ServerSavedCodes";
+import { auth } from "@clerk/nextjs/server";
 
 
 export async function generateMetadata() {
@@ -35,13 +36,20 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const session = await getServerAuthSession();
+
+  const { sessionClaims, } = auth()
+  // console.log("debug", debug())
+
+
+
+  console.log("sessionClaims", sessionClaims,)
+
   return (
     <HydrateClient>
       <Shell
-        session={session} title="QR Code Generator" redirect={"/"}
+        session={sessionClaims} title="QR Code Generator" redirect={"/"}
         withLoginButton={true}
       >
-
         <QrCodeContainer />
         <Stack mt={20} gap={0} >
           <Divider my={15} />

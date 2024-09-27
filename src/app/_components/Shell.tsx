@@ -18,8 +18,10 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 import { useOs } from '@mantine/hooks';
 
+import type { JwtPayload } from "@clerk/types/";
 
-function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
+
+function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: JwtPayload | null, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     const os = useOs()
