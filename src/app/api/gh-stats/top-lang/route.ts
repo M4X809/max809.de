@@ -190,9 +190,8 @@ export async function GET(req: NextRequest) {
 	console.log("params", params);
 	// prettier-ignore
 	const usernameWhitelist = [
-        "M4X809", 
-        "max809", 
-        "skycreat7"
+        "m4x809", 
+        "skycreat7",
     ];
 
 	const username = __params.get("username");
@@ -213,7 +212,7 @@ export async function GET(req: NextRequest) {
 				},
 			},
 		);
-	if (!usernameWhitelist.includes(username.toUpperCase()))
+	if (!usernameWhitelist.includes(username.toLowerCase()))
 		return new Response(
 			renderError(
 				"Invalid username",
