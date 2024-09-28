@@ -10,6 +10,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
 import { env } from "~/env";
+import { getDomain } from "~/lib/utils";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -211,8 +212,8 @@ export default async function Home() {
               <Group wrap="wrap" justify="center">
 
                 <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
-                  <Link href="https://max809.de" >
-                    <MantineImage src={`${!env.NEXTAUTH_URL.startsWith("https://") && env.NEXTAUTH_URL.startsWith("http://") ? env.NEXTAUTH_URL : `https://${env.NEXTAUTH_URL}`}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true&langs_count=20`} alt="gh-stats" />
+                  <Link href="https://github.com/m4x809" target="_blank" rel="noreferrer" >
+                    <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true&langs_count=20`} alt="gh-stats" />
                   </Link>
                 </AspectRatio>
               </Group>
