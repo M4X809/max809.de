@@ -20,6 +20,12 @@ import {
 	verificationTokens,
 } from "~/server/db/schema";
 
+import { tenant } from "@teamhanko/passkeys-next-auth-provider";
+
+import PasskeyProvider from "@teamhanko/passkeys-next-auth-provider";
+
+import chalk from "chalk";
+
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
 });
@@ -40,7 +46,7 @@ declare module "next-auth" {
 	}
 	// @ts-ignore
 	interface User extends AdapterUser {
-		limit: number;
+		limit?: number;
 	}
 
 	// interface User {
@@ -56,7 +62,16 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
 	callbacks: {
-		async session({ session, user }: { session: Session; user: User }) {
+		async session({
+			session,
+			user,
+			newSession,
+		}: {
+			session: Session;
+			user: User;
+			newSession: any;
+		}) {
+			console.log(chalk.red("session"), session, user, newSession);
 			return {
 				...session,
 				user: {
@@ -66,6 +81,7 @@ export const authOptions: NextAuthOptions = {
 			};
 		},
 		async redirect({ url, baseUrl }) {
+			// console.log(chalk.yellow("redirect"));
 			if (url.startsWith("/")) return `${baseUrl}${url}`;
 			if (new URL(url).origin === baseUrl) return url;
 			return baseUrl;
@@ -83,7 +99,16 @@ export const authOptions: NextAuthOptions = {
 				event: "sign-in",
 				distinctId: user.id,
 			});
-			console.log("sign in allowed", signInAllowed, user.id);
+			console.log(
+				chalk
+					.hex("#ff0000")
+					.bold(
+						"sign in",
+						signInAllowed ? chalk.green("allowed") : chalk.red("not allowed"),
+					),
+
+				user.id,
+			);
 			if (!signInAllowed) {
 				return false;
 			}
@@ -93,15 +118,21 @@ export const authOptions: NextAuthOptions = {
 			});
 			return true;
 		},
+		async jwt(params) {
+			console.log(chalk.yellow("jwt"), params);
+			return params;
+		},
 	},
 	theme: {
 		colorScheme: "dark",
 		logo: "/max809.webp",
 	},
 	session: {
+		// strategy: "jwt",
 		maxAge: 10 * 24 * 60 * 60, // 10 days
 	},
 	secret: env.NEXTAUTH_SECRET,
+
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		accountsTable: accounts,
@@ -118,6 +149,33 @@ export const authOptions: NextAuthOptions = {
 			clientId: env.GITHUB_CLIENT_ID,
 			clientSecret: env.GITHUB_CLIENT_SECRET,
 			allowDangerousEmailAccountLinking: false,
+		}),
+		PasskeyProvider({
+			id: "passkeys",
+			tenant: tenant({
+				apiKey: env.PASSKEYS_API_KEY,
+				tenantId: env.NEXT_PUBLIC_PASSKEYS_TENANT_ID,
+				baseUrl: "http://localhost:3000",
+			}),
+			async authorize({ userId, token }) {
+				const user = await db.query.users.findFirst({
+					where: (users, { eq }) => eq(users.id, userId),
+				});
+
+				if (!user) {
+					throw new Error("User not found");
+				}
+				console.log("user", user);
+
+				return user as User;
+				// return {
+				// 	id: user.id,
+				// 	name: user.name,
+				// 	email: user.email,
+				// 	image: user.image,
+				// 	limit: user.limit,
+				// };
+			},
 		}),
 		/**
 		 * ...add more providers here.
