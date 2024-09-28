@@ -28,6 +28,8 @@ export const env = createEnv({
 
 		NPM_FONT_AWESOME: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
+
+		PAT_1: z.string(),
 	},
 
 	/**
@@ -66,6 +68,7 @@ export const env = createEnv({
 
 		NPM_FONT_AWESOME: process.env.NPM_FONT_AWESOME,
 		UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
+		PAT_1: process.env.PAT_1,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
