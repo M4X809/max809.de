@@ -35,8 +35,13 @@ const retryer = async (
 			process.env[`PAT_${retries + 1}`],
 			retries,
 		);
+		// prettier-ignore
+		const headers = Array.from(req.headers.entries()).reduce<Record<string, string>>((acc, [key, value]) => {
+			acc[key] = value;
+			return acc;
+		}, {});
 
-		console.log("response", req);
+		console.log("response", headers);
 
 		// prettier-ignore
 		const isRateExceeded = response.data.errors && response.data.errors[0]?.type === "RATE_LIMITED";

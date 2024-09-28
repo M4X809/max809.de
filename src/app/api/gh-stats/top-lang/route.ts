@@ -12,9 +12,9 @@ import {
 	wrapTextMultiline,
 } from "~/app/api/gh-stats/_utils";
 import type { Fetcher, TopLangOptions } from "../_types";
-import { renderTopLanguages } from "./genTopLang";
+import { renderTopLanguages } from "./_genTopLang";
 
-export const revalidate = 1;
+export const revalidate = 120;
 
 export type Lang = {
 	name: string;
@@ -187,14 +187,14 @@ export async function GET(req: NextRequest) {
 		},
 		{},
 	);
-	console.log("params", params);
+	// console.log("params", params);
 	// prettier-ignore
 	const usernameWhitelist = [
         "m4x809", 
         "skycreat7",
     ];
 
-	const username = __params.get("username");
+	const username = __params.get("username") ?? "m4x809";
 	const theme = __params.get("theme");
 	if (!username)
 		return new Response(
@@ -246,10 +246,10 @@ export async function GET(req: NextRequest) {
 	const disable_animations = __params.get("disable_animations");
 	const hide_progress = __params.get("hide_progress");
 
-	if (!params.username) return new Response("Missing username", { status: 400 });
+	if (!username) return new Response("Missing username", { status: 400 });
 	try {
-		const topLangs = await fetchTopLanguages(params.username);
-		console.log("topLangs", topLangs);
+		const topLangs = await fetchTopLanguages(username);
+		// console.log("topLangs", topLangs);
 
 		return new Response(
 			renderTopLanguages(topLangs as unknown as TopLangData, {
