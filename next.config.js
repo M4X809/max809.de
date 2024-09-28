@@ -25,6 +25,11 @@ const config = {
 				hostname: "utfs.io",
 				pathname: "/a/su1pkz07fn/*",
 			},
+			{
+				protocol: "https",
+				hostname: "max809.de",
+				pathname: "/api/gh-stats/*",
+			}
 		],
 	},
 };
