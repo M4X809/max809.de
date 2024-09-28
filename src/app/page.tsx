@@ -213,7 +213,7 @@ export default async function Home() {
 
                 <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
                   <Link href="https://github.com/m4x809" target="_blank" rel="noreferrer" >
-                    <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true&langs_count=20`} alt="gh-stats" />
+                    <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`} alt="gh-stats" />
                   </Link>
                 </AspectRatio>
               </Group>
