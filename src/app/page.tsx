@@ -212,7 +212,7 @@ export default async function Home() {
 
                 <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
                   <Link href="https://max809.de" >
-                    <MantineImage src={`${env.NEXTAUTH_URL}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true&langs_count=20`} alt="gh-stats" />
+                    <MantineImage src={`${!env.NEXTAUTH_URL.startsWith("https://") && env.NEXTAUTH_URL.startsWith("http://") ? env.NEXTAUTH_URL : `https://${env.NEXTAUTH_URL}`}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true&langs_count=20`} alt="gh-stats" />
                   </Link>
                 </AspectRatio>
               </Group>
