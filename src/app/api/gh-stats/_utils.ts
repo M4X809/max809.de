@@ -340,10 +340,10 @@ const request = async (
 			// "Content-Type": "application/json",
 			...headers,
 		},
-		// cache: "force-cache",
-		next: {
-			revalidate: 60,
-		},
+		cache: "force-cache",
+		// next: {
+		// 	revalidate: 60,
+		// },
 	}).then(async (_res) => {
 		const res = (await _res.json()) as GHResponse;
 		return {
