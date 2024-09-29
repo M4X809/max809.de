@@ -17,9 +17,9 @@ const ClearGhCache = async () => {
             component={Link}
             prefetch={false}
             href="/api/gh-stats/clear-cache"
-            // target="_blank"
-            // rel="noreferrer"
             variant="light"
+            className='self-center'
+            rel='external'
             size="sm"
             title="Clear GitHub Stats Cache"
         >

@@ -211,18 +211,20 @@ export default async function Home() {
                 My Top Programming Languages
               </Title>
               <Group wrap="wrap" justify="center">
+                <Stack>
 
-                <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
-                  <Link href="https://github.com/m4x809" target="_blank" rel="noreferrer" >
-                    <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`} alt="gh-stats" />
-                  </Link>
-                </AspectRatio>
+                  <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
+                    <Link href="https://github.com/m4x809" target="_blank" rel="noreferrer" >
+                      <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`} alt="gh-stats" />
+                    </Link>
+                  </AspectRatio>
+                  {!!session && session.user.name === "max809" && <ClearGhCache />}
+                </Stack>
               </Group>
             </Stack>
           </Center>
         </Stack>
-        {/* {!!session && session.user.name === "max809" && <ClearGhCache />} */}
-        <ClearGhCache />
+        {/* <ClearGhCache /> */}
       </Shell >
     </HydrateClient >
   )

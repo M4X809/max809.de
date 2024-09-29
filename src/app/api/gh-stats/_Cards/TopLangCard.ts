@@ -9,7 +9,7 @@ import {
 	getCardColors,
 	lowercaseTrim,
 	measureText,
-} from "../_utils";
+} from "../utils";
 import type { TopLangData } from "../top-lang/route";
 // import { langCardLocales } from "../translations.js";
 

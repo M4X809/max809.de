@@ -10,11 +10,12 @@ import {
 	request,
 	retryer,
 	wrapTextMultiline,
-} from "~/app/api/gh-stats/_utils";
+} from "~/app/api/gh-stats/utils";
 import type { Fetcher, TopLangOptions } from "../_types";
 import { renderTopLanguages } from "../_Cards/TopLangCard";
 
-// export const revalidate = 1;
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export type Lang = {
 	name: string;
@@ -181,19 +182,27 @@ const fetchTopLanguages = async (
 const cachedTopLangs = unstable_cache(
 	async (username) => fetchTopLanguages(username),
 	["gh-stats"],
-	{ revalidate: 120, tags: ["gh-stats"] },
+	{ revalidate: 60, tags: ["gh-stats"] },
 );
 
 export async function GET(req: NextRequest) {
+	// const headersList = headers();
+	// const cacheControl = headersList.get("Cache-Control");
+	// console.log(chalk.red("cacheControl route", cacheControl));
+
+	// if (cacheControl?.includes("no-cache")) {
+	// 	headersList.set("Cache-Control", null);
+	// }
+
 	const __params = req.nextUrl.searchParams;
 	const _params = req.nextUrl.searchParams.entries();
-	const params = Array.from(_params).reduce<Record<string, string>>(
-		(acc, [key, value]) => {
-			acc[key] = value;
-			return acc;
-		},
-		{},
-	);
+	// const params = Array.from(_params).reduce<Record<string, string>>(
+	// 	(acc, [key, value]) => {
+	// 		acc[key] = value;
+	// 		return acc;
+	// 	},
+	// 	{},
+	// );
 	// console.log("params", params);
 	// prettier-ignore
 	const usernameWhitelist = [

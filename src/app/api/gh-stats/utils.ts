@@ -6,6 +6,7 @@ import wrap from "word-wrap";
 import { themes } from "./_themes";
 import { env } from "~/env";
 import type { Fetcher, GHResponse } from "./_types";
+import { unstable_cache } from "next/cache";
 
 const PATs = Object.keys(env).filter((key) => /PAT_\d*$/.exec(key)).length;
 const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;
@@ -322,12 +323,15 @@ const fallbackColor = (
 		(gradient ? gradient : isValidHexColor(color) && `#${color}`) || fallbackColor
 	);
 };
-export const revalidate = 1;
 /**
  * Send GraphQL request to GitHub API.
  *
 
  */
+
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
+
 const request = async (
 	data: any,
 	headers: Record<string, string>,
@@ -348,19 +352,26 @@ const request = async (
 			// "Content-Type": "application/json",
 			...headers,
 		},
-		// cache: "force-cache",
-		// next: {
-		// 	revalidate: 1,
-		// 	tags: ["gh-stats"],
-		// },
+		// cache: "reload",
+		next: {
+			revalidate: 10,
+			tags: ["gh-stats"],
+		},
 	}).then(async (_res) => {
 		const res = (await _res.json()) as GHResponse;
+		console.log("GH Request", res);
 		return {
 			res: res,
 			req: _res,
 		} as Fetcher;
 	});
 };
+
+// const request = unstable_cache(
+// 	async (data, headers) => _request(data, headers),
+// 	["gh-stats"],
+// 	{ revalidate: 60, tags: ["gh-stats"] },
+// );
 
 /**
  * Object containing card colors.

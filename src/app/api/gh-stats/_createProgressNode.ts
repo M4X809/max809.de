@@ -1,6 +1,6 @@
 // @ts-check
 
-import { clampValue } from "./_utils";
+import { clampValue } from "./utils";
 
 /**
  * Create a node to indicate progress in percentage along a horizontal line.
