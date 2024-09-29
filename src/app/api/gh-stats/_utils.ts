@@ -36,12 +36,20 @@ const retryer = async (
 			retries,
 		);
 		// prettier-ignore
-		const headers = Array.from(req.headers.entries()).reduce<Record<string, string>>((acc, [key, value]) => {
+		const headers = Array.from(req.headers.entries()).reduce<{ [key: string]: string }>((acc, [key, value]) => {
 			acc[key] = value;
 			return acc;
-		}, {});
+		}, {})
 
-		console.log("response", headers);
+		console.log(
+			"response",
+			Object.entries(headers)
+				.filter(([key]) => key.startsWith("x-"))
+				.reduce<{ [key: string]: string }>((acc, [key, value]) => {
+					acc[key] = value;
+					return acc;
+				}, {}),
+		);
 
 		// prettier-ignore
 		const isRateExceeded = response.data.errors && response.data.errors[0]?.type === "RATE_LIMITED";
@@ -314,7 +322,7 @@ const fallbackColor = (
 		(gradient ? gradient : isValidHexColor(color) && `#${color}`) || fallbackColor
 	);
 };
-
+export const revalidate = 1;
 /**
  * Send GraphQL request to GitHub API.
  *
@@ -340,9 +348,10 @@ const request = async (
 			// "Content-Type": "application/json",
 			...headers,
 		},
-		cache: "force-cache",
+		// cache: "force-cache",
 		// next: {
-		// 	revalidate: 60,
+		// 	revalidate: 1,
+		// 	tags: ["gh-stats"],
 		// },
 	}).then(async (_res) => {
 		const res = (await _res.json()) as GHResponse;

@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
 import { env } from "~/env";
 import { getDomain } from "~/lib/utils";
+import ClearGhCache from "./_components/ClearGhCache";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -220,6 +221,8 @@ export default async function Home() {
             </Stack>
           </Center>
         </Stack>
+        {/* {!!session && session.user.name === "max809" && <ClearGhCache />} */}
+        <ClearGhCache />
       </Shell >
     </HydrateClient >
   )

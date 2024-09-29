@@ -1,4 +1,4 @@
-import { encodeHTML, flexLayout } from "./_utils";
+import { encodeHTML, flexLayout } from "../_utils";
 
 interface CardColors {
 	titleColor: string;

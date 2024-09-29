@@ -12,9 +12,9 @@ import {
 	wrapTextMultiline,
 } from "~/app/api/gh-stats/_utils";
 import type { Fetcher, TopLangOptions } from "../_types";
-import { renderTopLanguages } from "./_genTopLang";
+import { renderTopLanguages } from "../_Cards/TopLangCard";
 
-export const revalidate = 120;
+// export const revalidate = 1;
 
 export type Lang = {
 	name: string;
@@ -23,6 +23,7 @@ export type Lang = {
 };
 
 export type TopLangData = Record<string, Lang>;
+import { unstable_cache } from "next/cache";
 
 const fetcher = (
 	variables: Record<string, string>,
@@ -177,6 +178,12 @@ const fetchTopLanguages = async (
 	return topLangs;
 };
 
+const cachedTopLangs = unstable_cache(
+	async (username) => fetchTopLanguages(username),
+	["gh-stats"],
+	{ revalidate: 120, tags: ["gh-stats"] },
+);
+
 export async function GET(req: NextRequest) {
 	const __params = req.nextUrl.searchParams;
 	const _params = req.nextUrl.searchParams.entries();
@@ -248,7 +255,7 @@ export async function GET(req: NextRequest) {
 
 	if (!username) return new Response("Missing username", { status: 400 });
 	try {
-		const topLangs = await fetchTopLanguages(username);
+		const topLangs = await cachedTopLangs(username);
 		// console.log("topLangs", topLangs);
 
 		return new Response(

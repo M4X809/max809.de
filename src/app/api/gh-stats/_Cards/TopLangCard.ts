@@ -1,4 +1,4 @@
-import { Card } from "../_Card";
+import { Card } from "./Card";
 import { createProgressNode } from "../_createProgressNode";
 import type { TopLangOptions } from "../_types";
 // import { I18n } from "../common/I18n.js";
@@ -10,7 +10,7 @@ import {
 	lowercaseTrim,
 	measureText,
 } from "../_utils";
-import type { TopLangData } from "./route";
+import type { TopLangData } from "../top-lang/route";
 // import { langCardLocales } from "../translations.js";
 
 const DEFAULT_CARD_WIDTH = 300;
