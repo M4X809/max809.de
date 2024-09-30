@@ -1,4 +1,4 @@
-import { AspectRatio, Box, Center, Container, Grid, GridCol, Group, Pill, Stack, Text, Title } from "@mantine/core";
+import { AspectRatio, Box, Center, Container, Grid, GridCol, Group, Pill, Stack, Text, Title, Image as MantineImage } from "@mantine/core";
 import Link from "next/link";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
@@ -9,6 +9,9 @@ import type { Metadata } from 'next'
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
+import { env } from "~/env";
+import { getDomain } from "~/lib/utils";
+import ClearGhCache from "./_components/ClearGhCache";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -203,12 +206,25 @@ export default async function Home() {
 
 
                 </Container>
-
               </Group>
+              <Title order={3} ta={"center"}  >
+                My Top Programming Languages
+              </Title>
+              <Group wrap="wrap" justify="center">
+                <Stack>
 
+                  <AspectRatio ratio={16 / 9} maw={"100%"} className="w-[25rem] self-center justify-center flex" >
+                    <Link href="https://github.com/m4x809" target="_blank" rel="noreferrer" >
+                      <MantineImage src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`} alt="gh-stats" />
+                    </Link>
+                  </AspectRatio>
+                  {!!session && session.user.name === "max809" && <ClearGhCache />}
+                </Stack>
+              </Group>
             </Stack>
           </Center>
         </Stack>
+        {/* <ClearGhCache /> */}
       </Shell >
     </HydrateClient >
   )
