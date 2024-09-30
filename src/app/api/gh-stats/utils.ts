@@ -336,30 +336,16 @@ const request = async (
 	data: any,
 	headers: Record<string, string>,
 ): Promise<Fetcher> => {
-	// return axios({
-	// 	url: "https://api.github.com/graphql",
-	// 	method: "post",
-	// 	headers,
-	// 	data,
-	// 	fetchOptions: {
-	// 		cache: "force-cache",
-	// 	},
-	// });
 	return fetch("https://api.github.com/graphql", {
 		method: "POST",
 		body: JSON.stringify(data),
 		headers: {
-			// "Content-Type": "application/json",
 			...headers,
 		},
-		// cache: "reload",
-		next: {
-			revalidate: 10,
-			tags: ["gh-stats"],
-		},
+		cache: "no-store",
 	}).then(async (_res) => {
 		const res = (await _res.json()) as GHResponse;
-		console.log("GH Request", res);
+		console.log("GH Request", JSON.stringify(res));
 		return {
 			res: res,
 			req: _res,
