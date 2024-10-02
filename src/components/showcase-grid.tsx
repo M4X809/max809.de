@@ -99,7 +99,7 @@ export default function ShowcaseGrid({ mainTitle = defaultShowcaseData.mainTitle
 
   return (
     <div className="flex justify-center">
-      <Container className=" xs:px-4 py-8 ">
+      <Container className=" xs:px-4 py-8 " size={"lg"}>
         <h1 className="text-3xl font-bold mb-8 text-center select-none">{mainTitle}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
           {elements.map((_element) => {
@@ -116,17 +116,15 @@ export default function ShowcaseGrid({ mainTitle = defaultShowcaseData.mainTitle
                 </Box>
               )
             }
-
-
             return (
               <Box
                 component={element.link ? Link : undefined}
                 href={element.link || '#'}
                 key={element.title}
                 prefetch={element.prefetch}
-                className={twMerge("block h-full max-w-full lg:max-w-[calc(100%)]", odd && lastElement.title === element.title ? "lg:col-span-2 lg:place-self-center  lg:w-[60rem]" : "")}
+                className={twMerge("block h-full max-w-full lg:max-w-[calc(100%)]", odd && lastElement.title === element.title ? "lg:col-span-2 lg:place-self-center lg:max-w-[calc(80%)] lg:w-[calc(80%)]" : "")}
               >
-                <div className="grid grid-cols-5 justify-between h-full min-h-[100px]  transition-shadow hover:shadow-lg bg-[rgba(255,255,255,0.1)] rounded-lg">
+                <div className="grid grid-cols-5 justify-between h-full min-h-[100px] transition-shadow hover:shadow-lg bg-[rgba(255,255,255,0.1)] rounded-lg max-w-full w-full">
                   <Card className={twMerge("flex flex-col bg-transparent border-none sm:col-span-3 text-white shadow-none ", !!element.colSpan?.card && `sm:col-span-${element.colSpan?.card}`, "col-span-5")}>
                     <CardHeader className="py-1 pt-2 select-none">
                       <Title className="text-2xl">{element.title}</Title>

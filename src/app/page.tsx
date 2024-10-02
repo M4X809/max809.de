@@ -72,7 +72,7 @@ const appsOnPage: ShowcaseLayout = {
 
         </Center>
       ),
-      badges: ["Some feature requires login!"],
+      badges: ["Some features require login!"],
       imageAspectRatio: 1 / 1,
       link: "/qr-code-generator",
       prefetch: true
@@ -104,7 +104,7 @@ const appsOnPage: ShowcaseLayout = {
 
         </Center>),
 
-      // badges: ["Under Development"],
+      badges: ["Under Development", " Some feature requires login!"],
       imageAspectRatio: 1 / 1,
       link: "/cube-timer",
       prefetch: true
@@ -123,13 +123,13 @@ const otherApps: ShowcaseLayout = {
       title: "Note Mark",
       description: "This is a simple desktop note taking app, utilizing the power of Markdown, Build with Electron. It has a fully fledged auto updater, Settings to customize the app, and a lot more.",
       imageLink: getUtUrl("2014oiRrVeB1T8AKNp71aXGmChWOT4zM6DpIgyZxirAYdVjq"),
-      badges: ["Under Development", "Windows Only"],
+      badges: ["Under Development", "Windows Only", "No Account", "Local Only"],
       imageAspectRatio: 16 / 9,
       link: "/note-mark",
       prefetch: true,
       classNames: {
-        imgClassName: " max-h-[300px]",
-        imgAspectRatioClassName: " max-h-[280px]",
+        imgClassName: " max-h-[280px]",
+        imgAspectRatioClassName: " max-h-[250px]",
       },
       colSpan: {
         card: 2,
