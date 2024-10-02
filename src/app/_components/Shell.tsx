@@ -17,6 +17,7 @@ import { AuthButton } from './AuthButton';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 import { useOs } from '@mantine/hooks';
+import { PhotoProvider } from 'react-photo-view';
 
 
 function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
@@ -78,71 +79,75 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
     }, [])
 
     return (
-        <>
-            <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 bg-gradient-to-tr from-[#06080f] to-[#122b69] ' style={{
-                zIndex: "1",
-            }} >
-                <div className="flex min-h-screen min-w-full flex-col  justify-center bg-gradient-to-tr from-[#06080f] to-[#122b69]  text-white z-1 " >
-                    <AppShell
-                        navbar={{
-                            width: 300,
-                            breakpoint: 'sm',
-                            collapsed: { mobile: true, desktop: true },
-                        }}
-                        padding="md"
-                        {...props}
-                    >
-                        <AppShell.Main className='h-full flex flex-col'  >
-                            {/* {!timerRunning &&  */}
-                            <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
-                                <Stack gap={0}>
-                                    {!!redirect && <Link href={redirect.toString()} >
-                                        <Title>
-                                            {title}
-                                        </Title>
-                                    </Link>}
-                                    {!redirect && <Title>
-                                        {title}
-                                    </Title>}
-                                </Stack>
-                                {withLoginButton && <AuthButton session={session} />}
-                            </Group>
-                            {/* // } */}
-                            {children}
-                        </AppShell.Main>
-                    </AppShell>
-                </div>
 
-            </Box>
-            <Box
-                style={{ zIndex: "revert-layer" }}
-                className='h-[calc(2rem*var(--mantine-scale))] fixed bottom-0 left-0 right-0 z-0  bg-gradient-to-br from-[#06080f] to-[#122b69] '>
-                <Group h={"100%"} align='center' justify='space-between' px={10} >
-                    <Text c={"dimmed"} fz={13}>
-                        Made with <Text component='span' c={"#ff0000"} > <FontAwesomeIcon icon={faHeart} /></Text> by <Text fz={13} c={"blue"} component="a" href='https://github.com/m4x809' target='_blank' td={"underline"} >@M4X809</Text>
+        <>
+            <PhotoProvider>
+                <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 bg-gradient-to-tr from-[#06080f] to-[#122b69] ' style={{
+                    zIndex: "1",
+                }} >
+                    <div className="flex min-h-screen min-w-full flex-col  justify-center bg-gradient-to-tr from-[#06080f] to-[#122b69]  text-white z-1 " >
+                        <AppShell
+                            navbar={{
+                                width: 300,
+                                breakpoint: 'sm',
+                                collapsed: { mobile: true, desktop: true },
+                            }}
+                            padding="md"
+                            {...props}
+                        >
+                            <AppShell.Main className='h-full flex flex-col'  >
+                                {/* {!timerRunning &&  */}
+                                <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
+                                    <Stack gap={0}>
+                                        {!!redirect && <Link href={redirect.toString()} >
+                                            <Title>
+                                                {title}
+                                            </Title>
+                                        </Link>}
+                                        {!redirect && <Title>
+                                            {title}
+                                        </Title>}
+                                    </Stack>
+                                    {withLoginButton && <AuthButton session={session} />}
+                                </Group>
+                                {/* // } */}
+                                {children}
+                            </AppShell.Main>
+                        </AppShell>
+                    </div>
+
+                </Box>
+                <Box
+                    style={{ zIndex: "revert-layer" }}
+                    className='h-[calc(2rem*var(--mantine-scale))] fixed bottom-0 left-0 right-0 z-0  bg-gradient-to-br from-[#06080f] to-[#122b69] '>
+                    <Group h={"100%"} align='center' justify='space-between' px={10} >
+                        <Text c={"dimmed"} fz={13}>
+                            Made with <Text component='span' c={"#ff0000"} > <FontAwesomeIcon icon={faHeart} /></Text> by <Text fz={13} c={"blue"} component="a" href='https://github.com/m4x809' target='_blank' td={"underline"} >@M4X809</Text>
+                        </Text>
+                        <Text fz={13} c={"dimmed"} component='span'> Version: {pkg.version} </Text>
+                        <Text c={"dimmed"} ta={"right"} fz={13} component="a" target='_blank' href='https://github.com/m4x809/max809.de' td={"underline"}>
+                            Source code on <Text c={"blue"} component='span' px={3} ><FontAwesomeIcon color='white' icon={faGithub} /></Text>
+                        </Text>
+                    </Group>
+                </Box>
+                <Dialog
+                    transitionProps={{ transition: "slide-left", duration: 500 }}
+                    w={600}
+                    className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
+                    withBorder
+                    opened={trackingBanner} withCloseButton onClose={() => setTrackingBanner(false)} size="lg" radius="md">
+                    <Text size="sm" mb="xs" fw={500}>
+                        Cookies and Analytics
                     </Text>
-                    <Text fz={13} c={"dimmed"} component='span'> Version: {pkg.version} </Text>
-                    <Text c={"dimmed"} ta={"right"} fz={13} component="a" target='_blank' href='https://github.com/m4x809/max809.de' td={"underline"}>
-                        Source code on <Text c={"blue"} component='span' px={3} ><FontAwesomeIcon color='white' icon={faGithub} /></Text>
+                    <Text fz={13} mb="xs">
+                        This website uses cookies and analytics to improve your experience and are necessary for the website to function properly. <br /> By using this website, you agree to the use of cookies and analytics.
                     </Text>
-                </Group>
-            </Box>
-            <Dialog
-                transitionProps={{ transition: "slide-left", duration: 500 }}
-                w={600}
-                className='bg-gradient-to-tr from-[#222840] to-[#2347a1] text-white'
-                withBorder
-                opened={trackingBanner} withCloseButton onClose={() => setTrackingBanner(false)} size="lg" radius="md">
-                <Text size="sm" mb="xs" fw={500}>
-                    Cookies and Analytics
-                </Text>
-                <Text fz={13} mb="xs">
-                    This website uses cookies and analytics to improve your experience and are necessary for the website to function properly. <br /> By using this website, you agree to the use of cookies and analytics.
-                </Text>
-                <Button onClick={() => setTrackingBanner(false)} fullWidth size='compact-xs'>
-                    OK
-                </Button>
-            </Dialog>
+                    <Button onClick={() => setTrackingBanner(false)} fullWidth size='compact-xs'>
+                        OK
+                    </Button>
+                </Dialog>
+            </PhotoProvider>
+
         </>
     )
 }
