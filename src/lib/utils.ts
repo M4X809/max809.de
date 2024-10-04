@@ -10,3 +10,7 @@ export function getDomain(url: string) {
 	if (url.startsWith("https://")) return url;
 	return `https://${url}`;
 }
+
+export function getUtUrl(key: string): string {
+	return `https://utfs.io/a/su1pkz07fn/${key}`;
+}

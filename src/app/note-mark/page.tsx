@@ -12,6 +12,7 @@ import { redirect } from "next/navigation";
 import { getServerAuthSession } from "~/server/auth";
 import type { GhAPI } from "./_type";
 
+import React from "react";
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
@@ -64,7 +65,7 @@ export default async function NoteMark() {
                     It has a sidebar on the left side, which contains all the notes of that specific folder, and a main area on the right side, where you can write your notes.
                     <br />
                     <br />
-                    At the top of the Navbar, you can Search for notes in the current folder, or refresh  <Text inline component="span" c={"dimmed"}> <FontAwesomeIcon scale={0} icon={faRefresh} /></Text>  the Files.
+                    At the top of the Navbar, you can Search for notes in the current folder, or refresh  <Text inline component="span" c={"dimmed"}> <FontAwesomeIcon size="1x" fontSize={20} icon={faRefresh} /></Text>  the Files.
                     <br />
                     <br />
                     On the bottom of the Navbar, you can see the current folder, change the folder, or create a new folder / note.

@@ -1,18 +1,13 @@
-"use client"
+// "use client"
 import 'react-photo-view/dist/react-photo-view.css';
-import { PhotoProvider } from 'react-photo-view';
+import type React from 'react';
 
 export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
         <>
-            <PhotoProvider>
-
-
-                {children}
-            </PhotoProvider>
-
+            {children}
         </>
     );
 }
