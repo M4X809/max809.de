@@ -14,7 +14,6 @@ import 'react-photo-view/dist/react-photo-view.css';
 import { env } from "~/env";
 import { Img } from "./note-mark/_notemark-components/Img";
 import Link from "next/link";
-import { ClassValue } from "clsx";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -82,7 +81,6 @@ const appsOnPage: ShowcaseLayout = {
       type: "normal",
       title: "Timezone Converter",
       description: "This is a simple tool to convert time zones between different formats.",
-      // imageLink: "/timezone-converter.png",
       badges: ["Under Development"],
       imageAspectRatio: 1 / 1,
       link: "/timezone-converter",
@@ -93,17 +91,12 @@ const appsOnPage: ShowcaseLayout = {
       type: "normal",
       title: "Cube Timer",
       description: "A SpeedCubing timer. Generate scrambles, Calculate Averages and more.",
-      // imageLink: "/cube-timer.png",
       imageElement: (
         <Center className="h-full w-full ">
           <AspectRatio ratio={1 / 1} maw={100} >
-            {/* <Box h={"auto"} w={100} /> */}
             <FontAwesomeIcon icon={faCube} size="10x" height={200} width={100} />
-
           </AspectRatio>
-
         </Center>),
-
       badges: ["Under Development", " Some feature requires login!"],
       imageAspectRatio: 1 / 1,
       link: "/cube-timer",
@@ -112,8 +105,6 @@ const appsOnPage: ShowcaseLayout = {
 
   ]
 }
-
-
 
 const otherApps: ShowcaseLayout = {
   mainTitle: "Other Apps",
@@ -136,7 +127,6 @@ const otherApps: ShowcaseLayout = {
         img: 3,
       },
     }
-    // }
   ]
 };
 
@@ -147,11 +137,8 @@ const githubStats: ShowcaseLayout = {
     {
       type: "image-only",
       title: "github-top-lang",
-      // imageLink: getUtUrl("2014oiRrVeB1T8AKNp71aXGmChWOT4zM6DpIgyZxirAYdVjq"),
       link: "/note-mark ",
-      // prefetch: true,
       children: (link) => {
-
         return (
           <Center >
             <Box
@@ -165,7 +152,6 @@ const githubStats: ShowcaseLayout = {
                 width={500}
               />
             </Box>
-            {/* <MantineImage maw={450} src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`} alt="gh-stats" /> */}
           </Center>
         )
       }

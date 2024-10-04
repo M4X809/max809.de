@@ -32,7 +32,6 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
 
     const setOs = useAppStore((state) => state.setOs)
 
-
     const setSession = useAppStore((state) => state.setSession)
     const hideHeader = useAppStore((state) => state.hideHeader)
 
