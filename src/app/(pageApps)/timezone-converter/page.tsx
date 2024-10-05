@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { HydrateClient } from "~/trpc/server";
-import Shell from "../_components/Shell";
+import Shell from "~/app/_components/Shell";
 import { getServerAuthSession } from "~/server/auth";
 import { Center, Group, Stack, Title } from "@mantine/core";
-import { AuthButton } from "../_components/AuthButton";
+import { AuthButton } from "~/app/_components/AuthButton";
 import Link from "next/link";
 
 export async function generateMetadata(): Promise<Metadata> {

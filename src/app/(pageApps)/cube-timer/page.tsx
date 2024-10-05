@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import Shell from "../_components/Shell";
+import Shell from "~/app/_components/Shell";
 import { MainTimer } from "./_cube-timer-components/MainTimer";
 // import CubeTimerContainer from "./_cube-timer-components/CubeTimerContainer";
 import { Box, Center, Grid, GridCol, Stack, Text, Title } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import CubeScrambleBox from "./_cube-timer-components/CubeScrambleBox";
 import CubeTimerHistory from "./_cube-timer-components/CubeTimerHistory";
-import { AuthButton } from "../_components/AuthButton";
+import { AuthButton } from "~/app/_components/AuthButton";
 import type { CubeHistory } from "./_cubeTimerTypes";
 import CubeTimerStats from "./_cube-timer-components/CubeTimerStats";
 import CubeSignIn from "./_cube-timer-components/CubeSignIn";

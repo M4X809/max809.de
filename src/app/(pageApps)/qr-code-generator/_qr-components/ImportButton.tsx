@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import ErrorBox from "~/app/_components/ErrorBox"
 import { useQrCodeStore } from "~/providers/qr-code-provider"
 import { useAppStore } from "~/providers/app-store-provider"
+import React from "react"
 
 
 
