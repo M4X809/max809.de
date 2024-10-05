@@ -3,7 +3,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import Shell from "./_components/Shell";
 
-import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
+import QrCodePreview from "~/app/(pageApps)/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
@@ -79,13 +79,22 @@ const appsOnPage: ShowcaseLayout = {
     },
     {
       type: "normal",
-      title: "Timezone Converter",
-      description: "This is a simple tool to convert time zones between different formats.",
-      badges: ["Under Development"],
+      title: "Emoji Favicon API",
+      description: "This is a simple API to generate emoji favicons.",
+      badges: ["For Fun"],
       imageAspectRatio: 1 / 1,
-      link: "/timezone-converter",
-      prefetch: false
-
+      link: "/emoji-favicon",
+      prefetch: true,
+      imgType: "mantine",
+      imageLink: `${getDomain(env.NEXTAUTH_URL)}/api/icon/👑`,
+      classNames: {
+        // imgAspectRatioClassName: " h-[100px]",
+        // imgClassName: " h-[100px]",
+      },
+      imgSizes: {
+        height: "140px",
+        width: "140px",
+      }
     },
     {
       type: "normal",

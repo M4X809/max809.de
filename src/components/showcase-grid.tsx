@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
-import { AspectRatio, Box, Center, Container, Pill, Title } from "@mantine/core"
+import { AspectRatio, Box, Center, Container, Pill, type StyleProp, Title } from "@mantine/core"
 import { twMerge } from "tailwind-merge"
 import isOdd from "is-odd"
 import { Img } from "~/app/note-mark/_notemark-components/Img"
@@ -21,8 +21,13 @@ type ShowcaseElementNormal = {
     imgAspectRatioClassName?: string
   }
   colSpan?: {
-    card?: number
-    img?: number
+    card?: number;
+    img?: number;
+  }
+  imgType?: "mantine" | "next";
+  imgSizes?: {
+    width?: StyleProp<React.CSSProperties['width']>;
+    height?: StyleProp<React.CSSProperties['height']>;
   }
 
 }
@@ -103,10 +108,13 @@ export default function ShowcaseGrid({ mainTitle, elements }: ShowcaseLayout) {
                         className={twMerge("w-auto h-auto max-h-[180px] sm:col-span-2  my-2 ", element.colSpan?.img && `sm:col-span-${element.colSpan?.img}`, element?.classNames?.imgAspectRatioClassName, "col-span-5")}
                       >
                         <Img
+                          imgType={element.imgType}
                           src={element.imageLink}
                           alt={element.title}
                           ratio={element.imageAspectRatio || 1}
-                          className="w-full h-auto object-cover cursor-pointer transition-transform hover:scale-105 rounded-md max-h-[inherit] "
+                          width={element.imgSizes?.width as number | `${number}` | undefined}
+                          height={element.imgSizes?.height as number | `${number}` | undefined}
+                          className={twMerge("w-full h-auto object-cover cursor-pointer transition-transform hover:scale-105 rounded-md max-h-[inherit]",)}
                         />
                       </AspectRatio>
                     </Center>

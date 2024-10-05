@@ -95,8 +95,15 @@ export default async function EmojiFavicon() {
                                 Top Emoji
                             </Title>
                             <Img className="flex self-center justify-center" imgType="mantine" src={`${getDomain(env.NEXTAUTH_URL)}/api/icon/${topEmojis[0]?.emoji ?? "👑"}`} alt="emoji favicon" ratio={1 / 1} width={50} />
-                            <Text c={"white"} className="text-center" mb={10} fz={20} ta={"center"} >
+                            {topEmojis.length > 0 && <Text c={"white"} className="text-center" mb={10} fz={20} ta={"center"} >
                                 The {topEmojis[0]?.emoji} was requested {topEmojis[0]?.callCount} times.
+                            </Text>}
+                            {topEmojis.length === 0 && <Text c={"white"} className="text-center" mb={10} fz={20} ta={"center"} >
+                                No Emojis were requested yet. Try using one of the examples below.
+                            </Text>}
+
+                            <Text c={"white"} className="text-center" mb={10} fz={18} ta={"center"} >
+                                Total Emoji Calls: {totalCalls ?? 0}
                             </Text>
 
                         </Stack>
@@ -120,9 +127,12 @@ export default async function EmojiFavicon() {
                             )
                         })}
                     </Container>
-                    <ExampleInput
-                        url={getDomain()}
-                    />
+                    <Container size={"xl"} className="min-w-[500px] ">
+                        <ExampleInput
+                            url={getDomain()}
+                        />
+
+                    </Container>
                 </Box>
 
             </Shell>

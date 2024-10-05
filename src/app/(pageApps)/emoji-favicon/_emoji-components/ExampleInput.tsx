@@ -15,10 +15,10 @@ const ExampleInput = ({ url }: { startEmoji?: string, url: string }) => {
     const mounted = useMounted()
 
     return (
-        <Stack justify="center" mt={20} className="flex">
+        <Stack justify="center" mt={20} className="flex min-w-[500px]">
             <Title ta={"center"} order={2}>Usage</Title>
 
-            <Group className="min-h-[400px]">
+            <Group className="min-h-[400px] min-w-[500px] flex-nowrap">
                 <Group justify="space-between" className="bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white rounded-lg p-2 w-1/2 flex-nowrap ">
 
                     <Text truncate>
