@@ -88,7 +88,7 @@ export default async function EmojiFavicon() {
                 redirect={"/"}
                 session={session}
             >
-                <Box className="m-auto">
+                <Container fluid className="md:m-auto md:w-[1000px] h-full">
                     <Center>
                         <Stack justify="center" gap={2} ta={"center"} mb={15}>
                             <Title>
@@ -108,7 +108,7 @@ export default async function EmojiFavicon() {
 
                         </Stack>
                     </Center>
-                    <Container className="gap-2 flex max-w-1/2 flex-wrap  items-center " >
+                    <Container className="gap-2 flex md:max-w-1/2 flex-wrap items-center " >
                         {topEmojis.map((emoji) => {
                             return (
                                 <Pill key={emoji.id} size="xl" radius={"sm"}
@@ -127,13 +127,13 @@ export default async function EmojiFavicon() {
                             )
                         })}
                     </Container>
-                    <Container size={"xl"} className="min-w-[500px] ">
-                        <ExampleInput
-                            url={getDomain()}
-                        />
+                    {/* <Container size={"xl"} className="min-w-[500px] "> */}
+                    <ExampleInput
+                        url={getDomain()}
+                    />
 
-                    </Container>
-                </Box>
+                    {/* </Container> */}
+                </Container>
 
             </Shell>
         </HydrateClient>
