@@ -49,6 +49,7 @@ export async function GET(
 ) {
 	try {
 		let serverRequest = false;
+		console.info(chalk.yellow("IP", req.ip));
 
 		const _referer = req.headers.get("referer");
 		if (_referer?.includes(getDomain(env.NEXTAUTH_URL))) serverRequest = true;
