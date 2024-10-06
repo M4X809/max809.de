@@ -26,11 +26,12 @@ const convertPng = (svg: string): Uint8Array => {
 		ctx.font = "150px Noto Color Emoji";
 		ctx.fillText(svg, 0, 140);
 		const png = canvas.toBuffer("image/png");
+		console.log("created png with Noto Color Emoji");
 		return png;
 	} catch (error) {
 		if (error instanceof Error) {
 			// console.log(chalk.red(os.platform(), os.type()));
-			console.error(error.message);
+			console.log("Error creating png with Noto Color Emoji", error.message);
 		}
 	}
 
