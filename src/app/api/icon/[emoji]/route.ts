@@ -21,11 +21,10 @@ const convertPng = (svg: string): Uint8Array => {
 			family: "Noto Color Emoji",
 		});
 
-		const canvas = createCanvas(100, 100);
+		const canvas = createCanvas(200, 200);
 		const ctx = canvas.getContext("2d");
-		ctx.font = "75px Noto Color Emoji";
-		ctx.fill;
-		ctx.fillText(svg, 0, 70);
+		ctx.font = "150px Noto Color Emoji";
+		ctx.fillText(svg, 0, 140);
 		const png = canvas.toBuffer("image/png");
 		return png;
 	} catch (error) {
@@ -35,10 +34,10 @@ const convertPng = (svg: string): Uint8Array => {
 		}
 	}
 
-	const canvas = createCanvas(100, 100);
+	const canvas = createCanvas(200, 200);
 	const ctx = canvas.getContext("2d");
-	ctx.font = "75px roboto";
-	ctx.fillText(svg, 0, 70);
+	ctx.font = "150px Roboto";
+	ctx.fillText(svg, 0, 140);
 	const png = canvas.toBuffer("image/png");
 	return png;
 };
@@ -104,12 +103,13 @@ export async function GET(
 		`;
 
 		const forceSvg =
-			req.nextUrl.search.includes("svg") && !req.nextUrl.search.includes("png"); // ?svg tacked on the end forces SVG, handy for css cursors
+			req.nextUrl.search.includes("svg") ||
+			(true && !req.nextUrl.search.includes("png")); // ?svg tacked on the end forces SVG, handy for css cursors
 		const forcePng =
 			req.nextUrl.search.includes("png") && !req.nextUrl.search.includes("svg"); // ?png tacked on the end forces PNG, handy for css cursors
 		const userAgent = req.headers.get("user-agent");
 
-		if (userAgent?.includes("Safari")) {
+		if (userAgent?.includes("Safari") && !userAgent.includes("Chrome")) {
 			const png = convertPng(emoji);
 			console.log("Safari");
 			return new NextResponse(png, {
