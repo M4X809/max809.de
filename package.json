@@ -37,6 +37,7 @@
     "@trpc/react-query": "^11.0.0-rc.553",
     "@trpc/server": "^11.0.0-rc.553",
     "@uploadthing/react": "^7.0.2",
+    "canvas": "^2.11.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "countries-and-timezones": "^3.7.0",
@@ -97,7 +98,11 @@
     "initVersion": "7.37.0"
   },
   "trustedDependencies": [
-    "@biomejs/biome"
+    "@biomejs/biome",
+    "canvas",
+    "esbuild",
+    "puppeteer",
+    "sharp"
   ],
   "module": "index.ts"
 }
