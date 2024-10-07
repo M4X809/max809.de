@@ -57,7 +57,7 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-
+ARG NEXT_PUBLIC_POSTHOG_KEY
 
 # Build the Next.js application using npm
 RUN npm run build
