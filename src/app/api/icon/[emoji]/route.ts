@@ -18,19 +18,37 @@ const convertPng = async (
 	userAgent?: string | null,
 ): Promise<Uint8Array> => {
 	const browser = await puppeteer.launch({
+		browser: "chrome",
 		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+		// acceptInsecureCerts: true,
+		// devtools: true,
 	});
 	const page = await browser.newPage();
+	await page.setBypassCSP(true);
+
+	// await page.addStyleTag({
+	// 	content: `
+	// 	@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+	// 	.noto-color-emoji-regular {
+	// 		font-family: "Noto Color Emoji", sans-serif;
+	// 		font-weight: 400;
+	// 		font-style: normal;
+	// 	};
+	// 	`,
+	// });
 
 	// Render the emoji on the page
 	await page.setContent(`
     <html>
-		<head>
-			<style>
-				@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
-			</style>
-		</head>
-		<body style="background: transparent !important; display: flex; justify-content: center; align-items: center; font-family: "Noto Color Emoji", sans-serif; font-weight: 400; font-style: normal; ">
+		<style>
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+			.noto-color-emoji-regular {
+				font-family: "Noto Color Emoji", sans-serif;
+				font-weight: 400;
+				font-style: normal;
+			};
+		</style>
+		<body style="background: transparent !important; display: flex; justify-content: center; align-items: center;" class="noto-color-emoji-regular">
 			${svg}
 		</body>
     </html>
@@ -107,8 +125,8 @@ export async function GET(
 		}
 
 		const svg = `
-		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet">
-			<text fill="#ffffff" font-size="75" font-family="Verdana" x="0" y="70">${emoji}</text>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet" class="noto-color-emoji-regular">
+			<text class="noto-color-emoji-regular" fill="#ffffff" font-size="75" font-family="Verdana" x="0" y="70">${emoji}</text>
 		</svg>
 		`;
 
