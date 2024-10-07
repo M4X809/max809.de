@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "docker:build": "docker buildx build -t max809.de/latest --build-arg NPM_FONT_AWESOME=$NPM_FONT_AWESOME ."
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.6.0",
@@ -37,7 +38,6 @@
     "@trpc/react-query": "^11.0.0-rc.553",
     "@trpc/server": "^11.0.0-rc.553",
     "@uploadthing/react": "^7.0.2",
-    "canvas": "^2.11.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "countries-and-timezones": "^3.7.0",
@@ -100,7 +100,6 @@
   },
   "trustedDependencies": [
     "@biomejs/biome",
-    "canvas",
     "esbuild",
     "puppeteer",
     "sharp"

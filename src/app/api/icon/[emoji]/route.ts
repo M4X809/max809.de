@@ -7,10 +7,6 @@ import { getServerAuthSession } from "~/server/auth";
 import { getDomain } from "~/lib/utils";
 import { env } from "~/env";
 import chalk from "chalk";
-import sharp from "sharp";
-
-import os from "node:os";
-import { createCanvas, registerFont } from "canvas";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
@@ -21,7 +17,9 @@ const convertPng = async (
 	svg: string,
 	userAgent?: string | null,
 ): Promise<Uint8Array> => {
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({
+		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+	});
 	const page = await browser.newPage();
 
 	// Render the emoji on the page
