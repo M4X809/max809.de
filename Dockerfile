@@ -106,6 +106,24 @@ COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+ARG DATABASE_URL
+
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+
+ARG DISCORD_CLIENT_ID
+ARG DISCORD_CLIENT_SECRET
+
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+
+ARG UPLOADTHING_TOKEN
+ARG PAT_1
+
+
 # Expose the port Next.js runs on
 EXPOSE 3000
 ENV PORT 3000
