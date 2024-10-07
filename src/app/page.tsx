@@ -148,16 +148,12 @@ export default async function Home() {
         type: "normal",
         title: "Emoji Favicon API",
         description: "This is a simple API to generate emoji favicons.",
-        badges: ["For Fun"],
+        badges: ["For Fun", "API", "Public"],
         imageAspectRatio: 1 / 1,
         link: "/emoji-favicon",
         prefetch: true,
         imgType: "mantine",
         imageLink: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${topEmoji?.emoji ?? "👑"}`,
-        classNames: {
-          // imgAspectRatioClassName: " h-[100px]",
-          // imgClassName: " h-[100px]",
-        },
         imgSizes: {
           height: "140px",
           width: "140px",

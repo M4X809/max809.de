@@ -12,26 +12,17 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";
 import ExampleInput from "./_emoji-components/ExampleInput";
+import { userAgent } from "next/server";
+import { headers } from "next/headers";
 
-// import { Noto_Color_Emoji } from "next/font/google"
-
-
-// const notoColorEmoji = Noto_Color_Emoji({
-//     subsets: ['emoji'],
-//     fallback: ['sans-serif'],
-//     weight: '400',
-//     style: 'normal',
-//     display: 'swap',
-//     variable: '--font-noto-color-emoji',
-// })
 
 
 function getRandomObjectEmoji(): string {
     const objectEmojis = [
         '📱', '💻', '📷', '🔑', '🎧', '🔨', '📚', '🎒', '🖼️', '✏️', '🖊️', '🔒', '🔧', '🔩', '🖥️', '🖱️',
-        '📺', '📀', '💡', '🔋', '🔌', '🛏️', '🚪', '🚿', '🛁', '🪑', '🚽', '📦', '🗑️', '📅', '📂', '📇', '📎',
+        '📺', '📀', '💡', '🔋', '🔌', '🛏️', '🚪', '🚿', '🛁', '🪑', '🚽', '📦', '🗑️', '📅', '📂', '📇',
         '🗄️', '🗂️', '✂️', '📏', '📐', '🖇️', '🔗', '🔎', '🔬', '💼', '👜', '🛍️', '🎁', '🧳', '🏷️', '🛠️', '🧰',
-        '🧲', '⛏️', '⚙️', '🧵', '🧶', '🪛', '🪚', '🔫', '💣', '🧯'
+        '🧲', '⛏️', '⚙️', '🧵', '🧶', '🔫', '💣', '🧯'
     ];
 
     const randomIndex = Math.floor(Math.random() * objectEmojis.length);
@@ -46,26 +37,22 @@ export const dynamic = "force-dynamic";
 
 
 export async function generateMetadata(): Promise<Metadata> {
-
     const emoji = getRandomObjectEmoji();
-
-
-
-    // get a random emoji
-
-    // console.log("emoji", emoji);
-
+    const header = headers()
+    const uAgent = userAgent({ headers: header });
+    const isSafari = uAgent.ua.includes("Safari") && !uAgent.ua.includes("Chrome");
+    console.log("isSafari", isSafari);
     return {
         metadataBase: new URL('https://max809.de'),
         title: "Emoji Favicon",
         description: "A simple emoji favicon generator.",
-        icons: [{ rel: "icon", url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}` }],
+        icons: [{ rel: "icon", url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}${isSafari ?? "?png"}` }],
         openGraph: {
             title: "Emoji Favicon",
             description: "A simple emoji favicon generator.",
             images: [
                 {
-                    url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}`,
+                    url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}${isSafari ?? "?png"}`,
                     width: 1200,
                     height: 630,
                     alt: "emoji favicon",

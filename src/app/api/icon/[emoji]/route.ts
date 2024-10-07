@@ -7,11 +7,10 @@ import { getServerAuthSession } from "~/server/auth";
 import { getDomain } from "~/lib/utils";
 import { env } from "~/env";
 import chalk from "chalk";
+import puppeteer from "puppeteer";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
-
-import puppeteer from "puppeteer";
 
 const convertPng = async (
 	svg: string,
@@ -69,6 +68,8 @@ const convertPng = async (
 	return jpeg;
 };
 
+const blockedEmojis = ["🍆"];
+
 export async function GET(
 	req: NextRequest,
 	{ params }: { params: { emoji?: string } },
@@ -95,6 +96,9 @@ export async function GET(
 		if (error) {
 			return NextResponse.json({ error: error.issues[0]?.message });
 		}
+
+		if (blockedEmojis.includes(emoji))
+			return NextResponse.json({ error: "Blocked emoji" }, { status: 403 });
 
 		const emojiHash = emoji.codePointAt(0)?.toString(16);
 		if (!emojiHash) return new NextResponse("Invalid emoji", { status: 400 });
