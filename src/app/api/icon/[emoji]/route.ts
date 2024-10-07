@@ -25,9 +25,14 @@ const convertPng = async (
 	// Render the emoji on the page
 	await page.setContent(`
     <html>
-      <body style="background: transparent !important; display: flex; justify-content: center; align-items: center; ">
-        ${svg}
-      </body>
+		<head>
+			<style>
+				@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
+			</style>
+		</head>
+		<body style="background: transparent !important; display: flex; justify-content: center; align-items: center; font-family: "Noto Color Emoji", sans-serif; font-weight: 400; font-style: normal; ">
+			${svg}
+		</body>
     </html>
   `);
 
