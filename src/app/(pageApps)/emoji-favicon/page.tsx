@@ -13,6 +13,18 @@ import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";
 import ExampleInput from "./_emoji-components/ExampleInput";
 
+// import { Noto_Color_Emoji } from "next/font/google"
+
+
+// const notoColorEmoji = Noto_Color_Emoji({
+//     subsets: ['emoji'],
+//     fallback: ['sans-serif'],
+//     weight: '400',
+//     style: 'normal',
+//     display: 'swap',
+//     variable: '--font-noto-color-emoji',
+// })
+
 
 function getRandomObjectEmoji(): string {
     const objectEmojis = [
@@ -63,7 +75,8 @@ export async function generateMetadata(): Promise<Metadata> {
             siteName: "emoji favicon",
             url: "https://max809.de/emoji-favicon",
             locale: "en_US",
-        }
+        },
+
     }
 }
 

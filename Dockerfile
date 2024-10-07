@@ -15,6 +15,7 @@ RUN echo $NPM_FONT_AWESOME
 
 # Install dependencies with bun
 RUN bun install --no-save
+RUN bunx puppeteer browsers install chrome
 
 # Stage 2: Build with node/npm
 FROM node:21 AS builder
@@ -105,6 +106,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/src/env.js ./src/env.js
 COPY --from=builder /app/next.config.js ./next.config.js
 
+COPY --from=deps /app/.cache/puppeteer /root/.cache/puppeteer
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
