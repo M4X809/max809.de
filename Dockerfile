@@ -127,7 +127,7 @@ COPY --from=builder /app/.next/static ./.next/static
 
 # Expose the port Next.js runs on
 EXPOSE 3000
-ENV PORT 3000
+ENV PORT=3000
 
 # Run the Next.js application using npm
 # CMD ["npm", "run", "next", "start"]
