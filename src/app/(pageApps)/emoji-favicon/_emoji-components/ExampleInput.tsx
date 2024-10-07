@@ -8,7 +8,7 @@ import { useMounted } from "@mantine/hooks"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCopy } from "@fortawesome/pro-duotone-svg-icons"
 import { twMerge } from "tailwind-merge"
-import { CodeHighlight, InlineCodeHighlight } from '@mantine/code-highlight';
+import { InlineCodeHighlight } from '@mantine/code-highlight';
 
 const ExampleInput = ({ url }: { startEmoji?: string, url: string }) => {
     const [value, setValue] = useState("👑")

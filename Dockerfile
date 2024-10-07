@@ -106,7 +106,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/src/env.js ./src/env.js
 COPY --from=builder /app/next.config.js ./next.config.js
 
-COPY --from=deps /app/.cache/puppeteer /root/.cache/puppeteer
+COPY --from=deps /root/.cache/puppeteer /root/.cache/puppeteer
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
