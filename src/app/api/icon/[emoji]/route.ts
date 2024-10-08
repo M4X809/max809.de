@@ -19,13 +19,14 @@ const convertPng = async (
 	const browser = await puppeteer.launch({
 		browser: "chrome",
 		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+		defaultViewport: { height: 500, width: 500 },
 		// acceptInsecureCerts: true,
 		// devtools: true,
 	});
 	const page = await browser.newPage();
 	await page.setBypassCSP(true);
 
-	// await page.addStyleTag({
+	// const styleElement = await page.addStyleTag({
 	// 	content: `
 	// 	@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
 	// 	.noto-color-emoji-regular {
@@ -37,7 +38,8 @@ const convertPng = async (
 	// });
 
 	// Render the emoji on the page
-	await page.setContent(`
+	await page.setContent(
+		`
     <html>
 		<style>
 		@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
@@ -51,9 +53,10 @@ const convertPng = async (
 			${svg}
 		</body>
     </html>
-  `);
+	`,
+		{ waitUntil: "domcontentloaded" },
+	);
 
-	await page.setViewport({ width: 500, height: 450 });
 	if (userAgent) await page.setUserAgent(userAgent);
 
 	const jpeg = await page.screenshot({
