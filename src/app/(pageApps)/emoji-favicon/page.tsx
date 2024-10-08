@@ -131,14 +131,14 @@ export default async function EmojiFavicon() {
                             return (
                                 <Pill key={emoji.id} size="xl" radius={"sm"}
 
-                                    className={twMerge("bg-[rgba(255,255,255,0.1)]  text-white min-w-[100px]", isMax809 && "w-[max-content] min-w-[120px]")}
+                                    className={twMerge("bg-[rgba(255,255,255,0.1)] px-1 w-fit  text-white min-w-fit", isMax809 && " ")}
                                     classNames={{
-                                        label: twMerge("w-full", !isMax809 && "flex")
+                                        label: twMerge("w-full", !isMax809 && "flex flex-grow")
                                     }}
 
                                 >
-                                    <Group gap={0} justify="space-between"  >
-                                        <Group justify="start" gap={0} >
+                                    <Group gap={0} justify="space-between" wrap="nowrap" w={"100%"} className="justify-between" >
+                                        <Group justify={"space-between"} flex={1} gap={2} wrap="nowrap" className="px-2" >
                                             <Title order={4}>{emoji.emoji}</Title>
                                             <Text  >
                                                 {emoji.callCount}x
@@ -147,7 +147,7 @@ export default async function EmojiFavicon() {
                                         {isMax809 && <Box>
 
                                             <form action={deleteEmojiWithId}>
-                                                <ActionIcon type="submit" unstyled className="px-1 hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
+                                                <ActionIcon type="submit" unstyled className="px-1 mx-auto hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
                                                     <FontAwesomeIcon icon={faX} style={
                                                         // @ts-ignore
                                                         { "--fa-secondary-opacity": "1" }} />
