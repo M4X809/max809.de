@@ -18,7 +18,7 @@ RUN bun install --no-save
 RUN bunx puppeteer browsers install chrome
 
 # Stage 2: Build with node/npm
-FROM node:21 AS builder
+FROM node:22-slim AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -69,7 +69,7 @@ RUN npm run build
 RUN ls -la .next
 
 # Stage 3: Run the application with node/npm
-FROM node:21 AS runner
+FROM node:22-slim AS runner
 
 # Set the working directory inside the container
 WORKDIR /app
