@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
 import { emojis } from "~/server/db/schema";
@@ -24,21 +24,9 @@ const convertPng = async (
 		// devtools: true,
 	});
 	const page = await browser.newPage();
-	await page.setBypassCSP(true);
-
-	// const styleElement = await page.addStyleTag({
-	// 	content: `
-	// 	@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap');
-	// 	.noto-color-emoji-regular {
-	// 		font-family: "Noto Color Emoji", sans-serif;
-	// 		font-weight: 400;
-	// 		font-style: normal;
-	// 	};
-	// 	`,
-	// });
-
+	const bypassProm = page.setBypassCSP(true);
 	// Render the emoji on the page
-	await page.setContent(
+	const setContentProm = page.setContent(
 		`
     <html>
 		<style>
@@ -54,10 +42,12 @@ const convertPng = async (
 		</body>
     </html>
 	`,
-		{ waitUntil: "domcontentloaded" },
 	);
 
-	if (userAgent) await page.setUserAgent(userAgent);
+	await Promise.all([setContentProm, bypassProm]);
+	await page.waitForNetworkIdle({ idleTime: 1 });
+
+	// if (userAgent) await page.setUserAgent(userAgent);
 
 	const jpeg = await page.screenshot({
 		omitBackground: true,
@@ -93,18 +83,18 @@ export async function GET(
 		);
 
 		const _emoji = params.emoji;
-		if (!_emoji) return new NextResponse("Missing emoji", { status: 400 });
+		if (!_emoji) return new Response("Missing emoji", { status: 400 });
 
 		const { data: emoji, error } = z.string().emoji().safeParse(_emoji);
 		if (error) {
-			return NextResponse.json({ error: error.issues[0]?.message });
+			return Response.json({ error: error.issues[0]?.message });
 		}
 
 		if (blockedEmojis.includes(emoji))
-			return NextResponse.json({ error: "Blocked emoji" }, { status: 403 });
+			return Response.json({ error: "Blocked emoji" }, { status: 403 });
 
 		const emojiHash = emoji.codePointAt(0)?.toString(16);
-		if (!emojiHash) return new NextResponse("Invalid emoji", { status: 400 });
+		if (!emojiHash) return new Response("Invalid emoji", { status: 400 });
 		console.log("emojiHash", emojiHash);
 
 		const emojiIcon = await db.query.emojis.findFirst({
@@ -147,7 +137,7 @@ export async function GET(
 		if (userAgent?.includes("Safari") && !userAgent.includes("Chrome")) {
 			const png = await convertPng(svg, userAgent);
 			// console.log("Safari");
-			return new NextResponse(png, {
+			return new Response(png, {
 				status: 200,
 				headers: { "Content-Type": "image/png", Cache: "max-age=60" },
 			});
@@ -155,7 +145,7 @@ export async function GET(
 
 		if (forcePng && forceSvg) {
 			// console.log("Both png and svg are forced.");
-			return NextResponse.json(
+			return Response.json(
 				{ error: "Both png and svg are forced." },
 				{ status: 400 },
 			);
@@ -165,14 +155,14 @@ export async function GET(
 			const png = await convertPng(svg, userAgent);
 
 			// console.log("Forcing PNG");
-			return new NextResponse(png, {
+			return new Response(png, {
 				status: 200,
 				headers: { "Content-Type": "image/png", Cache: "max-age=60" },
 			});
 		}
 		if (forceSvg || !forcePng) {
 			// console.log("Forcing SVG");
-			return new NextResponse(svg, {
+			return new Response(svg, {
 				status: 200,
 				headers: { "Content-Type": "image/svg+xml", Cache: "max-age=60" },
 			});
@@ -182,7 +172,7 @@ export async function GET(
 			const session = await getServerAuthSession();
 			if (session?.user?.name === "max809") {
 				console.error(error.message);
-				return NextResponse.json(
+				return Response.json(
 					{
 						errorMessage: error.message,
 						stack: error.stack?.split("at").join("\n"),
@@ -194,7 +184,7 @@ export async function GET(
 			}
 
 			console.error(error.message);
-			return NextResponse.json(
+			return Response.json(
 				{ error: "Internal Server Error" },
 				{ headers: { "Content-Type": "application/json" }, status: 500 },
 			);
@@ -216,7 +206,7 @@ export async function GET(
 // 		`;
 
 // 		if (!body) {
-// 			return NextResponse.json(
+// 			return Response.json(
 // 				{ message: "SVG data is required" },
 // 				{ status: 400 },
 // 			);
@@ -226,7 +216,7 @@ export async function GET(
 // 		const pngBuffer = await sharp(Buffer.from(body)).png().toBuffer();
 
 // 		// Return the PNG image as a response
-// 		return new NextResponse(pngBuffer, {
+// 		return new Response(pngBuffer, {
 // 			headers: {
 // 				"Content-Type": "image/png",
 // 				"Content-Disposition": 'inline; filename="output.png"',
@@ -234,7 +224,7 @@ export async function GET(
 // 		});
 // 	} catch (error) {
 // 		console.error("Error during SVG to PNG conversion:", error);
-// 		return NextResponse.json(
+// 		return Response.json(
 // 			{ message: "Error converting SVG to PNG" },
 // 			{ status: 500 },
 // 		);
@@ -266,7 +256,7 @@ export async function GET(
 // 	await browser.close();
 
 // 	// Send the PNG as a response
-// 	return new NextResponse(pngBuffer, {
+// 	return new Response(pngBuffer, {
 // 		headers: {
 // 			"Content-Type": "image/png",
 // 			"Content-Disposition": `inline; filename="output.png"`,
