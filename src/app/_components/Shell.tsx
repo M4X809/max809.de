@@ -81,7 +81,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
 
         <>
             <PhotoProvider>
-                <Box className='relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 bg-gradient-to-tr from-[#06080f] to-[#122b69] ' style={{
+                <Box className='w-[-webkit-fill-available] relative min-h-[calc(100vh-40px)] mb-[calc(2rem*var(--mantine-scale))] z-1 bg-gradient-to-tr from-[#06080f] to-[#122b69] ' style={{
                     zIndex: "1",
                 }} >
                     <div className="flex min-h-screen min-w-full flex-col  justify-center bg-gradient-to-tr from-[#06080f] to-[#122b69]  text-white z-1 " >
@@ -94,7 +94,7 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                             padding="md"
                             {...props}
                         >
-                            <AppShell.Main className='h-full flex flex-col'  >
+                            <AppShell.Main className='h-full flex flex-col w-full'>
                                 {/* {!timerRunning &&  */}
                                 <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                     <Stack gap={0}>

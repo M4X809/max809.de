@@ -3,7 +3,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 import Shell from "./_components/Shell";
 
-import QrCodePreview from "~/app/qr-code-generator/_qr-components/QrCodePreview";
+import QrCodePreview from "~/app/(pageApps)/qr-code-generator/_qr-components/QrCodePreview";
 import type { Metadata } from 'next'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
@@ -14,6 +14,7 @@ import 'react-photo-view/dist/react-photo-view.css';
 import { env } from "~/env";
 import { Img } from "./note-mark/_notemark-components/Img";
 import Link from "next/link";
+import { db } from "~/server/db";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -41,70 +42,9 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+export const revalidate = 30
+export const dynamic = "force-dynamic"
 
-const appsOnPage: ShowcaseLayout = {
-  mainTitle: "Apps on this site",
-  elements: [
-    {
-      type: "normal",
-      title: "Qr Code Generator",
-      description: "This is a QR Code Generator. It allows you to create QR Codes with customizable options. You can save them to your account and share them with others.",
-      // imageLink: "/qr-code-generator.png",
-      imageElement: (
-        <Center className="h-full w-full">
-          <QrCodePreview
-            data={{
-              color: "rgba(255,255,255,1)",
-              backgroundColor: "rgba(0,0,0,0)",
-              finderRadius: 0,
-              dotRadius: 0,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              qrCode: "https://max809.de/qr-code-generator",
-              qrLvl: 0,
-              size: 2048,
-              id: "1",
-              name: "QR Code Generator",
-              createdById: "1",
-            }}
-            w={200} />
-
-        </Center>
-      ),
-      badges: ["Some features require login!"],
-      imageAspectRatio: 1 / 1,
-      link: "/qr-code-generator",
-      prefetch: true
-
-    },
-    {
-      type: "normal",
-      title: "Timezone Converter",
-      description: "This is a simple tool to convert time zones between different formats.",
-      badges: ["Under Development"],
-      imageAspectRatio: 1 / 1,
-      link: "/timezone-converter",
-      prefetch: false
-
-    },
-    {
-      type: "normal",
-      title: "Cube Timer",
-      description: "A SpeedCubing timer. Generate scrambles, Calculate Averages and more.",
-      imageElement: (
-        <Center className="h-full w-full ">
-          <AspectRatio ratio={1 / 1} maw={100} >
-            <FontAwesomeIcon icon={faCube} size="10x" height={200} width={100} />
-          </AspectRatio>
-        </Center>),
-      badges: ["Under Development", " Some feature requires login!"],
-      imageAspectRatio: 1 / 1,
-      link: "/cube-timer",
-      prefetch: true
-    },
-
-  ]
-}
 
 const otherApps: ShowcaseLayout = {
   mainTitle: "Other Apps",
@@ -159,11 +99,84 @@ const githubStats: ShowcaseLayout = {
   ]
 }
 
-
 export default async function Home() {
   const session = await getServerAuthSession();
 
+  const topEmoji = await db.query.emojis.findFirst({
+    orderBy: (emojis, { desc }) => desc(emojis.callCount),
+    columns: { emoji: true }
+  })
+  console.log("topEmoji", topEmoji);
 
+
+  const appsOnPage: ShowcaseLayout = {
+    mainTitle: "Apps on this site",
+    elements: [
+      {
+        type: "normal",
+        title: "Qr Code Generator",
+        description: "This is a QR Code Generator. It allows you to create QR Codes with customizable options. You can save them to your account and share them with others.",
+        // imageLink: "/qr-code-generator.png",
+        imageElement: (
+          <Center className="h-full w-full">
+            <QrCodePreview
+              data={{
+                color: "rgba(255,255,255,1)",
+                backgroundColor: "rgba(0,0,0,0)",
+                finderRadius: 0,
+                dotRadius: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                qrCode: "https://max809.de/qr-code-generator",
+                qrLvl: 0,
+                size: 2048,
+                id: "1",
+                name: "QR Code Generator",
+                createdById: "1",
+              }}
+              w={200} />
+
+          </Center>
+        ),
+        badges: ["Some features require login!"],
+        imageAspectRatio: 1 / 1,
+        link: "/qr-code-generator",
+        prefetch: true
+
+      },
+      {
+        type: "normal",
+        title: "Emoji Favicon API",
+        description: "This is a simple API to generate emoji favicons.",
+        badges: ["For Fun", "API", "Public"],
+        imageAspectRatio: 1 / 1,
+        link: "/emoji-favicon",
+        prefetch: true,
+        imgType: "mantine",
+        imageLink: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${topEmoji?.emoji ?? "👑"}`,
+        imgSizes: {
+          height: "140px",
+          width: "140px",
+        }
+      },
+      {
+        type: "normal",
+        title: "Cube Timer",
+        description: "A SpeedCubing timer. Generate scrambles, Calculate Averages and more.",
+        imageElement: (
+          <Center className="h-full w-full ">
+            <AspectRatio ratio={1 / 1} maw={100} >
+              <FontAwesomeIcon icon={faCube} size="10x" height={200} width={100} />
+            </AspectRatio>
+          </Center>),
+        badges: ["Under Development", " Some feature requires login!"],
+        imageAspectRatio: 1 / 1,
+        link: "/cube-timer",
+        prefetch: true
+      },
+
+    ]
+  }
 
 
   return (

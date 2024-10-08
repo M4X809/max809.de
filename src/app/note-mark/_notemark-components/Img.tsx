@@ -1,13 +1,13 @@
 "use client"
 import Image, { type ImageProps } from "next/image"
 
-import { Image as MantineImage } from "@mantine/core"
+import { Image as MantineImage, type ImageProps as MantineImageProps } from "@mantine/core"
 import { PhotoView } from "react-photo-view"
 import { twMerge } from "tailwind-merge"
 
 import React from "react"
 
-export const Img = ({ imgType = "next", ...props }: ImageProps & { ratio?: number, imgType?: "next" | "mantine" }) => {
+export const Img = ({ imgType = "next", ...props }: ImageProps & MantineImageProps & { ratio?: number, imgType?: "next" | "mantine" }) => {
 
     if (imgType === "next") {
         return (

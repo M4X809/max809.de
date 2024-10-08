@@ -27,7 +27,8 @@
 			"biome.json",
 			"build/**/*",
 			".next/**/*",
-			"drizzle/**/*"
+			"drizzle/**/*",
+			"*dockerignore*"
 		]
 	}
 }

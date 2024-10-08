@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { relations, type SQL, sql } from "drizzle-orm";
 // import { float } from "drizzle-orm/mysql-core";
 import {
 	boolean,
@@ -23,43 +23,35 @@ import type { AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `qr-code_${name}`);
 
-export const qrCodes = createTable(
-	"codes",
-	{
-		id: varchar("id", { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		name: varchar("name", { length: 255 }),
-		createdById: varchar("created_by", { length: 255 })
-			.notNull()
-			.references(() => users.id),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.default(sql`CURRENT_TIMESTAMP`)
-			.notNull(),
-		updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-			() => new Date(),
-		),
-		// data: varchar("data", { length: 500 }),
-		dataUrl: text("data_url"),
-		qrCode: varchar("qr_code", { length: 4096 }),
-		qrLvl: integer("qr_lvl").default(1),
-		size: integer("size").default(512),
-		color: varchar("color", { length: 255 }).default("#000000"),
-		backgroundColor: varchar("background_color", { length: 255 }).default(
-			"#ffffff",
-		),
-		finderRadius: doublePrecision("finder_radius").default(0),
-		dotRadius: doublePrecision("dot_radius").default(0),
-		shareable: boolean("shareable").default(false),
-		imageKey: varchar("image_key", { length: 255 }),
-	},
-	// (example) => ({
-	// createdByIdIdx: index("created_by_idx_codes").on(example.createdById),
-	// nameIndex: index("name_idx_codes").on(example.name),
-	// dataIndex: index("data_idx_codes").on(example.data),
-	// }),
-);
+export const qrCodes = createTable("codes", {
+	id: varchar("id", { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	name: varchar("name", { length: 255 }),
+	createdById: varchar("created_by", { length: 255 })
+		.notNull()
+		.references(() => users.id),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.default(sql`CURRENT_TIMESTAMP`)
+		.notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+		() => new Date(),
+	),
+	// data: varchar("data", { length: 500 }),
+	dataUrl: text("data_url"),
+	qrCode: varchar("qr_code", { length: 4096 }),
+	qrLvl: integer("qr_lvl").default(1),
+	size: integer("size").default(512),
+	color: varchar("color", { length: 255 }).default("#000000"),
+	backgroundColor: varchar("background_color", { length: 255 }).default(
+		"#ffffff",
+	),
+	finderRadius: doublePrecision("finder_radius").default(0),
+	dotRadius: doublePrecision("dot_radius").default(0),
+	shareable: boolean("shareable").default(false),
+	imageKey: varchar("image_key", { length: 255 }),
+});
 
 export const users = createTable("user", {
 	id: varchar("id", { length: 255 })
@@ -166,4 +158,16 @@ export const cubeTimes = createTable("cube-times", {
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
+});
+
+export const emojis = createTable("emoji-icon", {
+	id: varchar("id", { length: 255 }).notNull().primaryKey().unique(), // emoji hash
+	emoji: varchar("emoji", { length: 255 }).notNull(),
+	callCount: integer("call_count")
+		.notNull()
+		.default(0)
+		.$onUpdateFn((): SQL => sql`${sql.raw("call_count + 1")}`),
+	lastCalledAt: timestamp("last_called_at", { withTimezone: true })
+		.notNull()
+		.default(sql`CURRENT_TIMESTAMP`),
 });
