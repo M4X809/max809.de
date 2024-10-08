@@ -98,8 +98,9 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                 {/* {!timerRunning &&  */}
                                 <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                     <Stack gap={0}>
-                                        {!!redirect && <Link href={redirect.toString()} >
-                                            <Title>
+                                        {!!redirect && <Link
+                                            href={redirect.toString()} >
+                                            <Title id={title.toLowerCase().split(" ").join("-")}>
                                                 {title}
                                             </Title>
                                         </Link>}

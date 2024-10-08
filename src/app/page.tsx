@@ -78,24 +78,23 @@ const githubStats: ShowcaseLayout = {
       type: "image-only",
       title: "github-top-lang",
       link: "/note-mark ",
-      children: (link) => {
-        return (
-          <Center >
-            <Box
-              component={link ? Link : undefined} href={link || "#"} prefetch={!!link}
-            >
-              <Img
-                imgType="mantine"
-                src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`}
-                alt="gh-stats"
-                ratio={16 / 9}
-                width={500}
-              />
-            </Box>
-          </Center>
-        )
-      }
-    }
+      children: (
+        <Center >
+          <Box
+
+          >
+            <Img
+              imgType="mantine"
+              src={`${getDomain(env.NEXTAUTH_URL)}/api/gh-stats/top-lang?layout=compact&hide=css&custom_title=M4X809's Top Languages&hide_border=true`}
+              alt="gh-stats"
+              ratio={16 / 9}
+              width={500}
+            />
+          </Box>
+        </Center>
+      )
+    },
+
   ]
 }
 
