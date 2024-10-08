@@ -5,15 +5,24 @@ import "server-only"
 import type { Metadata } from "next";
 import { getServerAuthSession } from "~/server/auth";
 import Shell from "~/app/_components/Shell";
-import { Box, Center, Container, Group, Pill, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Center, Container, Group, Pill, Stack, Text, Title } from "@mantine/core";
 import { HydrateClient } from "~/trpc/server";
 import { getDomain } from "~/lib/utils";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";
 import ExampleInput from "./_emoji-components/ExampleInput";
-import { userAgent } from "next/server";
+import { NextResponse, userAgent } from "next/server";
 import { headers } from "next/headers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/pro-duotone-svg-icons";
+import { emojis } from "~/server/db/schema";
+import { eq } from "drizzle-orm";
+import { Router } from "next/router";
+import { twMerge } from "tailwind-merge";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { deleteEmoji } from "./actions";
 
 
 
@@ -41,18 +50,23 @@ export async function generateMetadata(): Promise<Metadata> {
     const header = headers()
     const uAgent = userAgent({ headers: header });
     const isSafari = uAgent.ua.includes("Safari") && !uAgent.ua.includes("Chrome");
-    console.log("isSafari", isSafari);
+    // console.log("isSafari", isSafari);
+
+    let faviconUrl = `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}`;
+    if (isSafari) faviconUrl = `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}?png`;
+
+
     return {
         metadataBase: new URL('https://max809.de'),
         title: "Emoji Favicon",
         description: "A simple emoji favicon generator.",
-        icons: [{ rel: "icon", url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}${isSafari ?? "?png"}` }],
+        icons: [{ rel: "icon", url: `${faviconUrl}` }],
         openGraph: {
             title: "Emoji Favicon",
             description: "A simple emoji favicon generator.",
             images: [
                 {
-                    url: `${getDomain(env.NEXTAUTH_URL)}/api/icon/${emoji}${isSafari ?? "?png"}`,
+                    url: `${faviconUrl}`,
                     width: 1200,
                     height: 630,
                     alt: "emoji favicon",
@@ -75,11 +89,12 @@ export default async function EmojiFavicon() {
         where: (emojis, { gt }) => gt(emojis.callCount, 0),
         orderBy: (emojis, { desc }) => desc(emojis.callCount),
     });
-
-
     const totalCalls = topEmojis.reduce((acc, cur) => acc + cur.callCount, 0);
-    console.log("totalCalls", totalCalls);
-    // console.log("topEmojis", topEmojis);
+    const isMax809 = session?.user?.name === "max809";
+
+
+
+
 
     return (
         <HydrateClient>
@@ -110,19 +125,36 @@ export default async function EmojiFavicon() {
                     </Center>
                     <Container className="gap-2 flex md:max-w-1/2 flex-wrap items-center " >
                         {topEmojis.map((emoji) => {
+
+                            const deleteEmojiWithId = deleteEmoji.bind(null, emoji.id)
+
                             return (
                                 <Pill key={emoji.id} size="xl" radius={"sm"}
-                                    className="bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white min-w-[100px]"
+
+                                    className={twMerge("bg-[rgba(255,255,255,0.1)]  text-white min-w-[100px]", isMax809 && "w-[max-content] min-w-[120px]")}
                                     classNames={{
-                                        label: "flex"
+                                        label: twMerge("w-full", !isMax809 && "flex")
                                     }}
+
                                 >
-                                    <Box p={0} className="flex-nowrap w-fit flex self-center items-center gap-2" >
-                                        <Title order={4}>{emoji.emoji}</Title>
-                                        <Text  >
-                                            {emoji.callCount}x
-                                        </Text>
-                                    </Box>
+                                    <Group gap={0} justify="space-between"  >
+                                        <Group justify="start" gap={0} >
+                                            <Title order={4}>{emoji.emoji}</Title>
+                                            <Text  >
+                                                {emoji.callCount}x
+                                            </Text>
+                                        </Group>
+                                        {isMax809 && <Box>
+
+                                            <form action={deleteEmojiWithId}>
+                                                <ActionIcon type="submit" unstyled className="px-1 hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
+                                                    <FontAwesomeIcon icon={faX} style={
+                                                        // @ts-ignore
+                                                        { "--fa-secondary-opacity": "1" }} />
+                                                </ActionIcon>
+                                            </form>
+                                        </Box>}
+                                    </Group>
                                 </Pill>
                             )
                         })}

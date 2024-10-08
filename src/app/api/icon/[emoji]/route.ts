@@ -74,13 +74,13 @@ export async function GET(
 		const _referer = req.headers.get("referer");
 		if (_referer?.includes(getDomain(env.NEXTAUTH_URL))) serverRequest = true;
 
-		console.info(
-			serverRequest
-				? chalk.green("serverRequest", serverRequest)
-				: chalk.red("serverRequest", serverRequest),
+		// console.info(
+		// 	serverRequest
+		// 		? chalk.green("serverRequest", serverRequest)
+		// 		: chalk.red("serverRequest", serverRequest),
 
-			chalk.yellow("\nreferer", _referer),
-		);
+		// 	chalk.yellow("\nreferer", _referer),
+		// );
 
 		const _emoji = params.emoji;
 		if (!_emoji) return new Response("Missing emoji", { status: 400 });
@@ -95,7 +95,7 @@ export async function GET(
 
 		const emojiHash = emoji.codePointAt(0)?.toString(16);
 		if (!emojiHash) return new Response("Invalid emoji", { status: 400 });
-		console.log("emojiHash", emojiHash);
+		// console.log("emojiHash", emojiHash);
 
 		const emojiIcon = await db.query.emojis.findFirst({
 			where: eq(emojis.id, emojiHash),
