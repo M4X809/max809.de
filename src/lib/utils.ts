@@ -48,7 +48,13 @@ export async function hasPermission(
 	return false;
 }
 
-export async function onPageAllowed(permission: string | string[]) {
+export async function onPageAllowed(permission?: string | string[]) {
+	if (!permission) {
+		const admin = await isAdmin();
+		if (admin) return;
+		return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+	}
+
 	const hasPerm = await hasPermission(permission);
 	if (hasPerm) return;
 	console.log("permission", permission);

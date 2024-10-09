@@ -26,10 +26,8 @@ const DashNav = ({ children, session, }: { children: React.ReactNode, session: S
 
             }
         ]
-
         return data
     }
-
 
     return (
         <Box>

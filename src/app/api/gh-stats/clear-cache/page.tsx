@@ -5,28 +5,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Shell from "~/app/_components/Shell";
 import { env } from "~/env";
-import { getDomain } from "~/lib/utils";
+import { getDomain, onPageAllowed } from "~/lib/utils";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 
 export default async function ClearGhCache() {
+	await onPageAllowed()
 	const session = await getServerAuthSession();
-	if (!session?.user.id)
-		return redirect(
-			new URL(
-				"/",
-				getDomain(env.NEXTAUTH_URL),
-			).toString(),
-		);
-	if (session?.user.name !== "max809")
-		return redirect(
-			new URL(
-				"/",
-				getDomain(env.NEXTAUTH_URL),
-			).toString(),
-		);
 
-	// console.log("session", session);
 	revalidateTag("gh-stats");
 	console.log("revalidateTag");
 

@@ -7,7 +7,7 @@ import { getServerAuthSession } from "~/server/auth";
 import Shell from "~/app/_components/Shell";
 import { ActionIcon, Box, Center, Container, Group, Pill, Stack, Text, Title } from "@mantine/core";
 import { HydrateClient } from "~/trpc/server";
-import { getDomain } from "~/lib/utils";
+import { getDomain, isAdmin } from "~/lib/utils";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";
@@ -90,11 +90,7 @@ export default async function EmojiFavicon() {
         orderBy: (emojis, { desc }) => desc(emojis.callCount),
     });
     const totalCalls = topEmojis.reduce((acc, cur) => acc + cur.callCount, 0);
-    const isMax809 = session?.user?.name === "max809";
-
-
-
-
+    const admin = await isAdmin();
 
     return (
         <HydrateClient>
@@ -131,9 +127,9 @@ export default async function EmojiFavicon() {
                             return (
                                 <Pill key={emoji.id} size="xl" radius={"sm"}
 
-                                    className={twMerge("bg-[rgba(255,255,255,0.1)] px-1 w-fit  text-white min-w-fit", isMax809 && " ")}
+                                    className={twMerge("bg-[rgba(255,255,255,0.1)] px-1 w-fit  text-white min-w-fit", admin && " ")}
                                     classNames={{
-                                        label: twMerge("w-full", !isMax809 && "flex flex-grow")
+                                        label: twMerge("w-full", !admin && "flex flex-grow")
                                     }}
 
                                 >
@@ -144,7 +140,7 @@ export default async function EmojiFavicon() {
                                                 {emoji.callCount}x
                                             </Text>
                                         </Group>
-                                        {isMax809 && <Box>
+                                        {admin && <Box>
 
                                             <form action={deleteEmojiWithId}>
                                                 <ActionIcon type="submit" unstyled className="px-1 mx-auto hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
