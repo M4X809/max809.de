@@ -20,6 +20,8 @@ import {
 	verificationTokens,
 } from "~/server/db/schema";
 
+import chalk from "chalk";
+
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
 });
@@ -34,6 +36,9 @@ declare module "next-auth" {
 	interface Session extends DefaultSession {
 		user: {
 			id: string;
+			admin?: boolean;
+			staff?: boolean;
+			permissions?: string[];
 			// ...other properties
 			// role: UserRole;
 		} & DefaultSession["user"];
@@ -41,6 +46,8 @@ declare module "next-auth" {
 	// @ts-ignore
 	interface User extends AdapterUser {
 		limit: number;
+		staff?: boolean;
+		permissions?: string[];
 	}
 
 	// interface User {
@@ -136,4 +143,7 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = () => getServerSession(authOptions);
+export const getServerAuthSession = () => {
+	// console.log(chalk.red("getServerAuthSession", new Error().stack));
+	return getServerSession(authOptions);
+};

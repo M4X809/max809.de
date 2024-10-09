@@ -35,7 +35,7 @@ export const AuthButton = ({ session, onlySignIn = false, ...props }: { session:
                     await signIn()
                 }
             }}
-            className={twMerge("rounded-full bg-white/10 px-8 py-2 font-semibold no-underline  hover:bg-white/20 text-nowrap h-full transition-colors duration-700 ", confirmSignOut ? " bg-blue-500 hover:bg-blue-500 " : "")}
+            className={twMerge("rounded-full bg-white/10 px-8 py-2 font-semibold no-underline  hover:bg-white/20 text-nowrap h-full transition-colors duration-500 ", confirmSignOut ? " bg-blue-500 hover:bg-blue-500 " : "")}
         >
             {session ? confirmSignOut ? "Confirm Sign Out" : `Sign out: ${session.user?.name}` : "Sign in"}
         </Button>

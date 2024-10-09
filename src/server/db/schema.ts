@@ -66,6 +66,10 @@ export const users = createTable("user", {
 	}).default(sql`CURRENT_TIMESTAMP`),
 	image: varchar("image", { length: 255 }),
 	limit: integer("limit").default(15).notNull(),
+	// Staff fields
+	admin: boolean("admin").default(false),
+	staff: boolean("staff").default(false),
+	permissions: text("permissions").array().notNull().default([]),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
