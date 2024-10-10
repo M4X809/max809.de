@@ -99,23 +99,15 @@ const onClickHandler = (item: NavItem, closeMenu: { close: () => void, isMobile?
 
 
 const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputParams, session }) => {
-    // console.log(inputParams);
     const data = inputData
-
-    // const data = inputData();
     const pathname = usePathname();
     const hasPermission = usePermission(session);
-
-
-    // console.log("pathname", pathname)
-
 
     const [openStates, setOpenStates] = useSessionStorage<{
         [key: string]: boolean;
     }>({ key: nameSpace, defaultValue: {} });
 
     const openState = (item: NavMenuItemProps, ignoreStorage?: boolean) => {
-        // console.log(item);
         if (item.type === "item") return false;
         if (item.type === "divider") return false;
 
@@ -126,14 +118,8 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
     };
 
     const content = data.map((item, index) => {
-        // console.log(versionToNumber(item?.version));
-
-        // if (item.version && versionToNumber(item?.version) > versionToNumber(API_VERSION)) return null;
         if (item.type === "divider") {
             if (item?.permissions?.length && !hasPermission(item.permissions)) return null;
-
-
-
             return (
                 <Divider
                     color={"#f0f0f0"}
@@ -158,23 +144,15 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
         if (item.type === "item") {
             if (item?.permission && !hasPermission(item.permission)) return null;
 
-
-
             const currentPath = pathname
             const itemPath = item.to
-
-
-
             const isActive = itemPath === currentPath;
-
-
             return (
                 <React.Fragment key={item.label}>
                     <Tooltip label={item.tooltip} hidden={!item.tooltip}>
                         <NavLink
                             className={twMerge("backdrop-blur-lg bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}// key={Math.floor(index * 1.5)}
                             label={item.label}
-                            // c={"white"}
                             component={Link}
                             href={item?.to ?? ""}
                             onClick={() => onClickHandler(item, close)}
@@ -186,18 +164,11 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
             );
         }
         if (item.type === "multi") {
-            const children = item.children.map((child, index) => {
+            const children = item.children.map((child) => {
                 if (child.permission && !hasPermission(child.permission)) return null;
-
-
-
-
                 const currentPath = pathname
                 const childPath = child.to
                 const isActive = childPath === currentPath;
-
-
-
 
                 return (
                     <React.Fragment key={child.label}>
@@ -235,12 +206,8 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
                     <Tooltip label={item.tooltip} hidden={!item.tooltip}>
                         <NavLink
                             className={twMerge("backdrop-blur-lg bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}
-                            // key={Math.floor(index * 1.5)}
                             label={item.label}
-                            // py={4}
-                            // my={5}
                             leftSection={!!item.icon && <FontAwesomeIcon icon={item.icon} />}
-                            // bg={openState(item) && isAnyChildActive ? "background.4" : undefined}
                             active={isActive}
                             defaultOpened={openState(item) && !item.disabled}
                             opened={openState(item) && !item.disabled}
@@ -270,11 +237,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
 const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], session: Session | null | undefined; }) => {
     const { hovered: triggerHovered, ref: triggerRef } = useHover();
     const { hovered: contentHovered, ref: contentRef } = useHover();
-
-
     const open = triggerHovered || contentHovered
-
-
 
     return (
         <>
@@ -301,12 +264,7 @@ const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], sessi
                         inputData={elements}
                     />
                 </ScrollArea>
-
-
             </Box>
-
-            {/* <ErrorBox value={hovered.toString()} visible={true} /> */}
-
         </>
     )
 }

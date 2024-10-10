@@ -1,10 +1,10 @@
 
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { faTrashCan, faBoltLightning, faMobileNotch, faUserShield, faUser, faChartLine, faEye, faGear, faPen, faRightLeft, faTrash, faUserChart, faUserPlus, faWarning } from '@fortawesome/pro-duotone-svg-icons';
+import { faUserShield, faUser } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Title, Grid, Tooltip, Button, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group } from '@mantine/core';
+import { Title, Grid, Tooltip, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group } from '@mantine/core';
 import React from 'react'
-import { hasPermission, isAdmin, onPageAllowed } from '~/lib/utils';
+import { hasPermission, onPageAllowed } from '~/lib/utils';
 import { api } from '~/trpc/server'
 
 import CustomAccordion from '../../../_dash-components/CustomAccordion';
@@ -18,12 +18,9 @@ import UserSaveButton from '../../../_dash-components/UserSaveButton';
 
 import { perms } from "~/permissions";
 import AccGroup from '../../../_dash-components/AccGroup';
-import { revalidatePath } from 'next/cache';
 import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-
-    // const user = await api.management.getUser(params.id)
 
     return {
         metadataBase: new URL('https://max809.de'),

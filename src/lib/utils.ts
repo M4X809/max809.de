@@ -57,7 +57,7 @@ export async function onPageAllowed(
 	 * If permission is not provided, it will check if the user is an admin.
 	 */
 	permission?: string | string[] | "staff" | "admin",
-) {
+): Promise<void> {
 	if (!permission || permission === "admin") {
 		const admin = await isAdmin();
 		if (admin) return;
