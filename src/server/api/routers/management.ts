@@ -284,7 +284,7 @@ export const managementRouter = createTRPCRouter({
 			if (user.name === "max809" && user.id !== ctx.session.user.id) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You cannot Change the Admin Role of max809",
+					message: "You cannot Change the Staff Role of max809",
 				});
 			}
 
