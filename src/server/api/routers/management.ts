@@ -281,6 +281,12 @@ export const managementRouter = createTRPCRouter({
 					message: "You are not authorized to perform this action.",
 				});
 			}
+			if (user.name === "max809" && user.id !== ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You cannot Change the Admin Role of max809",
+				});
+			}
 
 			await ctx.db
 				.update(users)
