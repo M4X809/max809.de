@@ -1,24 +1,28 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import React from 'react'
 import Shell from '~/app/_components/Shell';
-import { isStaff } from '~/lib/utils';
+import { isStaff, onPageAllowed } from '~/lib/utils';
 import { getServerAuthSession } from '~/server/auth';
 import { HydrateClient } from '~/trpc/server';
 import DashNav from './_dash-components/DashNav';
 import { Box } from '@mantine/core';
+import { CodeHighlight } from '@mantine/code-highlight';
 
 
 export default async function StaffDashboard() {
+    await onPageAllowed("staff");
     const session = await getServerAuthSession();
-    // console.log("session", session)
-    const staff = await isStaff()
-    if (!staff) return notFound()
+
 
 
 
     return (
         <div>
-            test
+            <CodeHighlight
+                className='rounded-lg'
+                language="json"
+                code={JSON.stringify(session, null, 2)}
+            />
         </div>
 
         // <HydrateClient>

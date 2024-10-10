@@ -172,7 +172,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
                 <React.Fragment key={item.label}>
                     <Tooltip label={item.tooltip} hidden={!item.tooltip}>
                         <NavLink
-                            className={twMerge("bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}// key={Math.floor(index * 1.5)}
+                            className={twMerge("backdrop-blur-lg bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}// key={Math.floor(index * 1.5)}
                             label={item.label}
                             // c={"white"}
                             component={Link}
@@ -203,7 +203,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
                     <React.Fragment key={child.label}>
                         <Tooltip label={child.tooltip} hidden={!item.tooltip}>
                             <NavLink
-                                className={twMerge("bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}
+                                className={twMerge("backdrop-blur-lg bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}
                                 label={child.label}
                                 leftSection={!!child.icon && <FontAwesomeIcon icon={child.icon} />}
                                 component={Link}
@@ -234,7 +234,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
                 <React.Fragment key={item.label}>
                     <Tooltip label={item.tooltip} hidden={!item.tooltip}>
                         <NavLink
-                            className={twMerge("bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}
+                            className={twMerge("backdrop-blur-lg bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] rounded-md text-white", isActive && "bg-[rgba(255,255,255, 0.2)] hover:bg-[rgba(255,255,255, 00.25)] text-white ")}
                             // key={Math.floor(index * 1.5)}
                             label={item.label}
                             // py={4}
@@ -277,16 +277,16 @@ const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], sessi
 
 
     return (
-        <>
+        < >
             <Box
                 ref={triggerRef}
-                className="absolute left-0 bottom-0 h-[calc(100%-100px)]  border-red-400 w-[100px]  ">
+                className="fixed left-0 bottom-0 h-[calc(100%-100px)]  border-red-400 w-[100px]  ">
             </Box>
             <Box
                 ref={contentRef}
-                className={twMerge("absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-[100%]  border-red-800 w-full  xs:w-[300px] h-2/3 transition-transform ease-in-out duration-300  ", open && "-translate-x-0")}>
+                className={twMerge("fixed left-0 top-1/2 transform -translate-y-1/2 -translate-x-[100%]  w-full  xs:w-[300px] h-2/3 transition-transform ease-in-out duration-300 z-[1000] ", open && "-translate-x-0")}>
                 <Box
-                    className="absolute  right-0 top-1/2 transform -translate-y-1/2 h-5 w-5 translate-x-full bg-[rgba(255,255,255,0.1)] rounded-md p-3"
+                    className="fixed  right-0 top-1/2 transform -translate-y-1/2 h-5 w-5 translate-x-full bg-[rgba(0,0,0,0.04)] backdrop-blur-lg rounded-md p-3"
                 >
                     <Center className={twMerge('h-full transition-transform ease-in-out duration-300', open && "rotate-180")}>
                         <FontAwesomeIcon icon={faChevronsRight} />
@@ -294,7 +294,7 @@ const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], sessi
 
                 </Box>
 
-                <ScrollArea className='bg-[rgba(255,255,255,0.1)] h-full rounded-md'>
+                <ScrollArea className='bg-[rgba(0,0,0,0.04)] h-full rounded-md backdrop-blur-lg  border border-slate-700/20 '>
                     <NavMenu
                         session={session}
                         nameSpace='staff-dashboard'

@@ -48,10 +48,24 @@ export async function hasPermission(
 	return false;
 }
 
-export async function onPageAllowed(permission?: string | string[]) {
-	if (!permission) {
+export async function onPageAllowed(
+	/**
+	 * Permission can be a string or an array of strings
+	 *
+	 * Special permissions are "staff" and "admin", they do not check the user permissions, but the access level.
+	 *
+	 * If permission is not provided, it will check if the user is an admin.
+	 */
+	permission?: string | string[] | "staff" | "admin",
+) {
+	if (!permission || permission === "admin") {
 		const admin = await isAdmin();
 		if (admin) return;
+		return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+	}
+	if (permission === "staff") {
+		const staff = await isStaff();
+		if (staff) return;
 		return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
 	}
 

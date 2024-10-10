@@ -22,7 +22,7 @@ const DashNav = ({ children, session, }: { children: React.ReactNode, session: S
                 label: "User Management",
                 to: "/dashboard/user-management",
                 icon: faUser,
-                permission: "userManagement",
+                permission: "viewUser",
 
             }
         ]

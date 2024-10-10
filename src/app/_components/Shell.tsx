@@ -95,10 +95,10 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
                                 breakpoint: 'sm',
                                 collapsed: { mobile: true, desktop: true },
                             }}
-                            padding="md"
+                            padding={{ base: 0, md: "md" }}
                             {...props}
                         >
-                            <AppShell.Main className='h-full flex flex-col w-full'>
+                            <AppShell.Main className='h-full flex flex-col w-full ' px={{ base: 0, md: undefined }}>
                                 {/* {!timerRunning &&  */}
                                 <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                     <Stack gap={0}>

@@ -5,6 +5,9 @@ import {
 	type User,
 	type DefaultSession,
 	type NextAuthOptions,
+	type DefaultUser,
+	type Profile,
+	type Account,
 } from "next-auth";
 import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
@@ -21,6 +24,7 @@ import {
 } from "~/server/db/schema";
 
 import chalk from "chalk";
+import { eq } from "drizzle-orm";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -45,9 +49,10 @@ declare module "next-auth" {
 	}
 	// @ts-ignore
 	interface User extends AdapterUser {
-		limit: number;
+		limit?: number;
 		staff?: boolean;
 		permissions?: string[];
+		email?: string;
 	}
 
 	// interface User {
@@ -69,6 +74,8 @@ export const authOptions: NextAuthOptions = {
 				user: {
 					...session.user,
 					...user,
+					email: undefined,
+					emailVerified: undefined,
 				},
 			};
 		},
@@ -77,7 +84,14 @@ export const authOptions: NextAuthOptions = {
 			if (new URL(url).origin === baseUrl) return url;
 			return baseUrl;
 		},
-		async signIn({ user }) {
+		async signIn({
+			user,
+			profile,
+		}: {
+			user: User | AdapterUser;
+			account: Account | null;
+			profile?: Profile & { image_url?: string; banner_url?: string };
+		}) {
 			client.identify({
 				distinctId: user.id,
 				properties: {
@@ -98,6 +112,24 @@ export const authOptions: NextAuthOptions = {
 				event: "sign-in",
 				distinctId: user.id,
 			});
+
+			try {
+				const dbUser = await db.query.users.findFirst({
+					where: (users, { eq }) => eq(users.id, user.id),
+				});
+
+				if (dbUser) {
+					console.log(chalk.blue("dbUser", JSON.stringify(dbUser)));
+					db
+						.update(users)
+						.set({
+							banner: profile?.banner_url,
+						})
+						.where(eq(users.id, user.id))
+						.execute();
+				}
+			} catch (error) {}
+
 			return true;
 		},
 	},
@@ -120,6 +152,32 @@ export const authOptions: NextAuthOptions = {
 			clientId: env.DISCORD_CLIENT_ID,
 			clientSecret: env.DISCORD_CLIENT_SECRET,
 			allowDangerousEmailAccountLinking: false,
+			async profile(profile) {
+				if (profile.avatar === null) {
+					const defaultAvatarNumber = Number.parseInt(profile.discriminator) % 5;
+					profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
+				} else {
+					const format = profile.avatar.startsWith("a_") ? "gif" : "png";
+					profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
+				}
+
+				if (profile.banner === null) {
+					profile.banner_url = null;
+				} else {
+					const format = profile.banner.startsWith("a_") ? "gif" : "png";
+					profile.banner_url = `https://cdn.discordapp.com/banners/${profile.id}/${profile.banner}.${format}?size=4096&width=0&height=230`;
+				}
+
+				// console.log("profile", profile);
+
+				return {
+					id: profile.id,
+					name: profile.username,
+					email: profile.email,
+					image: profile.image_url,
+					banner: profile.banner_url,
+				};
+			},
 		}),
 		GithubProvider({
 			clientId: env.GITHUB_CLIENT_ID,

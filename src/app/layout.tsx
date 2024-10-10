@@ -1,7 +1,9 @@
 import "~/styles/globals.css";
 import '@mantine/core/styles.css';
 import '@mantine/dropzone/styles.css';
-import { MantineProvider } from '@mantine/core';
+import '@mantine/code-highlight/styles.css';
+
+import { Button, MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 
 import { GeistSans } from "geist/font/sans";
@@ -11,6 +13,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
+import { theme } from "./theme";
+import { ManagementStoreProvider } from "~/providers/management-store-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
@@ -37,10 +41,7 @@ export default function RootLayout({
             <MantineProvider
               defaultColorScheme="dark"
               forceColorScheme="dark"
-              theme={{
-                focusRing: "never",
-
-              }}
+              theme={theme}
             >
               <AppStoreProvider>
                 <QrCodeStoreProvider>

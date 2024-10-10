@@ -13,14 +13,17 @@ export default async function DashboardLayout({
         <HydrateClient>
             <Shell
                 title='Staff Dashboard'
-                redirect={"/"}
+                redirect={"/dashboard"}
                 withLoginButton
                 withHomeButton
                 withDashboardButton={false}
                 session={session}
             >
                 <DashNav session={session}>
-                    {children}
+                    <Box className="h-full w-full mt-10" >
+
+                        {children}
+                    </Box>
                 </DashNav>
             </Shell>
         </HydrateClient>
