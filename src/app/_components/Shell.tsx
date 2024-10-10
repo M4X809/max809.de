@@ -7,7 +7,7 @@ import { useAppStore } from '~/providers/app-store-provider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { faHeart } from '@fortawesome/pro-duotone-svg-icons'
+import { faHeart, faHome, faScrewdriverWrench } from '@fortawesome/pro-duotone-svg-icons'
 
 import pkg from "~/../package.json";
 import { usePostHog } from 'posthog-js/react';
@@ -18,12 +18,16 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 import { useOs } from '@mantine/hooks';
 import { PhotoProvider } from 'react-photo-view';
+import { useIsStaff } from '../../lib/cUtils';
+import ErrorBox from './ErrorBox';
 
 
-function Shell({ children, session, title = "SetMe", redirect, withLoginButton, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean }) {
+function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     const os = useOs()
+
+    const isStaff = useIsStaff(session)
 
     posthog.capture('page_view', { path: path })
 
@@ -91,10 +95,10 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                 breakpoint: 'sm',
                                 collapsed: { mobile: true, desktop: true },
                             }}
-                            padding="md"
+                            padding={{ base: 0, md: "md" }}
                             {...props}
                         >
-                            <AppShell.Main className='h-full flex flex-col w-full'>
+                            <AppShell.Main className='h-full flex flex-col w-full ' px={{ base: 0, md: undefined }}>
                                 {/* {!timerRunning &&  */}
                                 <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                     <Stack gap={0}>
@@ -107,7 +111,31 @@ function Shell({ children, session, title = "SetMe", redirect, withLoginButton, 
                                             {title}
                                         </Title>}
                                     </Stack>
-                                    {withLoginButton && <AuthButton session={session} />}
+                                    <Group justify='end' gap={1}>
+                                        {withLoginButton && <AuthButton session={session} />}
+                                        {withDashboardButton && isStaff() && !withHomeButton && <Link
+                                            href={"/dashboard"}
+                                            prefetch={true}
+                                            className={twMerge("rounded-full bg-white/10 px-4 py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
+                                            <FontAwesomeIcon icon={faScrewdriverWrench} fixedWidth />
+                                        </Link>
+                                        }
+
+                                        {withHomeButton && isStaff() && !withDashboardButton && <Link
+                                            href={"/"}
+                                            prefetch={true}
+                                            className={twMerge("rounded-full bg-white/10 px-4 py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
+                                            <FontAwesomeIcon icon={faHome} fixedWidth />
+                                        </Link>}
+
+                                        {withDashboardButton && withHomeButton && isStaff()
+                                            && <ErrorBox
+                                                value={"You can not have both the Dashboard and Home Button enabled."}
+                                                visible={true}
+                                            />
+                                        }
+
+                                    </Group>
                                 </Group>
                                 {/* // } */}
                                 {children}

@@ -1,15 +1,15 @@
 "use server"
 import { faGit } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Affix, VisuallyHidden } from '@mantine/core'
+import { ActionIcon, VisuallyHidden } from '@mantine/core'
 import Link from 'next/link'
 import React from 'react'
-import { getServerAuthSession } from '~/server/auth'
+import { onPageAllowed } from '~/lib/utils'
 
 const ClearGhCache = async () => {
-    const session = await getServerAuthSession()
-    if (!session?.user.id) return null
-    if (session?.user.name !== "max809") return null
+    await onPageAllowed()
+
+
 
     return (
         // <Affix position={{ bottom: 10, right: 10 }} >

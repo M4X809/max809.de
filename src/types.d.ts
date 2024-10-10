@@ -28,3 +28,19 @@
 // imageSize = 75,
 // copyToClipboard = true,
 // downloadable = false,
+
+export interface Permissions {
+	name: string;
+	icon: IconProp;
+	perms: Perm[];
+}
+
+export interface Perm {
+	name: string;
+	icon: IconProp;
+	perm?: string;
+	disabled?: boolean;
+	children?: Perm[];
+	danger?: boolean;
+	blocked?: boolean;
+}

@@ -1,4 +1,7 @@
 "use client";
+
+import type { Session } from "next-auth";
+
 export function formatTime(msInput: number | string): string {
 	// Convert input to a number if it's a string
 	let ms = typeof msInput === "string" ? Number.parseInt(msInput, 10) : msInput;
@@ -23,4 +26,34 @@ export function formatTime(msInput: number | string): string {
 		: m > 0
 			? `${mStr}:${sStr}.${msStr}`
 			: `${sStr}.${msStr}`;
+}
+
+export function useIsStaff(session: Session | null | undefined) {
+	return function isStaff() {
+		if (!session) return false;
+		if (session.user.admin || session.user.staff) return true;
+		return false;
+	};
+}
+
+export function useIsAdmin(session: Session | null | undefined) {
+	return function isAdmin() {
+		if (!session) return false;
+		if (session.user.admin) return true;
+		return false;
+	};
+}
+
+export function usePermission(session: Session | null | undefined) {
+	return function hasPermission(permission: string | string[]) {
+		if (!session) return false;
+		if (session.user.admin) return true;
+		if (Array.isArray(permission)) {
+			if (permission.some((perm) => session.user.permissions?.includes(perm)))
+				return true;
+			return false;
+		}
+		if (session.user.permissions?.includes(permission)) return true;
+		return false;
+	};
 }

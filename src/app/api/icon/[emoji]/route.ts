@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { emojis } from "~/server/db/schema";
 import { getServerAuthSession } from "~/server/auth";
-import { getDomain } from "~/lib/utils";
+import { getDomain, isAdmin } from "~/lib/utils";
 import { env } from "~/env";
 import chalk from "chalk";
 import puppeteer from "puppeteer";
@@ -169,8 +169,7 @@ export async function GET(
 		}
 	} catch (error) {
 		if (error instanceof Error) {
-			const session = await getServerAuthSession();
-			if (session?.user?.name === "max809") {
+			if (await isAdmin()) {
 				console.error(error.message);
 				return Response.json(
 					{
