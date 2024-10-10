@@ -14,7 +14,6 @@ import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 import { theme } from "./theme";
-import { ManagementStoreProvider } from "~/providers/management-store-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),

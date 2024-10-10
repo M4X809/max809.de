@@ -17,6 +17,7 @@ import { ManagementStoreProvider } from '~/providers/management-store-provider';
 import UserSaveButton from '../../../_dash-components/UserSaveButton';
 
 import { perms } from "~/permissions";
+import AccGroup from '../../../_dash-components/AccGroup';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 
@@ -73,6 +74,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                                     hidden={!await hasPermission("resetPermissions")}
                                     leftSection={<FontAwesomeIcon fontSize={20} icon={faBoltLightning} />}
                                     disabled={true}
+                                    // bg={"rgba(255,255,255,0.15)"}
+                                    // className="data-[disabled=true]:bg-[rgba(0,0,0,0.15)] data-[disabled=true]:backdrop-blur-lg data-[disabled=true]:cursor-not-allowed"
+
+
                                     fullWidth
                                     variant="gradient"
                                     gradient={{
@@ -118,7 +123,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                     {/* User Card */}
                     <GridCol span={6}>
                         <Card px={25} className={twMerge(className)}>
-                            {await hasPermission(["editUser", "editUserPermissions"]) && <Box className='absolute left-4 top-4'>
+                            {await hasPermission(["editUser", "editUserPermissions", "setStaff", "setAdmin"]) && <Box className='absolute left-4 top-4'>
                                 <UserSaveButton />
                             </Box>}
 
@@ -155,45 +160,18 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
                         </Card>
                     </GridCol>
-                    {/* <GridCol span={6} hiddenFrom="md" hidden={!accountActions()}>
-                        <Card className={twMerge(className)}>{accountActions()}</Card>
-                    </GridCol> */}
+                    {await hasPermission(["setAdmin", "setStaff"]) &&
 
-                    {/* User Info Card */}
-                    {/* <GridCol span={6}>
-						<Card>
-							<Title pb={10} order={4}>
-								User Info
-							</Title>
-							<Group justify="space-between" wrap="nowrap">
-								<Group wrap="nowrap">
-									<FontAwesomeIcon fixedWidth icon={faRightToBracket} />
-									<Text truncate>Logins:</Text>
-								</Group>
-								{employee.logins}
-							</Group>
-							<Group justify="space-between" wrap="nowrap">
-								<Group wrap="nowrap">
-									<FontAwesomeIcon fixedWidth icon={faCalendarNote} />
-									<Text truncate>Last Login:</Text>
-								</Group>
-								<Text truncate>
-									{formatTime(employee.lastLogin, {
-										withoutYear: true,
-										withoutSeconds: true,
-									})}
-								</Text>
-							</Group>
+                        <GridCol span={6}>
+                            <Card px={25} className={twMerge(className)}>
+                                <AccGroup user={user} session={session} />
 
-							<Group justify="space-between" wrap="nowrap">
-								<Group wrap="nowrap">
-									<FontAwesomeIcon fixedWidth icon={faDiscord} />
-									<Text truncate>ID:</Text>
-								</Group>
-								{employee.discordId}
-							</Group>
-						</Card>
-					</GridCol> */}
+
+                            </Card>
+
+
+
+                        </GridCol>}
                 </Grid>
             </React.Fragment>
         );

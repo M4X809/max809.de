@@ -9,6 +9,16 @@ export type ManagementStore = {
 	setUserPermissions: (
 		userPermissions: string[] | ((prev: string[]) => string[]),
 	) => void;
+
+	staffChanged: boolean;
+	setStaffChanged: (staffChanged: boolean) => void;
+	staff: boolean | null;
+	setStaff: (staff: boolean | null) => void;
+
+	adminChanged: boolean;
+	setAdminChanged: (adminChanged: boolean) => void;
+	admin: boolean | null;
+	setAdmin: (admin: boolean | null) => void;
 };
 
 // export const managementStore = create<ManagementStore>()((set, get) => ({
@@ -41,5 +51,15 @@ export const createManagementStore = () => {
 						: userPermissions,
 			}));
 		},
+
+		staffChanged: false,
+		setStaffChanged: (staffChanged: boolean) => set(() => ({ staffChanged })),
+		staff: false,
+		setStaff: (staff: boolean | null) => set(() => ({ staff })),
+
+		adminChanged: false,
+		setAdminChanged: (adminChanged: boolean) => set(() => ({ adminChanged })),
+		admin: false,
+		setAdmin: (admin: boolean | null) => set(() => ({ admin })),
 	}));
 };

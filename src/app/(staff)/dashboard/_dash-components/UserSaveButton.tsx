@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ActionIcon } from '@mantine/core'
 import { useParams, useRouter, } from 'next/navigation'
 import React, { useEffect } from 'react'
+import { set } from 'zod'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { api } from '~/trpc/react'
 
@@ -15,27 +16,67 @@ const UserSaveButton = () => {
     const userPermissions = useManagementStore((state) => state.userPermissions)
     const permissionsChanged = useManagementStore((state) => state.permissionsChanged)
     const setPermissionsChanged = useManagementStore((state) => state.setPermissionsChanged)
-    const unsavedChanges = permissionsChanged
+
+    const staffChanged = useManagementStore((state) => state.staffChanged)
+    const setStaffChanged = useManagementStore((state) => state.setStaffChanged)
+
+    const adminChanged = useManagementStore((state) => state.adminChanged)
+    const setAdminChanged = useManagementStore((state) => state.setAdminChanged)
+
+    const staff = useManagementStore((state) => state.staff)
+
+    const admin = useManagementStore((state) => state.admin)
+
+    const unsavedChanges = permissionsChanged || staffChanged || adminChanged
 
 
     const { mutate: updatePermissions, isPending: isUpdating, isSuccess: isUpdated, error: updateError } = api.management.updatePermissions.useMutation()
-    const loading = (isUpdating) && !(updateError)
+    const { mutate: updateStaff, isPending: isUpdatingStaff, isSuccess: isUpdatedStaff, error: updateErrorStaff } = api.management.updateStaffRole.useMutation()
+    const { mutate: updateAdmin, isPending: isUpdatingAdmin, isSuccess: isUpdatedAdmin, error: updateErrorAdmin } = api.management.updateAdminRole.useMutation()
+
+
+    const loading = (isUpdating || isUpdatingStaff || isUpdatingAdmin) && !(updateError || updateErrorStaff || updateErrorAdmin)
 
 
     const handleSave = () => {
-        if (isUpdating) return
+        if (loading) return
         if (permissionsChanged) {
             updatePermissions({ permissions: userPermissions, id: id })
         }
+
+        if (staffChanged) {
+            updateStaff({ staff: !!staff, id: id })
+        }
+
+        if (adminChanged) {
+            updateAdmin({ admin: !!admin, id: id })
+        }
+
     }
 
 
     useEffect(() => {
         if (isUpdated) {
             setPermissionsChanged(false)
+        }
+
+        if (isUpdatedStaff) {
+            setStaffChanged(false)
+        }
+
+        if (isUpdatedAdmin) {
+            setAdminChanged(false)
+        }
+
+    }, [isUpdated, setPermissionsChanged, isUpdatedStaff, setStaffChanged, isUpdatedAdmin, setAdminChanged])
+
+
+
+    useEffect(() => {
+        if (!loading) {
             router.refresh()
         }
-    }, [isUpdated, setPermissionsChanged, router])
+    }, [loading, router])
 
 
 

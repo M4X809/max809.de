@@ -244,4 +244,114 @@ export const managementRouter = createTRPCRouter({
 				status: "success",
 			};
 		}),
+
+	updateStaffRole: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				staff: z.boolean(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("setStaff"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+			if (user.id === ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			await ctx.db
+				.update(users)
+				.set({
+					staff: input.staff,
+				})
+				.where(eq(users.id, input.id))
+				.execute();
+
+			return {
+				status: "success",
+			};
+		}),
+
+	updateAdminRole: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				admin: z.boolean(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("setAdmin"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+			});
+
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			if (user.id === ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			if (user.name === "max809" && user.id !== ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You cannot Change the Admin Role of max809",
+				});
+			}
+
+			await ctx.db
+				.update(users)
+				.set({
+					admin: input.admin,
+					staff: input.admin ? true : user.staff,
+				})
+				.where(eq(users.id, input.id))
+				.execute();
+
+			return {
+				status: "success",
+			};
+		}),
 });

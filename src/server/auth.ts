@@ -55,6 +55,8 @@ declare module "next-auth" {
 		email?: string;
 	}
 
+	type SessionType = Session | null | undefined;
+
 	// interface User {
 	//   // ...other properties
 	//   // role: UserRole;

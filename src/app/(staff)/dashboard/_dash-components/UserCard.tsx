@@ -6,7 +6,9 @@ import { BackgroundImage, Card, CardSection, Group, Avatar, Tooltip, Button, Tex
 import { useMounted } from '@mantine/hooks';
 import Link from 'next/link';
 import React from 'react'
+import { twMerge } from 'tailwind-merge';
 import ClientIcon from '~/app/_components/ClientIcon';
+import { hasPermission } from '~/lib/utils';
 
 
 export type User = {
@@ -21,9 +23,9 @@ export type User = {
 }
 
 
-const UserCard = ({ user, admin, staff, id }: { user: User, admin: boolean, staff: boolean, id: string }) => {
+const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean, staff: boolean, id: string }) => {
 
-
+    const viewUserPage = await hasPermission("viewUserPage")
 
     return (
         <BackgroundImage
@@ -43,16 +45,7 @@ const UserCard = ({ user, admin, staff, id }: { user: User, admin: boolean, staf
             >
                 <CardSection py={"xs"}>
                     <Group style={{ flexWrap: "nowrap" }} p={10} justify="">
-                        {/* <Indicator
-                                pos={"absolute"}
-                                h={60}
-                                w={60}
-                                position="bottom-end"
-                                size={13}
-                                color={user.presence ? "green" : "red"}
-                                label={user.presence ? "Online" : "Offline"}
-                                c={"#C9C9C9"}
-                            > */}
+
                         <Avatar pos={"absolute"} h={60} w={60} src={user.image}>
                             {user.name?.slice(0, 3)}
                         </Avatar>
@@ -90,10 +83,10 @@ const UserCard = ({ user, admin, staff, id }: { user: User, admin: boolean, staf
                 <CardSection p={"10"}>
                     {/* <Tooltip label={"View User"} p={"xs"} style={{ border: "1px solid #424242" }} > */}
                     <Button
-                        className='bg-[rgba(0,0,0,0.15)] hover:bg-[rgba(0,0,0,0.2)] backdrop-blur-md rounded-md text-white border-none hover:border-slate-400 hover:border'
+                        className={twMerge('bg-[rgba(255,255,255,0.11)] hover:bg-[rgba(255,255,255,0.14)] backdrop-blur-sm rounded-md text-white border-none', !viewUserPage && "text-gray-600 bg-[rgba(0,0,0,0.15)]")}
 
                         // TODO: Add permission check
-                        disabled={false}
+                        disabled={!viewUserPage}
                         // onClick={manageUserClicked}
                         component={Link}
                         // to={`/management/user/${user.id}`}
@@ -101,7 +94,7 @@ const UserCard = ({ user, admin, staff, id }: { user: User, admin: boolean, staf
                         variant="default"
                         fullWidth
                     >
-                        View User
+                        {viewUserPage ? "View User" : "Missing Permission"}
                     </Button>
                     {/* </Tooltip> */}
                 </CardSection>
