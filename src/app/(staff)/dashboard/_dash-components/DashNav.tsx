@@ -23,7 +23,6 @@ const DashNav = ({ children, session, }: { children: React.ReactNode, session: S
                 to: "/dashboard/user-management",
                 icon: faUser,
                 permission: "viewUser",
-
             }
         ]
         return data
@@ -35,9 +34,7 @@ const DashNav = ({ children, session, }: { children: React.ReactNode, session: S
             <Container size={"lg"} >
                 {children}
             </Container>
-
         </Box>
-
     )
 }
 

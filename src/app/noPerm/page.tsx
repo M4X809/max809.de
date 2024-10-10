@@ -4,7 +4,7 @@ import React from 'react'
 import { HydrateClient } from '~/trpc/server'
 import Shell from '../_components/Shell'
 import { getServerAuthSession } from '~/server/auth'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { Center, Stack, Title } from '@mantine/core'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
@@ -15,15 +15,9 @@ export default async function MissingPermission({
   searchParams: Record<string, string | string[] | undefined>
 }) {
   const session = await getServerAuthSession()
-  if (!session?.user.id) return notFound()
+  if (!session?.user.id) return redirect("/")
   const { t: time } = searchParamsCache.parse(searchParams)
-  if (!time) return notFound()
-
-  console.log("time", time)
-
-
-
-
+  if (!time) return redirect("/")
   return (
     <HydrateClient>
       <Shell

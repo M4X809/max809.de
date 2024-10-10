@@ -11,10 +11,6 @@ import { HydrateClient } from '~/trpc/server';
 export default async function notFound() {
     const session = await getServerAuthSession();
     const staff = await isStaff()
-
-
-
-
     let content: React.ReactNode = <></>
 
     if (session && !staff) {

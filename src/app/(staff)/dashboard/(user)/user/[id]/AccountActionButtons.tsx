@@ -99,15 +99,15 @@ interface DeleteUserButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> 
 
 export const DeleteUserButton = forwardRef<HTMLButtonElement, DeleteUserButtonProps>(({ id, session }, _ref) => {
     const hasPermission = usePermission(session)
-    const { mutate, isPending, isSuccess } = api.management.logoutAllDevices.useMutation()
+    // const { mutate, isPending, isSuccess } = api.management.logoutAllDevices.useMutation()
 
-    const router = useRouter()
+    // const router = useRouter()
 
-    useEffect(() => {
-        if (isSuccess) {
-            router.refresh()
-        }
-    }, [isSuccess, router])
+    // useEffect(() => {
+    //     if (isSuccess) {
+    //         router.refresh()
+    //     }
+    // }, [isSuccess, router])
 
     if (!hasPermission("deleteUser")) return null
 
@@ -116,7 +116,7 @@ export const DeleteUserButton = forwardRef<HTMLButtonElement, DeleteUserButtonPr
             className={twMerge("transition-colors ease-in-out duration-1000 bg-gradient-to-tr from-[red] to-[darkred]", "bg-[rgba(255,255,255,0.15)]  from-[#ff000000] to-[#8b000000] ")}
             hidden={!hasPermission("deleteUser")}
             leftSection={<FontAwesomeIcon fontSize={20} icon={faBoltLightning} />}
-            loading={isPending}
+            // loading={isPending}
             disabled={true}
             // onClick={() => {
             //     mutate({ id: id })

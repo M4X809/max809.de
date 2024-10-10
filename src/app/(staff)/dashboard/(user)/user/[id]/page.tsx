@@ -75,67 +75,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
                             </Group>
                         }
-
-
                     </Box>
-
-
-
-                    {/* <Grid columns={8} pt={10} >
-                        <GridCol span={{ base: 4, md: 2 }}>
-                            <Tooltip label="Delete User" >
-                                <Button
-                                    hidden={!await hasPermission("deleteUser")}
-                                    leftSection={<FontAwesomeIcon fontSize={20} icon={faTrashCan} />}
-                                    disabled={!!user.admin && !await isAdmin()}
-
-
-                                    // disabled={!employee.presence}
-                                    fullWidth
-                                    variant="gradient"
-                                    gradient={{
-                                        from: "red",
-                                        to: "orange",
-                                    }}
-                                >
-                                    Delete
-                                </Button>
-                            </Tooltip>
-                        </GridCol>
-                        <GridCol span={{ base: 4, md: 2 }}>
-                            <Tooltip label="Reset Permissions" >
-                                {await hasPermission("resetPermissions") &&
-                                    <ResetPermissionsButton id={params.id} session={session} />}
-                             
-                            </Tooltip>
-                        </GridCol>
-                        <GridCol span={{ base: 4, md: 2 }}>
-                            <Tooltip
-                                label="Logout All Devices"
-                            >
-                                <form action={async () => {
-                                    "use server"
-                                    await api.management.logoutAllDevices({ id: params.id })
-                                    revalidatePath(`/dashboard/user/${params.id}`)
-                                }}>
-                                    <Button
-                                        type='submit'
-                                        hidden={!await hasPermission("logoutAllDevices")}
-                                        leftSection={<FontAwesomeIcon fontSize={20} icon={faMobileNotch} />}
-                                        // disabled={true}
-                                        fullWidth
-                                        variant="gradient"
-                                        gradient={{
-                                            from: "yellow",
-                                            to: "brown",
-                                        }}
-                                    >
-                                        Logout All Devices
-                                    </Button>
-                                </form>
-                            </Tooltip>
-                        </GridCol>
-                    </Grid> */}
                 </React.Fragment>
             );
     };
@@ -159,7 +99,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                                     size={"xl"}
                                     src={user.image}
                                     style={{
-                                        // backgroundColor: "transparent",
                                         border: "3px solid #424242",
                                     }}
                                 >
@@ -190,12 +129,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         <GridCol span={6}>
                             <Card px={25} className={twMerge(className)}>
                                 <AccGroup user={user} session={session} />
-
-
                             </Card>
-
-
-
                         </GridCol>}
                 </Grid>
             </React.Fragment>
@@ -203,12 +137,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     };
 
     const MainBody = async () => {
-
-        // const [value, setValue] = useState<string[]>([]);
-
-
         return (
-
             <Grid>
                 {await hasPermission(["deleteUser", "resetPermissions", "logoutAllDevices"]) && <GridCol>
                     <Card className={twMerge(className)}>{accountActions()}</Card>
@@ -246,28 +175,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         {MainBody()}
                     </GridCol>
                 </Grid>
-                {/* <Affix
-                // hidden={!unsavedChanges}
-                position={{ bottom: 20, right: 20 }}>
-                <ActionIcon
-                    // loading={isUpdating}
-                    // onClick={() => {
-                    // 	if (unsavedChanges && employee && id) {
-                    // 		updateUser({
-                        // 			id: id, body: {
-                            // 				permissions: userPermissions,
-                            // 			}
-                            // 		});
-                            // 	}
-                            // }}
-                            size={"xl"}
-                            variant="gradient"
-                            // gradient={unsavedError ? { from: "error.4", to: "error.6" } : undefined}
-                            
-                            >
-                            <FontAwesomeIcon size={"xl"} icon={faFloppyDisk} />
-                            </ActionIcon>
-                            </Affix> */}
             </Container>
         </ManagementStoreProvider>
     )

@@ -87,6 +87,7 @@ const UserSaveButton = () => {
 
     return (
         <ActionIcon
+            className="data-[disabled=true]:bg-[rgba(0,0,0,0.15)] data-[disabled=true]:backdrop-blur-lg data-[disabled=true]:cursor-not-allowed"
             loading={loading}
             onClick={handleSave}
             disabled={!unsavedChanges}

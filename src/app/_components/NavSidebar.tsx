@@ -146,7 +146,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
                             <Grid.Col fz={16} span={"auto"}>
                                 <FontAwesomeIcon icon={item.icon} />
                             </Grid.Col>
-                            <Grid.Col fz={16} span={"auto"}>
+                            <Grid.Col fz={16} span={"auto"} c={"white"}>
                                 {item.label}
                             </Grid.Col>
                         </Grid>
@@ -277,7 +277,7 @@ const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], sessi
 
 
     return (
-        < >
+        <>
             <Box
                 ref={triggerRef}
                 className="fixed left-0 bottom-0 h-[calc(100%-100px)]  border-red-400 w-[100px]  ">

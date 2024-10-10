@@ -8,7 +8,6 @@ interface AccordionProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-
 const CustomAccordion: React.FC<AccordionProps> = ({ children, userName, }) => {
     useDocumentTitle(`${userName} - User Management`);
 
@@ -19,14 +18,12 @@ const CustomAccordion: React.FC<AccordionProps> = ({ children, userName, }) => {
     return (
         <>
             <Accordion
-
                 variant="filled"
                 radius={"md"}
                 multiple
                 value={value}
                 onChange={setValue}
             >
-
                 {children}
             </Accordion>
         </>

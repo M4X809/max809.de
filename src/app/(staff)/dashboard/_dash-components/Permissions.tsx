@@ -1,35 +1,16 @@
 "use client"
-
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faCircle, faCopy } from "@fortawesome/pro-duotone-svg-icons";
-import { Accordion, ActionIcon, Card, Checkbox, Code, Flex, Grid, Group, List, Stack, Text, Title, UnstyledButton } from "@mantine/core";
-import { useClipboard, useDidUpdate } from "@mantine/hooks";
 import type { Session } from "next-auth";
-import React, { useEffect, useState } from "react";
+import type { Permissions as PermissionsType } from "~/types";
+import type { User } from "./UserCard";
+
+import { faCircle, faCopy } from "@fortawesome/pro-duotone-svg-icons";
+import { Accordion, Card, Checkbox, Code, Flex, Grid, Group, List, Stack, Text, Title, UnstyledButton } from "@mantine/core";
+import { useClipboard } from "@mantine/hooks";
+import React, { useEffect } from "react";
 import { useIsAdmin, usePermission } from "~/lib/cUtils";
 import ClientIcon from "~/app/_components/ClientIcon";
 
-import type { Permissions as PermissionsType } from "~/types";
-
-// export interface Permissions {
-//     name: string;
-//     icon: IconProp;
-//     perms: Perm[];
-// }
-
-
-// export interface Perm {
-//     name: string;
-//     icon: IconProp;
-//     perm?: string;
-//     disabled?: boolean;
-//     children?: Perm[];
-//     danger?: boolean;
-// }
-
-import type { User } from "./UserCard";
 import { twMerge } from "tailwind-merge";
-
 import { useManagementStore } from "~/providers/management-store-provider";
 
 
@@ -39,7 +20,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
     const { copy } = useClipboard({ timeout: 500 });
     const setUserPermissions = useManagementStore((state) => state.setUserPermissions);
     const userPermissions = useManagementStore((state) => state.userPermissions);
-    const permissionsChanged = useManagementStore((state) => state.permissionsChanged);
     const setPermissionsChanged = useManagementStore((state) => state.setPermissionsChanged);
 
 
@@ -49,11 +29,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
     }, [user.permissions, setUserPermissions])
 
     if (!hasPermission("editUserPermissions")) return null;
-
-
-
-
-
 
     const color = (perm: any) => {
         switch (true) {
@@ -68,7 +43,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
         }
     };
 
-
     const onCheck = (e: { target: { checked: boolean; value: string } }) => {
         setUserPermissions((prevSelectedRoles: string[]) => {
             let updatedPermissions: string[];
@@ -80,7 +54,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                 // Remove the role from the selectedRoles array
                 updatedPermissions = prevSelectedRoles.filter((perm) => perm !== e.target.value);
             }
-
             // Sort the updatedPermissions array
             return updatedPermissions.slice().sort();
         });
@@ -88,23 +61,12 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
 
     useEffect(() => {
         const permissionsChanged = !userPermissions.every((perm,) => user.permissions.includes(perm)) || !user.permissions.every((perm) => userPermissions.includes(perm))
-
         setPermissionsChanged(permissionsChanged)
-
-
-
-
     }, [userPermissions, user.permissions, setPermissionsChanged])
-
-
-
-
 
     const categories = permissions.map((perm) => {
         const perms = perm?.perms?.map((perm) => {
             const subPerms = perm?.children?.map((perm) => {
-                // console.log(randomId());
-
                 return (
                     <Grid
                         py={5}
@@ -113,7 +75,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                         columns={8}
                         c={color(perm)}
                         style={{
-                            // borderTop: "1px solid #2D3748",
                             alignContent: "flex-end",
                         }}
                     >
@@ -122,7 +83,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                                 <ClientIcon
                                     fixedWidth
                                     visibility={!perm?.icon ? "hidden" : "visible"}
-                                    // style={{ alignSelf: "end" }}
                                     icon={perm?.icon ?? faCircle}
                                     fontSize={15}
                                 />
@@ -138,7 +98,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                                     type="button"
                                     bg="background.9"
                                     styles={{ root: { borderRadius: "0.4rem" } }}
-                                    // disabled={perm?.disabled ?? false}
                                     onClick={() => {
                                         copy(perm.perm);
                                     }}
@@ -188,7 +147,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                                     <ClientIcon
                                         fixedWidth
                                         visibility={!perm?.icon ? "hidden" : "visible"}
-                                        // style={{ alignSelf: "end" }}
                                         icon={perm?.icon ?? faCircle}
                                         fontSize={subPerms ? 20 : 15}
                                     />
@@ -199,15 +157,11 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                                     <Text truncate fz={subPerms ? 20 : 18} fw={subPerms ? 800 : 500}>
                                         {perm.name}
                                     </Text>
-                                    {/* <Text truncate fz={18}>
-                                        {perm.name}
-                                    </Text> */}
                                     {admin() && !subPerms && <UnstyledButton
                                         className="hidden md:block"
                                         type="button"
                                         bg="background.9"
                                         styles={{ root: { borderRadius: "0.4rem" } }}
-                                        // disabled={perm?.disabled ?? false}
                                         onClick={() => {
                                             copy(perm.perm);
                                         }}
@@ -241,7 +195,6 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                             </Grid.Col>
                         </Grid>
                     </Stack>
-
                     {subPerms}
                 </React.Fragment>
             );
@@ -252,13 +205,8 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                 <Card
                     className="bg-[rgba(0,0,0,0.25)]  rounded-lg"
                     mih={"100%"}
-                    // key={randomId()}
                     shadow="none"
-                    // shadow="sm"
-                    // padding="lg"
                     radius="md"
-                // withBorder
-                // bg={"transparent"}
                 >
                     <List>
                         <Title
@@ -266,13 +214,11 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
                             pb={5}
                             style={{
                                 borderBottom: "3px solid #2D3748",
-                                // alignContent: "flex-end",
                             }}
                         >
                             {perm.icon && <ClientIcon style={{ padding: "0 10 0 0" }} icon={perm.icon} />}
                             {perm.name}
                         </Title>
-
                         {perms}
                     </List>
                 </Card>
@@ -280,40 +226,20 @@ const Permissions = ({ session, permissions, user }: { session: Session | null |
         );
     });
 
-
-
-
-
     return (
-
-        <Accordion.Item value="permissions"
+        <Accordion.Item
+            value="permissions"
             className="bg-[rgba(255,255,255,0.1)] backdrop-blur-lg rounded-lg"
         >
             <Accordion.Control >
-                {/* <Group
-                    onClick={(e) => {
-                        e.stopPropagation()
-                    }
-                    }
-
-                > */}
-                {/* <form>
-                        <ActionIcon type="submit" />
-                    </form> */}
-
                 <Text size="xl">Permissions </Text>
-                {/* </Group> */}
             </Accordion.Control>
             <Accordion.Panel>
                 <Grid columns={1}>
-
                     {categories}
                 </Grid>
-
             </Accordion.Panel>
         </Accordion.Item>
-
-
     )
 };
 

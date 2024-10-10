@@ -23,8 +23,7 @@ export type User = {
 }
 
 
-const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean, staff: boolean, id: string }) => {
-
+const UserCard = async ({ user }: { user: User, admin?: boolean, staff?: boolean, id?: string }) => {
     const viewUserPage = await hasPermission("viewUserPage")
 
     return (
@@ -34,14 +33,11 @@ const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean
             key={user.id}
         >
             <Card
-                // ref={ref}
-                // w={500}
                 shadow="sm"
                 padding="lg"
                 radius="md"
                 withBorder
                 bg={"rgba(0, 0, 0, 0.6)"}
-
             >
                 <CardSection py={"xs"}>
                     <Group style={{ flexWrap: "nowrap" }} p={10} justify="">
@@ -49,7 +45,6 @@ const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean
                         <Avatar pos={"absolute"} h={60} w={60} src={user.image}>
                             {user.name?.slice(0, 3)}
                         </Avatar>
-                        {/* </Indicator> */}
                         <Group>
                             <Tooltip
                                 openDelay={500}
@@ -81,7 +76,6 @@ const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean
                     </Group>
                 </CardSection>
                 <CardSection p={"10"}>
-                    {/* <Tooltip label={"View User"} p={"xs"} style={{ border: "1px solid #424242" }} > */}
                     <Button
                         className={twMerge('bg-[rgba(255,255,255,0.11)] hover:bg-[rgba(255,255,255,0.14)] backdrop-blur-sm rounded-md text-white border-none', !viewUserPage && "text-gray-600 bg-[rgba(0,0,0,0.15)]")}
                         disabled={!viewUserPage}
@@ -92,11 +86,9 @@ const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean
                     >
                         {viewUserPage ? "View User" : "Missing Permission"}
                     </Button>
-                    {/* </Tooltip> */}
                 </CardSection>
             </Card>
         </BackgroundImage>
-
     )
 }
 

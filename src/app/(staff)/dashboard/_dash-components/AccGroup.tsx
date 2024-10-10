@@ -39,9 +39,6 @@ const AccGroup = ({ user, session }: { user: User, session: SessionType }) => {
         } else {
             setStaffChanged(false)
         }
-
-
-
     }, [adminUser, staffUser, user, setAdminChanged, setStaffChanged])
 
 
@@ -61,7 +58,6 @@ const AccGroup = ({ user, session }: { user: User, session: SessionType }) => {
                         checked={!!staffUser}
                         disabled={!!adminUser}
                         onChange={(e) => {
-                            // setStaffChanged(true)
                             setStaff(e.target.checked)
                         }}
 
@@ -80,7 +76,6 @@ const AccGroup = ({ user, session }: { user: User, session: SessionType }) => {
                         color='#f9413b'
                         checked={!!adminUser}
                         onChange={(e) => {
-                            // setStaffChanged(true)
                             setAdmin(e.target.checked)
                         }}
 
