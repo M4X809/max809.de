@@ -7,6 +7,7 @@ import { Group, Stack, Switch, Text } from '@mantine/core';
 import ClientIcon from '~/app/_components/ClientIcon';
 import type { SessionType } from 'next-auth';
 import { usePermission } from '~/lib/cUtils';
+import { twMerge } from 'tailwind-merge';
 
 
 const AccGroup = ({ user, session }: { user: User, session: SessionType }) => {
@@ -55,6 +56,9 @@ const AccGroup = ({ user, session }: { user: User, session: SessionType }) => {
                         </Text>
                     </Group>
                     <Switch
+                        classNames={{
+                            track: twMerge(!!adminUser && "bg-[rgba(0,0,0,0.15)] backdrop-blur-lg cursor-not-allowed border-transparent")
+                        }}
                         checked={!!staffUser}
                         disabled={!!adminUser}
                         onChange={(e) => {
