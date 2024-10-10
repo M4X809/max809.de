@@ -84,12 +84,8 @@ const UserCard = async ({ user, admin, staff, id }: { user: User, admin: boolean
                     {/* <Tooltip label={"View User"} p={"xs"} style={{ border: "1px solid #424242" }} > */}
                     <Button
                         className={twMerge('bg-[rgba(255,255,255,0.11)] hover:bg-[rgba(255,255,255,0.14)] backdrop-blur-sm rounded-md text-white border-none', !viewUserPage && "text-gray-600 bg-[rgba(0,0,0,0.15)]")}
-
-                        // TODO: Add permission check
                         disabled={!viewUserPage}
-                        // onClick={manageUserClicked}
-                        component={Link}
-                        // to={`/management/user/${user.id}`}
+                        component={viewUserPage ? Link : undefined}
                         href={`/dashboard/user/${user.id}`}
                         variant="default"
                         fullWidth

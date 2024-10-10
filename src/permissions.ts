@@ -44,7 +44,7 @@ export const allPerms: PermissionsType[] = [
 						name: "View User Permissions",
 						perm: "viewUserPermissions",
 						icon: faEye,
-						danger: false,
+						disabled: true,
 					},
 					{
 						name: "Edit User",
@@ -82,7 +82,12 @@ export const allPerms: PermissionsType[] = [
 						name: "Reset Permissions",
 						perm: "resetPermissions",
 						icon: faWarning,
-						disabled: true,
+						danger: true,
+					},
+					{
+						name: "Log Out All Devices",
+						perm: "logoutAllDevices",
+						icon: faWarning,
 					},
 				],
 			},
@@ -95,6 +100,7 @@ export const allPerms: PermissionsType[] = [
 						perm: "setStaff",
 						icon: faUser,
 						danger: true,
+						blocked: true,
 					},
 					{
 						name: "Set Admin Member",

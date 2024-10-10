@@ -8,7 +8,7 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { hasPermission, isAdmin } from "~/lib/utils";
-import { users } from "~/server/db/schema";
+import { sessions, users } from "~/server/db/schema";
 
 import {
 	allPerms,
@@ -244,6 +244,54 @@ export const managementRouter = createTRPCRouter({
 				status: "success",
 			};
 		}),
+	resetPermissions: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("resetPermissions"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+			if (user.id === ctx.session.user.id) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			await ctx.db
+				.update(users)
+				.set({
+					permissions: [],
+				})
+				.where(eq(users.id, input.id))
+				.execute();
+
+			return {
+				status: "success",
+			};
+		}),
 
 	updateStaffRole: protectedProcedure
 		.input(
@@ -355,6 +403,42 @@ export const managementRouter = createTRPCRouter({
 				})
 				.where(eq(users.id, input.id))
 				.execute();
+
+			return {
+				status: "success",
+			};
+		}),
+	logoutAllDevices: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("logoutAllDevices"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			await ctx.db.delete(sessions).where(eq(sessions.userId, input.id)).execute();
 
 			return {
 				status: "success",

@@ -2,7 +2,7 @@
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faTrashCan, faBoltLightning, faMobileNotch, faUserShield, faUser, faChartLine, faEye, faGear, faPen, faRightLeft, faTrash, faUserChart, faUserPlus, faWarning } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Title, Grid, Tooltip, Button, Card, Center, Avatar, rem, Container, GridCol, Box, Stack } from '@mantine/core';
+import { Title, Grid, Tooltip, Button, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group } from '@mantine/core';
 import React from 'react'
 import { hasPermission, isAdmin, onPageAllowed } from '~/lib/utils';
 import { api } from '~/trpc/server'
@@ -18,6 +18,8 @@ import UserSaveButton from '../../../_dash-components/UserSaveButton';
 
 import { perms } from "~/permissions";
 import AccGroup from '../../../_dash-components/AccGroup';
+import { revalidatePath } from 'next/cache';
+import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 
@@ -47,7 +49,39 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                 <React.Fragment>
                     <Title order={4}>Account Actions</Title>
 
-                    <Grid columns={8} pt={10} >
+
+                    <Box className='grid md:grid-cols-3 sm:grid-cols-4 gap-4'>
+                        {await hasPermission("deleteUser") &&
+                            <Group className='flex md:col-span-1 col-span-2'>
+                                <Tooltip label="Reset Permissions" >
+                                    <DeleteUserButton id={params.id} session={session} />
+                                </Tooltip>
+
+                            </Group>
+                        }
+                        {await hasPermission("resetPermissions") &&
+                            <Group className='flex md:col-span-1 col-span-2'>
+                                <Tooltip label="Reset Permissions" >
+                                    <ResetPermissionsButton id={params.id} session={session} />
+                                </Tooltip>
+
+                            </Group>
+                        }
+                        {await hasPermission("logoutAllDevices") &&
+                            <Group className='flex md:col-span-1 col-span-2'>
+                                <Tooltip label="Log Out All Devices" >
+                                    <LogoutAllDevicesButton id={params.id} session={session} />
+                                </Tooltip>
+
+                            </Group>
+                        }
+
+
+                    </Box>
+
+
+
+                    {/* <Grid columns={8} pt={10} >
                         <GridCol span={{ base: 4, md: 2 }}>
                             <Tooltip label="Delete User" >
                                 <Button
@@ -70,47 +104,38 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         </GridCol>
                         <GridCol span={{ base: 4, md: 2 }}>
                             <Tooltip label="Reset Permissions" >
-                                <Button
-                                    hidden={!await hasPermission("resetPermissions")}
-                                    leftSection={<FontAwesomeIcon fontSize={20} icon={faBoltLightning} />}
-                                    disabled={true}
-                                    // bg={"rgba(255,255,255,0.15)"}
-                                    // className="data-[disabled=true]:bg-[rgba(0,0,0,0.15)] data-[disabled=true]:backdrop-blur-lg data-[disabled=true]:cursor-not-allowed"
-
-
-                                    fullWidth
-                                    variant="gradient"
-                                    gradient={{
-                                        from: "darkred",
-                                        to: "#CB356B",
-                                    }}
-                                >
-                                    Reset Permissions
-                                </Button>
+                                {await hasPermission("resetPermissions") &&
+                                    <ResetPermissionsButton id={params.id} session={session} />}
+                             
                             </Tooltip>
                         </GridCol>
                         <GridCol span={{ base: 4, md: 2 }}>
                             <Tooltip
-                                // label="Logout All Devices"
-                                label="WIP / Logout All Devices"
-
+                                label="Logout All Devices"
                             >
-                                <Button
-                                    hidden={!await hasPermission("logoutAllDevices")}
-                                    leftSection={<FontAwesomeIcon fontSize={20} icon={faMobileNotch} />}
-                                    disabled={true}
-                                    fullWidth
-                                    variant="gradient"
-                                    gradient={{
-                                        from: "yellow",
-                                        to: "brown",
-                                    }}
-                                >
-                                    Logout All Devices
-                                </Button>
+                                <form action={async () => {
+                                    "use server"
+                                    await api.management.logoutAllDevices({ id: params.id })
+                                    revalidatePath(`/dashboard/user/${params.id}`)
+                                }}>
+                                    <Button
+                                        type='submit'
+                                        hidden={!await hasPermission("logoutAllDevices")}
+                                        leftSection={<FontAwesomeIcon fontSize={20} icon={faMobileNotch} />}
+                                        // disabled={true}
+                                        fullWidth
+                                        variant="gradient"
+                                        gradient={{
+                                            from: "yellow",
+                                            to: "brown",
+                                        }}
+                                    >
+                                        Logout All Devices
+                                    </Button>
+                                </form>
                             </Tooltip>
                         </GridCol>
-                    </Grid>
+                    </Grid> */}
                 </React.Fragment>
             );
     };
@@ -185,7 +210,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
         return (
 
             <Grid>
-                {await hasPermission(["deleteUser"]) && <GridCol>
+                {await hasPermission(["deleteUser", "resetPermissions", "logoutAllDevices"]) && <GridCol>
                     <Card className={twMerge(className)}>{accountActions()}</Card>
                 </GridCol>}
                 {
