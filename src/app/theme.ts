@@ -3,6 +3,7 @@ import {
 	ActionIcon,
 	Button,
 	Tooltip,
+	TooltipFloating,
 	type MantineThemeOverride,
 } from "@mantine/core";
 
@@ -22,6 +23,16 @@ export const theme: MantineThemeOverride = {
 			},
 		}),
 		Tooltip: Tooltip.extend({
+			defaultProps: {
+				// className: " backdrop-blur-xl",
+				bg: "rgba(0,0,0,0.35)",
+				c: "white",
+			},
+			classNames: {
+				tooltip: " backdrop-blur-xl ",
+			},
+		}),
+		TooltipFloating: TooltipFloating.extend({
 			defaultProps: {
 				// className: " backdrop-blur-xl",
 				bg: "rgba(0,0,0,0.35)",

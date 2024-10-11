@@ -11,14 +11,15 @@ import CustomAccordion from '../../../_dash-components/CustomAccordion';
 import { twMerge } from 'tailwind-merge';
 import ClientIcon from '~/app/_components/ClientIcon';
 import type { Metadata } from 'next';
-import Permissions from '../../../_dash-components/Permissions';
+import Permissions from '../_userpage-components/Permissions';
 import { getServerAuthSession } from '~/server/auth';
 import { ManagementStoreProvider } from '~/providers/management-store-provider';
-import UserSaveButton from '../../../_dash-components/UserSaveButton';
+import UserSaveButton from '../_userpage-components/UserSaveButton';
 
 import { perms } from "~/permissions";
-import AccGroup from '../../../_dash-components/AccGroup';
+import AccGroup from '../_userpage-components/AccGroup';
 import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
+import ManageQrCodes from '../_userpage-components/ManageQrCodes';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 
@@ -85,7 +86,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                     {/* User Card */}
                     <GridCol span={6}>
                         <Card px={25} className={twMerge(className)}>
-                            {await hasPermission(["editUser", "editUserPermissions", "setStaff", "setAdmin"]) && <Box className='absolute left-4 top-4'>
+                            {await hasPermission(["editUser", "editUserPermissions", "setStaff", "setAdmin", "changeQrLimits"]) && <Box className='absolute left-4 top-4'>
                                 <UserSaveButton />
                             </Box>}
 
@@ -140,17 +141,22 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                     <Card className={twMerge(className)}>{accountActions()}</Card>
                 </GridCol>}
                 {
-                    await hasPermission(["editUserPermissions"]) &&
+                    await hasPermission(["editUserPermissions", "viewQrStats"]) &&
                     <GridCol >
                         <CustomAccordion
                             userName={user.name}
                             image={user.image}
+                            defaultOpen={session?.user.config?.userPage?.expanded ?? []}
                         >
                             {await hasPermission("editUserPermissions") &&
                                 <Permissions
                                     permissions={await perms({ session })}
                                     session={session}
                                     user={user}
+                                />}
+                            {await hasPermission(["viewQrStats", "changeQrLimits"]) &&
+                                <ManageQrCodes
+                                    id={user.id}
                                 />}
                         </CustomAccordion>
 
@@ -162,6 +168,8 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 
     return (
+
+
         <ManagementStoreProvider>
 
             <Container fluid size={"xl"} px={{ base: 0, md: undefined }}>

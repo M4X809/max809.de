@@ -16,7 +16,7 @@ import { trackingStore } from '~/stores/tracking-store';
 import { AuthButton } from './AuthButton';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
-import { useOs } from '@mantine/hooks';
+import { useDidUpdate, useMounted, useOs } from '@mantine/hooks';
 import { PhotoProvider } from 'react-photo-view';
 import { useIsStaff } from '../../lib/cUtils';
 import ErrorBox from './ErrorBox';
@@ -36,12 +36,24 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
 
     const setOs = useAppStore((state) => state.setOs)
 
-    const setSession = useAppStore((state) => state.setSession)
     const hideHeader = useAppStore((state) => state.hideHeader)
+    const setSession = useAppStore((state) => state.setSession)
+    const refreshSession = useAppStore((state) => state.refreshSession)
+    const isMounted = useMounted()
+
 
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
         send_event: true,
     })
+
+    // useDidUpdate(() => {
+    //     if (!isMounted) return
+    //     refreshSession()
+    //     console.log("session", session)
+    // }, [isMounted, session])
+
+
+
 
     useEffect(() => {
         if (!session) return

@@ -6,10 +6,10 @@ import {
 	faGear,
 	faWarning,
 	faTrash,
-	faChartLine,
-	faUserChart,
-	faRightLeft,
 	faUserShield,
+	faQrcode,
+	faChartLine,
+	faRightLeft,
 } from "@fortawesome/pro-duotone-svg-icons";
 import type { Permissions as PermissionsType, Perm } from "./types";
 import type { Session } from "next-auth";
@@ -110,6 +110,33 @@ export const allPerms: PermissionsType[] = [
 						blocked: true,
 					},
 				],
+			},
+		],
+	},
+	{
+		name: "QR Codes",
+		icon: faQrcode,
+		perms: [
+			{
+				name: "View QR Code Stats",
+				perm: "viewQrStats",
+				icon: faChartLine,
+			},
+			{
+				name: "Change QR Code Limits ",
+				perm: "changeQrLimits",
+				icon: faGear,
+			},
+			{
+				name: "View QR Code Preview",
+				perm: "viewQrPreview",
+				icon: faRightLeft,
+			},
+			{
+				name: "Delete QR Code",
+				perm: "deleteQrCode",
+				icon: faTrash,
+				danger: true,
 			},
 		],
 	},

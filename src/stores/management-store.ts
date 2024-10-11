@@ -19,21 +19,18 @@ export type ManagementStore = {
 	setAdminChanged: (adminChanged: boolean) => void;
 	admin: boolean | null;
 	setAdmin: (admin: boolean | null) => void;
+
+	previewCodeId: string | null;
+	setPreviewCodeId: (previewCodeId: string | null) => void;
+	previewCodeOpen: boolean;
+	togglePreviewCodeOpen: () => void;
+
+	limitChanged: boolean;
+	setLimitChanged: (limitChanged: boolean) => void;
+	limit: number | null | string;
+	setLimit: (limit: number | null | string) => void;
 };
 
-// export const managementStore = create<ManagementStore>()((set, get) => ({
-// 	userPermissions: [],
-// 	setUserPermissions: (
-// 		userPermissions: string[] | ((prev: string[]) => string[]),
-// 	) => {
-// 		set(() => ({
-// 			userPermissions:
-// 				typeof userPermissions === "function"
-// 					? userPermissions(get().userPermissions)
-// 					: userPermissions,
-// 		}));
-// 	},
-// }));
 export const createManagementStore = () => {
 	return createStore<ManagementStore>()((set, get) => ({
 		permissionsChanged: false,
@@ -58,8 +55,28 @@ export const createManagementStore = () => {
 		setStaff: (staff: boolean | null) => set(() => ({ staff })),
 
 		adminChanged: false,
-		setAdminChanged: (adminChanged: boolean) => set(() => ({ adminChanged })),
+		setAdminChanged: (adminChanged) => set(() => ({ adminChanged })),
 		admin: false,
-		setAdmin: (admin: boolean | null) => set(() => ({ admin })),
+		setAdmin: (admin) => set(() => ({ admin })),
+
+		previewCodeId: null,
+		setPreviewCodeId: (previewCodeId) => set(() => ({ previewCodeId })),
+
+		previewCodeOpen: false,
+		togglePreviewCodeOpen: () => {
+			set((state) => ({ previewCodeOpen: !state.previewCodeOpen }));
+			setTimeout(() => {
+				if (!get().previewCodeOpen) {
+					set({ previewCodeId: null });
+				}
+			}, 1000);
+		},
+
+		limitChanged: false,
+		setLimitChanged: (limitChanged) => set(() => ({ limitChanged })),
+		limit: null,
+		setLimit: (limit) => {
+			set(() => ({ limit }));
+		},
 	}));
 };

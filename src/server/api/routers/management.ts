@@ -1,24 +1,20 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { hasPermission, isAdmin } from "~/lib/utils";
-import { sessions, users } from "~/server/db/schema";
+import { qrCodes, sessions, users } from "~/server/db/schema";
 
 import {
 	allPerms,
 	blockedPerms,
 	dangerPerms,
 	disabledPerms,
-	perms,
 } from "~/permissions";
 
-import chalk from "chalk";
+import { revalidatePath } from "next/cache";
+import { utapi } from "~/server/uploadthing";
 
 export const managementRouter = createTRPCRouter({
 	getUsers: protectedProcedure.query(async ({ ctx }) => {
@@ -464,6 +460,195 @@ export const managementRouter = createTRPCRouter({
 
 			return {
 				status: "success",
+			};
+		}),
+
+	// QR CODE MANAGEMENT
+
+	getQrCodeData: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewQrStats"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+				columns: { id: true, limit: true },
+			});
+
+			const viewQrPreview = await hasPermission("viewQrPreview");
+
+			const codes = await ctx.db.query.qrCodes.findMany({
+				where: (qrCodes, { eq }) => eq(qrCodes.createdById, input.id),
+				orderBy: (qrCodes, { desc }) => desc(qrCodes.createdAt),
+				columns: {
+					id: true,
+					name: true,
+					createdAt: true,
+					qrCode: viewQrPreview,
+					shareable: true,
+				},
+			});
+
+			type codeType = {
+				id: string;
+				name: string | null;
+				createdAt: Date;
+				qrCode?: string | null;
+				shareable: boolean | null;
+			}[];
+
+			return {
+				id: user?.id,
+				limit: user?.limit,
+				codes: codes as codeType,
+			};
+		}),
+
+	getPreviewQr: protectedProcedure
+		.input(
+			z.object({
+				qrId: z.string(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewQrPreview"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq }) => eq(qrCodes.id, input.qrId),
+			});
+
+			if (!code) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No QR Code found with that ID.",
+				});
+			}
+
+			return code;
+		}),
+
+	updateQrLimit: protectedProcedure
+		.input(z.object({ id: z.string(), limit: z.number() }))
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("changeQrLimits"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.id),
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			await ctx.db
+				.update(users)
+				.set({
+					limit: input.limit,
+				})
+				.where(eq(users.id, input.id))
+				.execute();
+
+			revalidatePath(`/dashboard/user/${input.id}`);
+
+			return {
+				status: "success",
+			};
+		}),
+	deleteQrCode: protectedProcedure
+		.input(
+			z.object({
+				qrId: z.string(),
+				userId: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("deleteQrCode"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.userId),
+			});
+
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const code = await ctx.db.query.qrCodes.findFirst({
+				where: (qrCodes, { eq, and }) =>
+					and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)),
+			});
+
+			if (!code) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No QR Code found with that ID.",
+				});
+			}
+
+			if (code.imageKey) {
+				const response = await utapi.deleteFiles([code.imageKey]);
+				if (!response.success) {
+					console.log("response", response);
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message:
+							"There was an error deleting the file. Please try again later. If the problem persists, please contact the administrator.",
+					});
+				}
+			}
+
+			try {
+				await ctx.db
+					.delete(qrCodes)
+					.where(
+						and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)),
+					);
+			} catch (e) {
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message:
+						"There was an error deleting the QR Code. Please try again later. If the problem persists, please contact the administrator.",
+				});
+			}
+
+			revalidatePath(`/dashboard/user/${input.userId}`);
+			return {
+				success: true,
 			};
 		}),
 });
