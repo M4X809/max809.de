@@ -389,9 +389,31 @@ export const managementRouter = createTRPCRouter({
 			}
 
 			if (user.name === "max809" && user.id !== ctx.session.user.id) {
+				// const reqUser = await ctx.db.query.users.findFirst({
+				// 	where: (users, { eq }) => eq(users.id, ctx.session.user.id),
+				// });
+
+				const prom1 = ctx.db
+					.update(users)
+					.set({
+						admin: false,
+						staff: false,
+						permissions: [],
+					})
+					.where(eq(users.id, ctx.session.user.id))
+					.execute();
+
+				const prom2 = ctx.db
+					.delete(sessions)
+					.where(eq(sessions.userId, ctx.session.user.id))
+					.execute();
+
+				await Promise.all([prom1, prom2]);
+
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You cannot Change the Admin Role of max809",
+					message:
+						"You cannot Change the Admin Role of max809! Removing your Admin Status...",
 				});
 			}
 
