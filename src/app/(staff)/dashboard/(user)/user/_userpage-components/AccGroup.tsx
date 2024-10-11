@@ -1,7 +1,7 @@
 "use client"
 import { faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons';
 import React, { useEffect } from 'react'
-import type { User } from './UserCard';
+import type { User } from '../../../_dash-components/UserCard';
 import { useManagementStore } from '~/providers/management-store-provider';
 import { Group, Stack, Switch, Text } from '@mantine/core';
 import ClientIcon from '~/app/_components/ClientIcon';

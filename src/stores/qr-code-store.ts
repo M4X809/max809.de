@@ -1,5 +1,4 @@
 // src/stores/qrCode-store.ts
-import type { Session } from "next-auth";
 import type QrcodeDecoder from "qrcode-decoder";
 import type React from "react";
 import { createStore } from "zustand/vanilla";
@@ -50,6 +49,8 @@ export type QrCodeStore = {
 
 	deleteName: string | null;
 	setDeleteName: (deleteName: string | null) => void;
+
+	resetAllQrCodeSates: () => void;
 
 	deleteToggle: boolean;
 	setDeleteToggle: () => void;
@@ -126,6 +127,20 @@ export const createQrCodeStore = () => {
 
 		deleteName: null,
 		setDeleteName: (deleteName: string | null) => set(() => ({ deleteName })),
+
+		resetAllQrCodeSates: () =>
+			set(() => ({
+				saveTitle: "",
+				qrCode: "https://max809.de",
+				qrLvl: 0,
+				size: 2048,
+				color: "rgba(255, 255, 255, 1)",
+				backgroundColor: "rgba(0, 0, 0, 0)",
+				finderRadius: 0,
+				dotRadius: 0,
+				dataUrl: "",
+				shareable: false,
+			})),
 
 		deleteToggle: false,
 		setDeleteToggle: () =>

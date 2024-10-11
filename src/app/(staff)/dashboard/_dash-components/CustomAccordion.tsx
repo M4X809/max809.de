@@ -1,20 +1,29 @@
 "use client"
-import { Accordion } from "@mantine/core";
-import { useDocumentTitle, useSessionStorage } from "@mantine/hooks";
+import { Accordion, Stack } from "@mantine/core";
+import { useDebouncedCallback, useDocumentTitle } from "@mantine/hooks";
+import { useState } from "react";
+import { api } from "~/trpc/react";
 
 interface AccordionProps {
     image: string | null | undefined;
     userName: string | null | undefined;
     children?: React.ReactNode | React.ReactNode[];
+    defaultOpen: string[];
+
 }
 
-const CustomAccordion: React.FC<AccordionProps> = ({ children, userName, }) => {
+const CustomAccordion: React.FC<AccordionProps> = ({ children, userName, defaultOpen }) => {
     useDocumentTitle(`${userName} - User Management`);
 
-    const [value, setValue] = useSessionStorage<string[]>({
-        key: "userEditAccordion",
-        defaultValue: ["permissions"],
-    });
+    const { mutate: setConfig } = api.account.setConfig.useMutation()
+
+    const handleStateChange = useDebouncedCallback((val) => {
+        setConfig({ path: "userPage.expanded", value: val })
+
+    }, 1000);
+
+    const [value, setValue] = useState<string[]>(defaultOpen);
+
     return (
         <>
             <Accordion
@@ -22,9 +31,15 @@ const CustomAccordion: React.FC<AccordionProps> = ({ children, userName, }) => {
                 radius={"md"}
                 multiple
                 value={value}
-                onChange={setValue}
+                defaultValue={defaultOpen}
+                onChange={(val) => {
+                    setValue(val)
+                    handleStateChange(val)
+                }}
             >
-                {children}
+                <Stack>
+                    {children}
+                </Stack>
             </Accordion>
         </>
     )

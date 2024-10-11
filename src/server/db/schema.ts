@@ -5,6 +5,7 @@ import {
 	doublePrecision,
 	index,
 	integer,
+	json,
 	pgTableCreator,
 	primaryKey,
 	serial,
@@ -12,6 +13,7 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+import type { Config } from "next-auth";
 import type { AdapterAccount } from "next-auth/adapters";
 // import QrCode from "~/app/qr-code-generator/_qr-components/QrCodeContainer";
 
@@ -71,6 +73,7 @@ export const users = createTable("user", {
 	admin: boolean("admin").default(false),
 	staff: boolean("staff").default(false),
 	permissions: text("permissions").array().notNull().default([]),
+	config: json("config").notNull().default({}).$type<Config>(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

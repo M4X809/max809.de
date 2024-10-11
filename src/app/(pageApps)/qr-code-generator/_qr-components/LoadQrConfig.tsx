@@ -4,6 +4,7 @@ import { faArrowUp } from "@fortawesome/pro-duotone-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { ActionIcon, type ActionIconProps, VisuallyHidden } from "@mantine/core"
 import { useWindowScroll } from "@mantine/hooks"
+import { useEffect } from "react"
 // import { z } from "zod"
 import { useQrCodeStore } from "~/providers/qr-code-provider"
 
@@ -24,10 +25,11 @@ type data = {
 }
 interface QrCodeData {
     data: data
+    autoLoad?: boolean
     // props?: ActionIconProps[]
 
 }
-const LoadQrConfig = ({ data, ...props }: ActionIconProps & QrCodeData) => {
+const LoadQrConfig = ({ data, autoLoad = false, ...props }: ActionIconProps & QrCodeData) => {
 
     const setSaveTitle = useQrCodeStore((state) => state.setSaveTitle)
     const setQrCode = useQrCodeStore((state) => state.setQrCode)
@@ -59,12 +61,19 @@ const LoadQrConfig = ({ data, ...props }: ActionIconProps & QrCodeData) => {
         return
     }
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (autoLoad) loadQrConfig(data)
+    }, [autoLoad, data])
+    if (autoLoad) {
+        return <></>
+    }
     return (
         <ActionIcon
             title="Load QR Config"
             {...props}
             onClick={() => {
-                console.log("data", data)
+                // console.log("data", data)
                 loadQrConfig(data)
                 scrollTo({ y: 0 })
             }}

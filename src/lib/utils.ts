@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 import { env } from "~/env";
 import { getServerAuthSession } from "~/server/auth";
 
@@ -47,7 +48,7 @@ export async function hasPermission(
 	if (session.user.permissions?.includes(permission)) return true;
 	return false;
 }
-
+// MARK: On Page Allowed
 export async function onPageAllowed(
 	/**
 	 * Permission can be a string or an array of strings
@@ -73,4 +74,40 @@ export async function onPageAllowed(
 	if (hasPerm) return;
 	console.log("permission", permission);
 	return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+}
+// MARK: Set Nested Value
+export function setNestedValue<T extends object>(
+	obj: T,
+	path: string,
+	value: any,
+): T {
+	const keys = path.split(".");
+	const lastKey = keys.pop()!;
+	const current: any = { ...obj };
+	let currentObj = current;
+
+	for (const key of keys) {
+		currentObj[key] = { ...currentObj[key] };
+		currentObj = currentObj[key];
+	}
+
+	currentObj[lastKey] = value;
+
+	return current;
+}
+
+// MARK: Check Config
+export function checkConf(config: object | undefined | null) {
+	return z
+		.object({
+			userPage: z
+				.object({
+					expanded: z.array(z.string()).default([]),
+				})
+				.default({
+					expanded: [],
+				}),
+		})
+
+		.safeParse(config);
 }

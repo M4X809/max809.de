@@ -5,7 +5,6 @@ import {
 	type User,
 	type DefaultSession,
 	type NextAuthOptions,
-	type DefaultUser,
 	type Profile,
 	type Account,
 } from "next-auth";
@@ -23,8 +22,8 @@ import {
 	verificationTokens,
 } from "~/server/db/schema";
 
-import chalk from "chalk";
 import { eq } from "drizzle-orm";
+import { checkConf } from "~/lib/utils";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -43,6 +42,7 @@ declare module "next-auth" {
 			admin?: boolean;
 			staff?: boolean;
 			permissions?: string[];
+			config?: Config;
 			// ...other properties
 			// role: UserRole;
 		} & DefaultSession["user"];
@@ -53,6 +53,13 @@ declare module "next-auth" {
 		staff?: boolean;
 		permissions?: string[];
 		email?: string;
+		config?: Config;
+	}
+
+	interface Config {
+		userPage?: {
+			expanded?: string[];
+		};
 	}
 
 	type SessionType = Session | null | undefined;
@@ -120,17 +127,28 @@ export const authOptions: NextAuthOptions = {
 					where: (users, { eq }) => eq(users.id, user.id),
 				});
 
+				const checkConfig = checkConf(dbUser?.config);
+
+				console.log(
+					"checkConfig",
+					checkConfig.success,
+					checkConfig.data,
+					checkConfig.error,
+				);
+
 				if (dbUser) {
-					console.log(chalk.blue("dbUser", JSON.stringify(dbUser)));
-					db
+					await db
 						.update(users)
 						.set({
 							banner: profile?.banner_url,
+							config: checkConfig.data ?? dbUser.config,
 						})
 						.where(eq(users.id, user.id))
 						.execute();
 				}
-			} catch (error) {}
+			} catch (error) {
+				console.error("error", error);
+			}
 
 			return true;
 		},

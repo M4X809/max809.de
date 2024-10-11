@@ -1,15 +1,15 @@
 // src/stores/app-store.ts
 import type { OS } from "@mantine/hooks";
-import type { Session } from "next-auth";
-import type QrcodeDecoder from "qrcode-decoder";
-import type React from "react";
+import type { Session, SessionType } from "next-auth";
+import { getSession } from "next-auth/react";
 import { createStore } from "zustand/vanilla";
 
 export type AppStore = {
-	session: Session | null;
+	session: SessionType;
+	refreshSession: () => Promise<void>;
 	setSession: (session: Session | null) => void;
 
-	os: OS ;
+	os: OS;
 	setOs: (os: OS) => void;
 
 	// SpeedCube Timer
@@ -20,7 +20,11 @@ export type AppStore = {
 export const createAppStore = () => {
 	return createStore<AppStore>()((set) => ({
 		session: null,
-		setSession: (session: Session | null) => set(() => ({ session })),
+		refreshSession: async () => {
+			const session = await getSession();
+			set(() => ({ session }));
+		},
+		setSession: (session) => set(() => ({ session })),
 
 		os: "undetermined",
 		setOs: (os: OS) => set(() => ({ os })),
