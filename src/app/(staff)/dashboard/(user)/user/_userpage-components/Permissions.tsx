@@ -1,7 +1,7 @@
 "use client"
 import type { Session } from "next-auth";
 import type { Permissions as PermissionsType } from "~/types";
-import type { User } from "./UserCard";
+import type { User } from "../../../_dash-components/UserCard";
 
 import { faCircle, faCopy } from "@fortawesome/pro-duotone-svg-icons";
 import { Accordion, Card, Checkbox, Code, Flex, Grid, Group, List, Stack, Text, Title, UnstyledButton } from "@mantine/core";

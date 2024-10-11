@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ActionIcon } from '@mantine/core'
 import { useParams, useRouter, } from 'next/navigation'
 import React, { useEffect } from 'react'
-import { set } from 'zod'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { api } from '~/trpc/react'
 
