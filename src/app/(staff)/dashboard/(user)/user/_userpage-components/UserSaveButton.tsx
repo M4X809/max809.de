@@ -96,7 +96,7 @@ const UserSaveButton = () => {
         const filteredObject = Object.fromEntries(
             Object.entries(errObj).filter(([key, value]) => value !== undefined)
         );
-        console.log("filteredObject", filteredObject)
+        // console.log("filteredObject", filteredObject)
         if (Object.keys(filteredObject).length === 0) return setErrorOject({})
 
         const errorStack = Object.fromEntries(Object.entries(filteredObject).map(([key, value]) => {
@@ -123,7 +123,7 @@ const UserSaveButton = () => {
         if (Object.keys(errorOject).length === 0 || loading) return
         if (!hasError) return
 
-        console.log("TOAST", errorOject)
+        // console.log("TOAST", errorOject)
         toast.error("Saving Failed.", {
             id: "saving-failed",
             cancel: <DismissButton id="saving-failed" />,

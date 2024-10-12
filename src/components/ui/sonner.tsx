@@ -46,7 +46,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
 const DismissButton = ({ id }: { id: string }) => {
   return (
-    <ActionIcon variant='transparent' className="absolute right-0 top-0 text-inherit  hover:text-[red] transition-colors duration-300 justify-center" onClick={() => toast.dismiss(id)}>
+    <ActionIcon variant='transparent' className="absolute right-4 top-4 text-inherit  hover:text-[red] transition-colors duration-300 justify-center" onClick={() => toast.dismiss(id)}>
       <FontAwesomeIcon icon={faX} fixedWidth swapOpacity />
     </ActionIcon>
   )
