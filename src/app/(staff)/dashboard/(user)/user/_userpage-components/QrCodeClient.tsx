@@ -114,15 +114,18 @@ export const PreviewCode = () => {
 
 export const SetLimitInput = ({ currentLimit }: { id: string, session: SessionType, currentLimit: string | undefined | number }) => {
 
+
     const limit = useManagementStore((state) => state.limit)
     const setLimit = useManagementStore((state) => state.setLimit)
     const setLimitChanged = useManagementStore((state) => state.setLimitChanged)
 
+    const refreshing = useManagementStore((state) => state.refreshing)
+
     useEffect(() => {
-        if (currentLimit) {
-            setLimit(currentLimit)
-        }
-    }, [currentLimit, setLimit])
+        if (!currentLimit || refreshing) return
+        setLimit(currentLimit)
+
+    }, [currentLimit, setLimit, refreshing])
 
     useEffect(() => {
         if (limit !== currentLimit) {

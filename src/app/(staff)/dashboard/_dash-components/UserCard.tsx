@@ -1,9 +1,8 @@
 
 
 import { faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BackgroundImage, Card, CardSection, Group, Avatar, Tooltip, Button, Text } from '@mantine/core';
-import { useMounted } from '@mantine/hooks';
+import type { Config } from 'next-auth';
 import Link from 'next/link';
 import React from 'react'
 import { twMerge } from 'tailwind-merge';
@@ -12,16 +11,18 @@ import { hasPermission } from '~/lib/utils';
 
 
 export type User = {
-    staff: boolean | null;
-    admin: boolean | null;
     id: string;
     name: string | null;
+    email: string;
     emailVerified: Date | null;
     image: string | null;
+    limit: number;
     banner: string | null;
+    admin: boolean | null;
+    staff: boolean | null;
     permissions: string[];
+    config: Config | null;
 }
-
 
 const UserCard = async ({ user }: { user: User, admin?: boolean, staff?: boolean, id?: string }) => {
     const viewUserPage = await hasPermission("viewUserPage")

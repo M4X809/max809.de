@@ -1,10 +1,20 @@
 'use client'
 
 import { ActionIcon, type ActionIconProps } from '@mantine/core'
+import { useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
+import { useManagementStore } from '~/providers/management-store-provider'
 
 export function SubmitButton({ ...props }: ActionIconProps & { children?: React.ReactNode }) {
     const { pending } = useFormStatus()
+    const setRefreshing = useManagementStore((state) => state.setRefreshing)
+
+
+    useEffect(() => {
+        setRefreshing(pending)
+    }, [pending, setRefreshing])
+
+
 
     return (
         <ActionIcon

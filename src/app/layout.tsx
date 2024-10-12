@@ -14,6 +14,9 @@ import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 import { theme } from "./theme";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowsRotate } from "@fortawesome/pro-duotone-svg-icons";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
@@ -45,6 +48,11 @@ export default function RootLayout({
               <AppStoreProvider>
                 <QrCodeStoreProvider>
                   <ModalsProvider>
+                    <Toaster
+                      closeButton
+                      visibleToasts={5}
+                      pauseWhenPageIsHidden
+                    />
                     {children}
                   </ModalsProvider>
                 </QrCodeStoreProvider>

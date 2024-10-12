@@ -2,11 +2,13 @@
 
 import { faBoltLightning } from "@fortawesome/pro-duotone-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Button } from "@mantine/core"
+import { Box, Button, Text } from "@mantine/core"
 import type { SessionType, User } from "next-auth"
 import { useRouter } from "next/navigation"
 import { type ButtonHTMLAttributes, forwardRef, useEffect } from "react"
+import { toast } from "sonner"
 import { twMerge } from "tailwind-merge"
+import { DismissButton } from "~/components/ui/sonner"
 import { usePermission } from "~/lib/cUtils"
 import { api } from "~/trpc/react"
 
@@ -20,15 +22,38 @@ interface ResetPermissionsButtonProps extends ButtonHTMLAttributes<HTMLButtonEle
 
 export const ResetPermissionsButton = forwardRef<HTMLButtonElement, ResetPermissionsButtonProps>(({ id, session }, _ref) => {
     const hasPermission = usePermission(session)
-    const { mutate, isPending, isSuccess } = api.management.resetPermissions.useMutation()
+    const { mutate, isPending, isSuccess, isError, error } = api.management.resetPermissions.useMutation()
 
     const router = useRouter()
 
     useEffect(() => {
         if (isSuccess) {
             router.refresh()
+            toast.dismiss("saving-failed")
+            return
         }
-    }, [isSuccess, router])
+        if (isError) {
+            toast.error("Resetting Permissions Failed.", {
+                id: "saving-failed",
+                cancel: <DismissButton id="saving-failed" />,
+                description: (
+                    <Box>
+                        <Text c={"inherit"} fz={15} >
+                            Resetting Permissions Failed.
+                        </Text>
+                        <Text c={"inherit"} fz={13} >
+                            {error.message.toLowerCase().includes("admin") && "Can't edit Admins."}
+                            {error.message.toLowerCase().includes("self") && "Can't edit Self."}
+                            {!error.message.toLowerCase().includes("admin") && !error.message.toLowerCase().includes("self") && error.message}
+                        </Text>
+                    </Box>
+                ),
+                duration: 15 * 1000,
+            })
+        }
+
+
+    }, [isSuccess, router, isError, error])
 
     if (!hasPermission("resetPermissions")) return null
 
