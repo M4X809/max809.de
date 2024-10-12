@@ -129,14 +129,14 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Admins)",
 				});
 			}
 
 			if (user.id === ctx.session.user.id && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Self)",
 				});
 			}
 
@@ -266,13 +266,13 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Admins)",
 				});
 			}
-			if (user.id === ctx.session.user.id) {
+			if (user.id === ctx.session.user.id && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Self)",
 				});
 			}
 
@@ -316,13 +316,13 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit admin)",
 				});
 			}
 			if (user.id === ctx.session.user.id) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Self)",
 				});
 			}
 			if (user.name === "max809" && user.id !== ctx.session.user.id) {
@@ -373,14 +373,14 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit admin)",
 				});
 			}
 
 			if (user.id === ctx.session.user.id) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Self)",
 				});
 			}
 
@@ -452,7 +452,7 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Admins)",
 				});
 			}
 
@@ -558,7 +558,14 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Admin)",
+				});
+			}
+
+			if (user.id === ctx.session.user.id && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action. (Edit Self)",
 				});
 			}
 
@@ -604,7 +611,7 @@ export const managementRouter = createTRPCRouter({
 			if (user.admin && !(await isAdmin())) {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
+					message: "You are not authorized to perform this action. (Edit Admins)",
 				});
 			}
 

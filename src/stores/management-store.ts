@@ -2,6 +2,9 @@
 import { create, createStore } from "zustand";
 
 export type ManagementStore = {
+	refreshing: boolean;
+	setRefreshing: (refreshing: boolean) => void;
+
 	permissionsChanged: boolean;
 	setPermissionsChanged: (permissionsChanged: boolean) => void;
 
@@ -33,6 +36,9 @@ export type ManagementStore = {
 
 export const createManagementStore = () => {
 	return createStore<ManagementStore>()((set, get) => ({
+		refreshing: false,
+		setRefreshing: (refreshing) => set(() => ({ refreshing })),
+
 		permissionsChanged: false,
 		setPermissionsChanged: (permissionsChanged: boolean) =>
 			set(() => ({ permissionsChanged })),
