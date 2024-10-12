@@ -76,6 +76,11 @@ export const PreviewCode = () => {
         if (!previewCodeId) {
             resetQrCode()
         }
+        return () => {
+            resetQrCode()
+        }
+
+
     }, [previewCodeId, resetQrCode])
 
     return (
