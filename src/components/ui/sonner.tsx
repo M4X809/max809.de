@@ -18,18 +18,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
           title: "text-xl",
           toast:
             "group toast group-[.toaster]:bg-[rgba(1,1,1,0.35)] group-[.toaster]:backdrop-blur-xl group-[.toaster]:border-none ",
-          // description: " data-[type=error]:text-red-600 data-[type=success]:text-green-500 data-[type=warning]:text-yellow-500 data-[type=info]:text-blue-500 data-[type=loading]:text-blue-500",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          // cancelButton:
-          //   "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           error: "text-red-600 ",
           success: "text-green-600 ",
           warning: "text-yellow-600 ",
           info: "text-blue-600 ",
           loading: "text-blue-600",
           icon: "data-[icon]:size-5 place-self-center place-items-center justify-center align-middle",
-          // closeButton: "data-[close-button]:right-0 data-[close-button]:left-auto data-[close-button]:border-none data-[close-button]:text-xl data-[close-button]:hover:bg-[rgba(0,0,0,0.15)] data-[close-button]:size-15 ",
         },
 
       }}

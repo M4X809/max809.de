@@ -1,7 +1,7 @@
 "use client"
-import { faArrowsRotate, faSave, faX } from '@fortawesome/pro-duotone-svg-icons'
+import { faArrowsRotate, faSave } from '@fortawesome/pro-duotone-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Box, Button, Group, Stack, Text, VisuallyHidden } from '@mantine/core'
+import { ActionIcon, Box, Group, Stack, Text, VisuallyHidden } from '@mantine/core'
 import { useParams, useRouter, } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { useManagementStore } from '~/providers/management-store-provider'
@@ -17,7 +17,6 @@ const UserSaveButton = () => {
     const { id }: { id: string } = useParams()
     const router = useRouter()
     const mounted = useMounted()
-
 
     const userPermissions = useManagementStore((state) => state.userPermissions)
     const permissionsChanged = useManagementStore((state) => state.permissionsChanged)
@@ -36,17 +35,14 @@ const UserSaveButton = () => {
     const limitChanged = useManagementStore((state) => state.limitChanged)
     const setLimitChanged = useManagementStore((state) => state.setLimitChanged)
 
-
     const [errorOject, setErrorOject] = useState<{ updateError?: any, updateErrorAdmin?: any, updateErrorLimit?: any, updateErrorStaff?: any }>({})
-
-    const unsavedChanges = permissionsChanged || staffChanged || adminChanged || limitChanged
-
 
     const { mutate: updatePermissions, isPending: isUpdating, isSuccess: isUpdated, error: updateError, reset: resetPermissionsMutation, isError: isPermissionsError } = api.management.updatePermissions.useMutation()
     const { mutate: updateStaff, isPending: isUpdatingStaff, isSuccess: isUpdatedStaff, error: updateErrorStaff, reset: resetStaffMutation, isError: isStaffError } = api.management.updateStaffRole.useMutation()
     const { mutate: updateAdmin, isPending: isUpdatingAdmin, isSuccess: isUpdatedAdmin, error: updateErrorAdmin, reset: resetAdminMutation, isError: isAdminError } = api.management.updateAdminRole.useMutation()
     const { mutate: updateLimit, isPending: isUpdatingLimit, isSuccess: isUpdatedLimit, error: updateErrorLimit, reset: resetLimitMutation, isError: isLimitError } = api.management.updateQrLimit.useMutation()
 
+    const unsavedChanges = permissionsChanged || staffChanged || adminChanged || limitChanged
     const loading = (isUpdating || isUpdatingStaff || isUpdatingAdmin || isUpdatingLimit) && !(updateError || updateErrorStaff || updateErrorAdmin || updateErrorLimit)
     const hasError = (isPermissionsError || isStaffError || isAdminError || isLimitError) && !loading
 
@@ -64,9 +60,6 @@ const UserSaveButton = () => {
         }
     }, [])
 
-
-
-
     const handleSave = () => {
         if (loading) return
         toast.dismiss("saving-failed")
@@ -79,43 +72,38 @@ const UserSaveButton = () => {
         if (permissionsChanged) {
             updatePermissions({ permissions: userPermissions, id: id })
         }
-
         if (staffChanged) {
             updateStaff({ staff: !!staff, id: id })
         }
-
         if (adminChanged) {
             updateAdmin({ admin: !!admin, id: id })
         }
-
         if (limitChanged && limit) {
             updateLimit({ limit: typeof limit === "string" ? Number.parseInt(limit) : limit, id: id })
         }
-
     }
 
     useEffect(() => {
         if (loading || !hasError) return
 
         const errObj = {
-            updateError: updateError,
-            updateErrorAdmin: updateErrorAdmin,
-            updateErrorLimit: updateErrorLimit,
-            updateErrorStaff: updateErrorStaff,
+            updateError: updateError ? updateError : undefined,
+            updateErrorAdmin: updateErrorAdmin ? updateErrorAdmin : undefined,
+            updateErrorLimit: updateErrorLimit ? updateErrorLimit : undefined,
+            updateErrorStaff: updateErrorStaff ? updateErrorStaff : undefined,
         }
 
-        const filtered = Object.fromEntries(Object.entries(errObj).filter(([_, value]) => value !== undefined && value !== null))
-        if (Object.keys(filtered).length === 0) return setErrorOject({})
+        const filteredObject = Object.fromEntries(
+            Object.entries(errObj).filter(([key, value]) => value !== undefined)
+        );
+        console.log("filteredObject", filteredObject)
+        if (Object.keys(filteredObject).length === 0) return setErrorOject({})
 
-        const errorStack = Object.fromEntries(Object.entries(filtered).map(([key, value]) => {
-
-
-
+        const errorStack = Object.fromEntries(Object.entries(filteredObject).map(([key, value]) => {
             if (value?.message.toLowerCase().includes("max809")) {
                 setTimeout(() => {
                     router.refresh()
                 }, 3000)
-
                 return [key, value?.message]
             }
             if (value?.message.toLowerCase().includes("admin")) {
@@ -125,21 +113,15 @@ const UserSaveButton = () => {
             if (value?.message.toLowerCase().includes("self")) {
                 return [key, "Can't edit Self."]
             }
-
-
             return [key, value?.message]
         }))
-        // console.log("errorStack", errorStack)
         setErrorOject(errorStack)
     }, [updateError, updateErrorAdmin, updateErrorLimit, updateErrorStaff, loading, hasError, router])
 
     useEffect(() => {
 
         if (Object.keys(errorOject).length === 0 || loading) return
-        // toast.dismiss("saving-failed")
         if (!hasError) return
-
-
 
         console.log("TOAST", errorOject)
         toast.error("Saving Failed.", {
@@ -147,16 +129,20 @@ const UserSaveButton = () => {
             cancel: <DismissButton id="saving-failed" />,
             description: (
                 <Box>
-                    {Object.keys(errorOject).map((key) => (
-                        <Stack key={key} gap={0}>
-                            <Text c={"inherit"} fz={15} >
-                                {errorKeys[key as keyof typeof errorKeys]}
-                            </Text>
-                            <Text c={"inherit"} fz={13} >
-                                {errorOject[key as keyof typeof errorOject]}
-                            </Text>
-                        </Stack>
-                    ))}
+                    {Object.keys(errorOject).map((key) => {
+                        if (!errorOject[key as keyof typeof errorOject]) return
+
+                        return (
+                            <Stack key={key} gap={0}>
+                                <Text c={"inherit"} fz={15} >
+                                    {errorKeys[key as keyof typeof errorKeys]}
+                                </Text>
+                                <Text c={"inherit"} fz={13} >
+                                    {errorOject[key as keyof typeof errorOject]}
+                                </Text>
+                            </Stack>
+                        )
+                    })}
                 </Box>
             ),
 

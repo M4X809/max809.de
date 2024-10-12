@@ -42,7 +42,6 @@ const UserCard = async ({ user }: { user: Omit<User, "email" | "limit">, admin?:
             >
                 <CardSection py={"xs"}>
                     <Group style={{ flexWrap: "nowrap" }} p={10} justify="">
-
                         <Avatar pos={"absolute"} h={60} w={60} src={user.image}>
                             {user.name?.slice(0, 3)}
                         </Avatar>
@@ -72,7 +71,6 @@ const UserCard = async ({ user }: { user: Omit<User, "email" | "limit">, admin?:
                             </Tooltip>
                             {user.admin && (<ClientIcon icon={faUserShield} />)}
                             {!user.admin && user.staff && (<ClientIcon icon={faUser} />)}
-
                         </Group>
                     </Group>
                 </CardSection>

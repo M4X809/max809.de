@@ -3,7 +3,7 @@ import '@mantine/core/styles.css';
 import '@mantine/dropzone/styles.css';
 import '@mantine/code-highlight/styles.css';
 
-import { Button, MantineProvider } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 
 import { GeistSans } from "geist/font/sans";
@@ -14,8 +14,6 @@ import { AppStoreProvider } from "~/providers/app-store-provider";
 import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 import { theme } from "./theme";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowsRotate } from "@fortawesome/pro-duotone-svg-icons";
 import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
