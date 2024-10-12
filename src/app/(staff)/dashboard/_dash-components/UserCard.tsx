@@ -24,7 +24,7 @@ export type User = {
     config: Config | null;
 }
 
-const UserCard = async ({ user }: { user: User, admin?: boolean, staff?: boolean, id?: string }) => {
+const UserCard = async ({ user }: { user: Omit<User, "email" | "limit">, admin?: boolean, staff?: boolean, id?: string }) => {
     const viewUserPage = await hasPermission("viewUserPage")
 
     return (
