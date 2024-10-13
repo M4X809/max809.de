@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import { useManagementStore } from '~/providers/management-store-provider'
 
-export function SubmitButton({ ...props }: ActionIconProps & { children?: React.ReactNode }) {
+export function SubmitButton({ ...props }: Omit<ActionIconProps, "children" | "type" | "loading"> & { children?: React.ReactNode }) {
     const { pending } = useFormStatus()
     const setRefreshing = useManagementStore((state) => state.setRefreshing)
 

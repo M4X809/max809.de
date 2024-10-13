@@ -22,7 +22,7 @@ import { useIsStaff } from '../../lib/cUtils';
 import ErrorBox from './ErrorBox';
 
 
-function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean }) {
+function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, forceHideHeader = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean, forceHideHeader?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     const os = useOs()
@@ -36,7 +36,10 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
 
     const setOs = useAppStore((state) => state.setOs)
 
-    const hideHeader = useAppStore((state) => state.hideHeader)
+    const _hideHeader = useAppStore((state) => state.hideHeader)
+    const hideHeader = forceHideHeader || _hideHeader
+
+
     const setSession = useAppStore((state) => state.setSession)
     const refreshSession = useAppStore((state) => state.refreshSession)
     const isMounted = useMounted()
