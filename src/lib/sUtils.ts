@@ -2,7 +2,12 @@ import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { env } from "~/env";
 import { getServerAuthSession } from "~/server/auth";
-import type { Key} from "ts-key-enum"
+import type { Key } from "ts-key-enum";
+import type { User } from "next-auth";
+import { db } from "~/server/db";
+import chalk from "chalk";
+import { eq } from "drizzle-orm";
+import { loginWhitelist, users } from "~/server/db/schema";
 
 export function getDomain(url: string = env.NEXTAUTH_URL) {
 	if (url.startsWith("http://")) return url;
@@ -102,12 +107,57 @@ export function checkConf(config: object | undefined | null) {
 				.default({
 					expanded: [],
 				}),
-			global: z.object({
-				openCommandKey : z.string().default("F1") as z.ZodType<keyof typeof Key > | z.ZodType< keyof typeof Key[]>,
-			}).default({
-				openCommandKey: "F1",
-			}),
+			global: z
+				.object({
+					openCommandKey: z.string().default("F1") as
+						| z.ZodType<keyof typeof Key>
+						| z.ZodType<keyof (typeof Key)[]>,
+				})
+				.default({
+					openCommandKey: "F1",
+				}),
 		})
 
 		.safeParse(config);
 }
+
+export const checkWhitelist = async ({
+	user,
+}: {
+	user: User;
+}): Promise<void> => {
+	const dbUser = await db.query.users.findFirst({
+		where: (users, { eq }) => eq(users.id, user.id),
+	});
+	if (!dbUser) {
+		console.error(chalk.red.bold("dbUser not found"));
+		return;
+	}
+	if (dbUser?.whiteListId) {
+		return;
+	}
+
+	const whitelist = await db.query.loginWhitelist.findFirst({
+		where: (loginWhitelist, { eq }) => eq(loginWhitelist.email, dbUser.email),
+	});
+
+	if (whitelist) {
+		console.log(chalk.yellow("whitelist", JSON.stringify(whitelist, null, 2)));
+
+		await db
+			.update(users)
+			.set({
+				whiteListId: whitelist.whiteListId,
+			})
+			.where(eq(users.id, dbUser.id))
+			.execute();
+
+		await db
+			.update(loginWhitelist)
+			.set({
+				userId: dbUser.id,
+			})
+			.where(eq(loginWhitelist.email, dbUser.email))
+			.execute();
+	}
+};

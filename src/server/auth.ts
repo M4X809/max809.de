@@ -17,14 +17,17 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import {
 	accounts,
+	loginWhitelist,
 	sessions,
 	users,
 	verificationTokens,
 } from "~/server/db/schema";
 
 import { eq } from "drizzle-orm";
-import { checkConf } from "~/lib/sUtils";
+import { checkConf, checkWhitelist } from "~/lib/sUtils";
 import type { Key } from "ts-key-enum";
+import chalk from "chalk";
+import { z } from "zod";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -55,6 +58,7 @@ declare module "next-auth" {
 		permissions?: string[];
 		email?: string;
 		config?: Config;
+		whiteListId?: string;
 	}
 
 	interface Config {
@@ -62,7 +66,7 @@ declare module "next-auth" {
 			expanded?: string[];
 		};
 		global?: {
-			openCommandKey?: keyof typeof Key | keyof typeof Key[];
+			openCommandKey?: keyof typeof Key | keyof (typeof Key)[];
 		};
 	}
 
@@ -83,7 +87,7 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async session({ session, user }: { session: Session; user: User }) {
 			const checkedConfig = checkConf(user?.config);
-
+			if (!user.whiteListId) void checkWhitelist({ user });
 
 			return {
 				...session,
@@ -103,56 +107,165 @@ export const authOptions: NextAuthOptions = {
 		},
 		async signIn({
 			user,
+			account,
 			profile,
 		}: {
 			user: User | AdapterUser;
 			account: Account | null;
 			profile?: Profile & { image_url?: string; banner_url?: string };
 		}) {
-			client.identify({
-				distinctId: user.id,
-				properties: {
-					name: `${user.name}${env.NODE_ENV === "development" ? " DEV" : ""}`,
-					id: user.id,
-				},
-			});
-			const signInAllowed = await client.isFeatureEnabled("sign-in", user.id);
-			client.capture({
-				event: "sign-in",
-				distinctId: user.id,
-			});
-			console.log("sign in allowed", signInAllowed, user.id);
-			if (!signInAllowed) {
-				return false;
-			}
-			client.capture({
-				event: "sign-in",
-				distinctId: user.id,
-			});
-
+			console.log(
+				chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
+			);
+			console.log(
+				chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
+			);
+			console.log(
+				chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
+			);
 			try {
-				const dbUser = await db.query.users.findFirst({
-					where: (users, { eq }) => eq(users.id, user.id),
-				});
+				const { success: isUUID, data: uuid } = z
+					.string()
+					.uuid()
+					.safeParse(user.id);
 
-				const checkConfig = checkConf(dbUser?.config);
+				if (isUUID) {
+					console.log(chalk.green("uuid", uuid));
+					const whitelist = await db.query.loginWhitelist.findFirst({
+						where: (loginWhitelist, { eq }) => eq(loginWhitelist.userId, uuid),
+					});
 
+					if (!whitelist) {
+						await db
+							.insert(loginWhitelist)
+							.values({
+								userId: uuid,
+								email: user.email,
+								lastLogin: new Date(),
+								oAuthProvider: account?.provider,
+								oAuthProviderAccountId: account?.providerAccountId,
+							})
+							.execute();
 
-				if (dbUser) {
-					await db
-						.update(users)
-						.set({
-							banner: profile?.banner_url,
-							config: checkConfig.data ?? dbUser.config,
-						})
-						.where(eq(users.id, user.id))
-						.execute();
+						const newWhitelist = await db.query.loginWhitelist.findFirst({
+							where: (loginWhitelist, { eq }) => eq(loginWhitelist.userId, uuid),
+						});
+						if (newWhitelist) {
+							await db
+								.update(users)
+								.set({
+									whiteListId: newWhitelist.whiteListId,
+								})
+								.where(eq(users.id, user.id))
+								.execute();
+						}
+
+						return false;
+					}
+
+					if (!whitelist?.allowed || whitelist.new) {
+						return false;
+					}
+					if (whitelist.allowed) {
+						await db
+							.update(loginWhitelist)
+							.set({
+								lastLogin: new Date(),
+							})
+							.where(eq(loginWhitelist.userId, uuid))
+							.execute();
+						return true;
+					}
+				}
+
+				if (!isUUID) {
+					console.log(chalk.red("not uuid", user.id));
+					const whitelist = await db.query.loginWhitelist.findFirst({
+						where: (loginWhitelist, { eq }) =>
+							eq(loginWhitelist.oAuthProviderAccountId, user.id),
+					});
+
+					if (!whitelist) {
+						await db
+							.insert(loginWhitelist)
+							.values({
+								email: user.email,
+								lastLogin: new Date(),
+								oAuthProvider: account?.provider,
+								oAuthProviderAccountId: account?.providerAccountId,
+							})
+							.execute();
+
+						return false;
+					}
+
+					if (!whitelist?.allowed || whitelist.new) {
+						return false;
+					}
+					if (whitelist.allowed) {
+						await db
+							.update(loginWhitelist)
+							.set({
+								lastLogin: new Date(),
+							})
+							.where(eq(loginWhitelist.oAuthProviderAccountId, user.id))
+							.execute();
+
+						return true;
+					}
 				}
 			} catch (error) {
-				console.error("error", error);
+				console.error(chalk.red.bold("error", error));
+				return false;
 			}
 
-			return true;
+			return false;
+
+			// client.identify({
+			// 	distinctId: user.id,
+			// 	properties: {
+			// 		name: `${user.name}${env.NODE_ENV === "development" ? " DEV" : ""}`,
+			// 		id: user.id,
+			// 	},
+			// });
+			// const signInAllowed = await client.isFeatureEnabled("sign-in", user.id);
+			// client.capture({
+			// 	event: "sign-in",
+			// 	distinctId: user.id,
+			// });
+			// console.log("sign in allowed", signInAllowed, user.id);
+			// if (!signInAllowed) {
+			// 	return false;
+			// }
+			// client.capture({
+			// 	event: "sign-in",
+			// 	distinctId: user.id,
+			// });
+
+			// ________ DONT DELETE _________
+
+			// try {
+			// 	const dbUser = await db.query.users.findFirst({
+			// 		where: (users, { eq }) => eq(users.id, user.id),
+			// 	});
+
+			// 	const checkConfig = checkConf(dbUser?.config);
+
+			// 	if (dbUser) {
+			// 		await db
+			// 			.update(users)
+			// 			.set({
+			// 				banner: profile?.banner_url,
+			// 				config: checkConfig.data ?? dbUser.config,
+			// 			})
+			// 			.where(eq(users.id, user.id))
+			// 			.execute();
+			// 	}
+			// } catch (error) {
+			// 	console.error("error", error);
+			// }
+
+			// return true;
 		},
 	},
 	theme: {
