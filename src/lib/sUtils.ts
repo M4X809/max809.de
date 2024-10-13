@@ -2,6 +2,7 @@ import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { env } from "~/env";
 import { getServerAuthSession } from "~/server/auth";
+import type { Key} from "ts-key-enum"
 
 export function getDomain(url: string = env.NEXTAUTH_URL) {
 	if (url.startsWith("http://")) return url;
@@ -101,6 +102,11 @@ export function checkConf(config: object | undefined | null) {
 				.default({
 					expanded: [],
 				}),
+			global: z.object({
+				openCommandKey : z.string().default("F1") as z.ZodType<keyof typeof Key > | z.ZodType< keyof typeof Key[]>,
+			}).default({
+				openCommandKey: "F1",
+			}),
 		})
 
 		.safeParse(config);

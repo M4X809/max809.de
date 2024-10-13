@@ -17,8 +17,6 @@ import { theme } from "./theme";
 import { Toaster } from "~/components/ui/sonner";
 import CommandHandler from "./_components/CommandHandler";
 import { getServerAuthSession } from "~/server/auth";
-import { CommandGroups } from "~/components/ui/command";
-import { faScrewdriverWrench } from "@fortawesome/pro-duotone-svg-icons";
 import { hasPermission } from "~/lib/sUtils";
 import { ManagementStoreProvider } from "~/providers/management-store-provider";
 
@@ -28,10 +26,6 @@ export const metadata: Metadata = {
   description: "The Homepage of @max809",
   icons: [{ rel: "icon", url: "/max809.webp" }],
 };
-
-
-
-
 
 
 
@@ -68,6 +62,8 @@ export default async function RootLayout({
                       />
                       {await hasPermission("mainCommandWindow") && <CommandHandler
                         session={session}
+                        keys={session?.user?.config?.global?.openCommandKey}
+
                       />}
                       {children}
                     </ModalsProvider>

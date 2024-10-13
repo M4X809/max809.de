@@ -14,6 +14,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { twMerge } from 'tailwind-merge'
 import { signOut } from 'next-auth/react'
+import type { Key } from 'ts-key-enum'
 
 const defaultCommands: CommandGroups[] = [
     {
@@ -210,7 +211,7 @@ const defaultCommands: CommandGroups[] = [
 ]
 
 
-const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { session: SessionType, commands?: CommandGroups[], keys?: string | readonly string[] }) => {
+const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { session: SessionType, commands?: CommandGroups[], keys?: keyof typeof Key | keyof typeof Key[] }) => {
     const [opened, { toggle, close }] = useDisclosure(false)
     const [loading, setLoading] = useState<string | undefined>(undefined)
     const mounted = useMounted()
@@ -226,7 +227,7 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
     const isAdmin = useIsAdmin(session)
     const isStaff = useIsStaff(session)
 
-    useHotkeys(keys, () => {
+    useHotkeys(keys as string | readonly string[], () => {
         toggle()
     }, {
         preventDefault: true,

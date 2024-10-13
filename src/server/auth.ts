@@ -24,6 +24,7 @@ import {
 
 import { eq } from "drizzle-orm";
 import { checkConf } from "~/lib/sUtils";
+import type { Key } from "ts-key-enum";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -60,6 +61,9 @@ declare module "next-auth" {
 		userPage?: {
 			expanded?: string[];
 		};
+		global?: {
+			openCommandKey?: keyof typeof Key | keyof typeof Key[];
+		};
 	}
 
 	type SessionType = Session | null | undefined;
@@ -78,6 +82,9 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async session({ session, user }: { session: Session; user: User }) {
+			const checkedConfig = checkConf(user?.config);
+
+
 			return {
 				...session,
 				user: {
@@ -85,6 +92,7 @@ export const authOptions: NextAuthOptions = {
 					...user,
 					email: undefined,
 					emailVerified: undefined,
+					config: checkedConfig.data,
 				},
 			};
 		},
