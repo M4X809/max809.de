@@ -7,7 +7,7 @@ import Link from 'next/link';
 import React from 'react'
 import { twMerge } from 'tailwind-merge';
 import ClientIcon from '~/app/_components/ClientIcon';
-import { hasPermission } from '~/lib/utils';
+import { hasPermission } from '~/lib/sUtils';
 
 
 export type User = {

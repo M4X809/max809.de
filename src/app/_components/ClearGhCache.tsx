@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ActionIcon, VisuallyHidden } from '@mantine/core'
 import Link from 'next/link'
 import React from 'react'
-import { onPageAllowed } from '~/lib/utils'
+import { onPageAllowed } from '~/lib/sUtils'
 
 const ClearGhCache = async () => {
     await onPageAllowed()

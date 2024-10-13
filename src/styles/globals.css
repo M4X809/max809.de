@@ -73,6 +73,18 @@ p > p {
 		--chart-4: 280 65% 60%;
 		--chart-5: 340 75% 55%;
 	}
+
+	::-webkit-scrollbar {
+		@apply h-2 w-2;
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply rounded-md bg-[rgba(255,255,255,0.1)] transition-colors duration-150 hover:bg-[rgba(255,255,255,0.12)];
+	}
+
+	::-webkit-scrollbar-track {
+		@apply rounded-md bg-gradient-to-t from-[#06080f] to-[#122b69];
+	}
 }
 @layer base {
 	* {

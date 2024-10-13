@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { hasPermission, isAdmin } from "~/lib/utils";
+import { hasPermission, isAdmin } from "~/lib/sUtils";
 import { qrCodes, sessions, users } from "~/server/db/schema";
 
 import {

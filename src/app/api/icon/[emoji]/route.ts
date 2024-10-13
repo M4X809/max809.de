@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { emojis } from "~/server/db/schema";
 import { getServerAuthSession } from "~/server/auth";
-import { getDomain, isAdmin } from "~/lib/utils";
+import { getDomain, isAdmin } from "~/lib/sUtils";
 import { env } from "~/env";
 import chalk from "chalk";
 import puppeteer from "puppeteer";

@@ -4,7 +4,7 @@ import { faUserShield, faUser } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Title, Grid, Tooltip, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group } from '@mantine/core';
 import React from 'react'
-import { hasPermission, onPageAllowed } from '~/lib/utils';
+import { hasPermission, onPageAllowed } from '~/lib/sUtils';
 import { api } from '~/trpc/server'
 
 import CustomAccordion from '../../../_dash-components/CustomAccordion';
@@ -170,18 +170,16 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     return (
 
 
-        <ManagementStoreProvider>
 
-            <Container fluid size={"xl"} px={{ base: 0, md: undefined }}>
-                <Grid pb={50} columns={10}>
-                    <GridCol
-                        span={{ base: 10, md: 2.5 }}>{userBody()}</GridCol>
-                    <GridCol span={{ base: 10, md: 7.5 }}>
-                        {MainBody()}
-                    </GridCol>
-                </Grid>
-            </Container>
-        </ManagementStoreProvider>
+        <Container fluid size={"xl"} px={{ base: 0, md: undefined }}>
+            <Grid pb={50} columns={10}>
+                <GridCol
+                    span={{ base: 10, md: 2.5 }}>{userBody()}</GridCol>
+                <GridCol span={{ base: 10, md: 7.5 }}>
+                    {MainBody()}
+                </GridCol>
+            </Grid>
+        </Container>
     )
 }
 

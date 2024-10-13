@@ -1,9 +1,14 @@
 "use client";
-import { create, createStore } from "zustand";
+import { createStore } from "zustand";
 
 export type ManagementStore = {
 	refreshing: boolean;
 	setRefreshing: (refreshing: boolean) => void;
+
+	saveUserCounter: number;
+	increaseSaveUserCounter: () => void;
+	saveDisabled: boolean;
+	setSaveDisabled: (saveDisabled: boolean) => void;
 
 	permissionsChanged: boolean;
 	setPermissionsChanged: (permissionsChanged: boolean) => void;
@@ -38,6 +43,13 @@ export const createManagementStore = () => {
 	return createStore<ManagementStore>()((set, get) => ({
 		refreshing: false,
 		setRefreshing: (refreshing) => set(() => ({ refreshing })),
+
+		saveUserCounter: 0,
+		increaseSaveUserCounter: () =>
+			set((state) => ({ saveUserCounter: state.saveUserCounter + 1 })),
+
+		saveDisabled: true,
+		setSaveDisabled: (saveDisabled) => set(() => ({ saveDisabled })),
 
 		permissionsChanged: false,
 		setPermissionsChanged: (permissionsChanged: boolean) =>

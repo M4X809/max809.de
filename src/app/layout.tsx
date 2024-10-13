@@ -15,18 +15,25 @@ import { CSPostHogProvider } from "./providers";
 import { QrCodeStoreProvider } from "~/providers/qr-code-provider";
 import { theme } from "./theme";
 import { Toaster } from "~/components/ui/sonner";
+import CommandHandler from "./_components/CommandHandler";
+import { getServerAuthSession } from "~/server/auth";
+import { hasPermission } from "~/lib/sUtils";
+import { ManagementStoreProvider } from "~/providers/management-store-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
   title: "max809.de",
   description: "The Homepage of @max809",
   icons: [{ rel: "icon", url: "/max809.webp" }],
-
 };
 
-export default function RootLayout({
+
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getServerAuthSession()
+
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <head>
@@ -45,14 +52,22 @@ export default function RootLayout({
             >
               <AppStoreProvider>
                 <QrCodeStoreProvider>
-                  <ModalsProvider>
-                    <Toaster
-                      closeButton
-                      visibleToasts={5}
-                      pauseWhenPageIsHidden
-                    />
-                    {children}
-                  </ModalsProvider>
+                  <ManagementStoreProvider>
+                    <ModalsProvider>
+
+                      <Toaster
+                        closeButton
+                        visibleToasts={5}
+                        pauseWhenPageIsHidden
+                      />
+                      {await hasPermission("mainCommandWindow") && <CommandHandler
+                        session={session}
+                        keys={session?.user?.config?.global?.openCommandKey}
+
+                      />}
+                      {children}
+                    </ModalsProvider>
+                  </ManagementStoreProvider>
                 </QrCodeStoreProvider>
               </AppStoreProvider>
             </MantineProvider>

@@ -1,7 +1,7 @@
 import { AccordionControl, AccordionItem, AccordionPanel, Box, TextInput, Text, ScrollArea, Stack, Center, ActionIcon, Tooltip, Paper, ActionIconGroup, TooltipFloating, Group } from "@mantine/core";
 import type { User } from "../../../_dash-components/UserCard";
 import { api } from "~/trpc/server";
-import { hasPermission } from "~/lib/utils";
+import { hasPermission } from "~/lib/sUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare, faEye, faTrashCan } from "@fortawesome/pro-duotone-svg-icons";
 import { ActionGroup, PreviewCode, SetLimitInput } from "./QrCodeClient";

@@ -4,7 +4,7 @@ import { emojis } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
 import { revalidatePath } from "next/cache";
-import { isAdmin } from "~/lib/utils";
+import { isAdmin } from "~/lib/sUtils";
 
 export const deleteEmoji = async (emojiId: string) => {
 	console.log("emojiId", emojiId);
