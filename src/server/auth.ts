@@ -137,12 +137,6 @@ export const authOptions: NextAuthOptions = {
 
 				const checkConfig = checkConf(dbUser?.config);
 
-				console.log(
-					"checkConfig",
-					checkConfig.success,
-					checkConfig.data,
-					checkConfig.error,
-				);
 
 				if (dbUser) {
 					await db
@@ -167,6 +161,9 @@ export const authOptions: NextAuthOptions = {
 	},
 	session: {
 		maxAge: 10 * 24 * 60 * 60, // 10 days
+	},
+	pages: {
+		signIn: "/api/auth/signin",
 	},
 	secret: env.NEXTAUTH_SECRET,
 	adapter: DrizzleAdapter(db, {
