@@ -20,7 +20,7 @@ const defaultCommands: CommandGroups[] = [
         type: "group",
         permission: ["editUser", "editUserPermissions", "setStaff", "setAdmin", "changeQrLimits"],
         heading: "User",
-        onlyOnPath: ["/dashboard/user"],
+        onlyOnPath: ["/dashboard/user/"],
         commands: [
             {
                 icon: faSave,
@@ -44,7 +44,7 @@ const defaultCommands: CommandGroups[] = [
     {
         type: "separator",
         key: "saveUser",
-        onlyOnPath: ["/dashboard/user"],
+        onlyOnPath: ["/dashboard/user/"],
         permission: ["editUser", "editUserPermissions", "setStaff", "setAdmin", "changeQrLimits"],
     },
     {
