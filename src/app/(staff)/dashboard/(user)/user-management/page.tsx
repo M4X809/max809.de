@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core'
 import React from 'react'
-import { onPageAllowed } from '~/lib/utils'
+import { onPageAllowed } from '~/lib/sUtils'
 import { api } from '~/trpc/server'
 import UserCard from '../../_dash-components/UserCard'
 

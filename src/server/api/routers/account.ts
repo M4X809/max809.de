@@ -1,16 +1,11 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { checkConf, hasPermission, isAdmin, setNestedValue } from "~/lib/utils";
-import { users, usersRelations } from "~/server/db/schema";
+import { checkConf, isAdmin, setNestedValue } from "~/lib/sUtils";
+import { users } from "~/server/db/schema";
 import { db } from "~/server/db";
-import { Config } from "next-auth";
 
 // Dynamically infer keys of Config and Config["userPage"] from TypeScript's `keyof`
 export const accountRouter = createTRPCRouter({

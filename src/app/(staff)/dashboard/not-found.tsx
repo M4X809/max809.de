@@ -4,7 +4,7 @@ import type React from 'react'
 import { twMerge } from 'tailwind-merge';
 import { AuthButton } from '~/app/_components/AuthButton';
 import Shell from '~/app/_components/Shell';
-import { isStaff } from '~/lib/utils';
+import { isStaff } from '~/lib/sUtils';
 import { getServerAuthSession } from '~/server/auth';
 import { HydrateClient } from '~/trpc/server';
 

@@ -7,7 +7,7 @@ import { getServerAuthSession } from "~/server/auth";
 import Shell from "~/app/_components/Shell";
 import { ActionIcon, Box, Center, Container, Group, Pill, Stack, Text, Title } from "@mantine/core";
 import { HydrateClient } from "~/trpc/server";
-import { getDomain, isAdmin } from "~/lib/utils";
+import { getDomain, isAdmin } from "~/lib/sUtils";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";

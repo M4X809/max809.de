@@ -1,13 +1,7 @@
-import { clsx, type ClassValue } from "clsx";
-import { notFound, redirect, RedirectType } from "next/navigation";
-import { twMerge } from "tailwind-merge";
+import { redirect, RedirectType } from "next/navigation";
 import { z } from "zod";
 import { env } from "~/env";
 import { getServerAuthSession } from "~/server/auth";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
 
 export function getDomain(url: string = env.NEXTAUTH_URL) {
 	if (url.startsWith("http://")) return url;

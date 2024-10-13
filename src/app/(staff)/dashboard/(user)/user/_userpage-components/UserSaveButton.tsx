@@ -35,6 +35,9 @@ const UserSaveButton = () => {
     const limitChanged = useManagementStore((state) => state.limitChanged)
     const setLimitChanged = useManagementStore((state) => state.setLimitChanged)
 
+    const saveUserCounter = useManagementStore((state) => state.saveUserCounter)
+    const setSaveDisabled = useManagementStore((state) => state.setSaveDisabled)
+
     const [errorOject, setErrorOject] = useState<{ updateError?: any, updateErrorAdmin?: any, updateErrorLimit?: any, updateErrorStaff?: any }>({})
 
     const { mutate: updatePermissions, isPending: isUpdating, isSuccess: isUpdated, error: updateError, reset: resetPermissionsMutation, isError: isPermissionsError } = api.management.updatePermissions.useMutation()
@@ -61,7 +64,7 @@ const UserSaveButton = () => {
     }, [])
 
     const handleSave = () => {
-        if (loading) return
+        if (loading || !unsavedChanges) return
         toast.dismiss("saving-failed")
         resetPermissionsMutation()
         resetStaffMutation()
@@ -82,6 +85,18 @@ const UserSaveButton = () => {
             updateLimit({ limit: typeof limit === "string" ? Number.parseInt(limit) : limit, id: id })
         }
     }
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (!mounted) return
+        if (saveUserCounter > 0) {
+            handleSave()
+        }
+    }, [mounted, saveUserCounter])
+
+    useEffect(() => {
+        setSaveDisabled(!unsavedChanges || loading)
+    }, [unsavedChanges, setSaveDisabled, loading])
 
     useEffect(() => {
         if (loading || !hasError) return

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Shell from "~/app/_components/Shell";
 import { env } from "~/env";
-import { getDomain, onPageAllowed } from "~/lib/utils";
+import { getDomain, onPageAllowed } from "~/lib/sUtils";
 import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 

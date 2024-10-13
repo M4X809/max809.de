@@ -10,6 +10,8 @@ import {
 	faQrcode,
 	faChartLine,
 	faRightLeft,
+	faToolbox,
+	faCommand,
 } from "@fortawesome/pro-duotone-svg-icons";
 import type { Permissions as PermissionsType, Perm } from "./types";
 import type { Session } from "next-auth";
@@ -137,6 +139,17 @@ export const allPerms: PermissionsType[] = [
 				perm: "deleteQrCode",
 				icon: faTrash,
 				danger: true,
+			},
+		],
+	},
+	{
+		name: "Misc",
+		icon: faToolbox,
+		perms: [
+			{
+				icon: faCommand,
+				perm: "mainCommandWindow",
+				name: "Open Command Window",
 			},
 		],
 	},

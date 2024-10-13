@@ -5,6 +5,13 @@ export type ManagementStore = {
 	refreshing: boolean;
 	setRefreshing: (refreshing: boolean) => void;
 
+	// saveUserFunc: (() => void) | null;
+	// setSaveUserFunc: (saveUserFunc: (() => void) | null) => void;
+	saveUserCounter: number;
+	increaseSaveUserCounter: () => void;
+	saveDisabled: boolean;
+	setSaveDisabled: (saveDisabled: boolean) => void;
+
 	permissionsChanged: boolean;
 	setPermissionsChanged: (permissionsChanged: boolean) => void;
 
@@ -38,6 +45,16 @@ export const createManagementStore = () => {
 	return createStore<ManagementStore>()((set, get) => ({
 		refreshing: false,
 		setRefreshing: (refreshing) => set(() => ({ refreshing })),
+
+		// saveUserFunc: null,
+		// setSaveUserFunc: (saveUserFunc) => set(() => ({ saveUserFunc })),
+
+		saveUserCounter: 0,
+		increaseSaveUserCounter: () =>
+			set((state) => ({ saveUserCounter: state.saveUserCounter + 1 })),
+
+		saveDisabled: true,
+		setSaveDisabled: (saveDisabled) => set(() => ({ saveDisabled })),
 
 		permissionsChanged: false,
 		setPermissionsChanged: (permissionsChanged: boolean) =>
@@ -86,3 +103,9 @@ export const createManagementStore = () => {
 		},
 	}));
 };
+
+// export function getSaveUserFunc() {
+// 	const func = createManagementStore().getState().saveUserFunc;
+// 	console.log("func", func);
+// 	return func;
+// }

@@ -23,7 +23,7 @@ import {
 } from "~/server/db/schema";
 
 import { eq } from "drizzle-orm";
-import { checkConf } from "~/lib/utils";
+import { checkConf } from "~/lib/sUtils";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,

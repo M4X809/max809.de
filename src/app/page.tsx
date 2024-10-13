@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
 // import { env } from "~/env";
-import { getDomain, getUtUrl } from "~/lib/utils";
+import { getDomain, getUtUrl } from "~/lib/sUtils";
 import ShowcaseGrid, { type ShowcaseLayout } from "~/components/showcase-grid"
 import 'react-photo-view/dist/react-photo-view.css';
 import { env } from "~/env";

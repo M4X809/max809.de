@@ -1,6 +1,12 @@
 "use client";
 
+import clsx, { type ClassValue } from "clsx";
 import type { Session } from "next-auth";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
 
 export function formatTime(msInput: number | string): string {
 	// Convert input to a number if it's a string
