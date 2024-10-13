@@ -194,25 +194,6 @@ type CommandsFunction = (props: { close: () => void, router: AppRouterInstance, 
 
 type Commands = CommandsObject | CommandsFunction
 
-
-// interface Commands {
-//   key: string;
-//   label: string;
-//   onSelect: ({ val, close, router, saveUserFunc }: { val: string, close: () => void, router: AppRouterInstance, saveUserFunc?: () => void }) => void;
-//   keywords?: string[];
-//   icon: IconProp;
-//   permission?: string | string[];
-//   disabled?: boolean | (({ val, saveDisabled }: { val: string, saveDisabled: boolean }) => boolean);
-//   requireAdmin?: boolean;
-//   requireStaff?: boolean;
-//   onlyOnPath?: string[];
-//   className?: string;
-
-// }
-
-
-
-
 export {
   Command,
   CommandDialog,
