@@ -187,6 +187,7 @@ type CommandsObject = {
   requireStaff?: boolean;
   onlyOnPath?: string[];
   className?: string;
+  prefetch?: string;
 }
 
 type CommandsFunction = (props: { close: () => void, router: AppRouterInstance, session: SessionType, setLoading: React.Dispatch<React.SetStateAction<string | undefined>> }) => CommandsObject | undefined | null

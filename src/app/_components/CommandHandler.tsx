@@ -1,5 +1,5 @@
 "use client"
-import { useDisclosure, } from '@mantine/hooks'
+import { useDisclosure, useMounted, } from '@mantine/hooks'
 import type { SessionType } from 'next-auth'
 import React, { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -178,6 +178,7 @@ const defaultCommands: CommandGroups[] = [
                     label: `Editing Page: ${session.user.name}`,
                     keywords: ["edit", "page", "account", `${session.user.name}`],
                     permission: ["viewUserPage"],
+                    prefetch: `/dashboard/user/${session.user.id}`,
                     onSelect: () => {
                         router.push(`/dashboard/user/${session.user.id}`)
                         close()
@@ -211,6 +212,7 @@ const defaultCommands: CommandGroups[] = [
 const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { session: SessionType, commands?: CommandGroups[], keys?: string | readonly string[] }) => {
     const [opened, { toggle, close }] = useDisclosure(false)
     const [loading, setLoading] = useState<string | undefined>(undefined)
+    const mounted = useMounted()
 
     const incrementSaveUserCounter = useManagementStore((state) => state.increaseSaveUserCounter)
     const saveDisabled = useManagementStore((state) => state.saveDisabled)
@@ -231,6 +233,8 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
         enableOnContentEditable: true,
         enableOnFormTags: ["INPUT", "TEXTAREA", "SELECT"],
     })
+
+
 
     return (
 
@@ -268,7 +272,7 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
                                 if (command.requireAdmin && !isAdmin) return null
                                 if (command.requireStaff && !isStaff) return null
                                 if (command.onlyOnPath && !command.onlyOnPath.every((path) => currentPath.includes(path))) return null
-
+                                if (typeof command.prefetch !== "undefined" && typeof window !== "undefined" && mounted) { router.prefetch(command.prefetch); /** console.log("prefetching", command.prefetch) */ }
                                 return <CommandItem
                                     className={twMerge(command.className)}
                                     key={command.key}
