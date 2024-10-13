@@ -1,12 +1,10 @@
 "use client";
-import { create, createStore } from "zustand";
+import { createStore } from "zustand";
 
 export type ManagementStore = {
 	refreshing: boolean;
 	setRefreshing: (refreshing: boolean) => void;
 
-	// saveUserFunc: (() => void) | null;
-	// setSaveUserFunc: (saveUserFunc: (() => void) | null) => void;
 	saveUserCounter: number;
 	increaseSaveUserCounter: () => void;
 	saveDisabled: boolean;
@@ -45,9 +43,6 @@ export const createManagementStore = () => {
 	return createStore<ManagementStore>()((set, get) => ({
 		refreshing: false,
 		setRefreshing: (refreshing) => set(() => ({ refreshing })),
-
-		// saveUserFunc: null,
-		// setSaveUserFunc: (saveUserFunc) => set(() => ({ saveUserFunc })),
 
 		saveUserCounter: 0,
 		increaseSaveUserCounter: () =>
@@ -103,9 +98,3 @@ export const createManagementStore = () => {
 		},
 	}));
 };
-
-// export function getSaveUserFunc() {
-// 	const func = createManagementStore().getState().saveUserFunc;
-// 	console.log("func", func);
-// 	return func;
-// }

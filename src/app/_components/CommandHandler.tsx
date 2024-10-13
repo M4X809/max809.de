@@ -13,10 +13,7 @@ import { faArrowRightToBracket, faArrowsRotate, faIcons, faNote, faQrcode, faSav
 import { usePathname, useRouter } from 'next/navigation'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { twMerge } from 'tailwind-merge'
-// import { getSaveUserFunc } from '~/stores/management-store'
-
 import { signOut } from 'next-auth/react'
-import { c } from 'node_modules/nuqs/dist/serializer-DjSGvhZt'
 
 const defaultCommands: CommandGroups[] = [
     {
@@ -30,9 +27,10 @@ const defaultCommands: CommandGroups[] = [
                 key: "saveUser",
                 label: "Save User",
                 keywords: ["save", "user"],
-                onSelect: ({ saveUserFunc }) => {
+                onSelect: ({ saveUserFunc, close }) => {
                     if (saveUserFunc) {
                         saveUserFunc()
+                        close()
                     }
                 },
                 disabled({ saveDisabled }) {
@@ -155,8 +153,8 @@ const defaultCommands: CommandGroups[] = [
                 label: "Reload",
                 keywords: ["reload", "page", "refresh"],
                 onSelect: ({ router, close }) => {
-                    router.refresh()
                     close()
+                    router.refresh()
                 },
             }
         ],
@@ -241,7 +239,6 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
                 className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white px-3'
                 placeholder="Type a command or search..." />
             <CommandList className='bg-transparent '>
-                {/* <ScrollArea className='overflow-y-visible h-[inherit]'> */}
                 <CommandEmpty>No results found.</CommandEmpty>
                 {commands?.map((command) => {
                     if (command.type === "separator") {
@@ -286,54 +283,13 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
                                 >
                                     {loading !== command.key && <FontAwesomeIcon icon={command.icon} className="mr-2 " fontSize={20} />}
                                     {/* @ts-ignore */}
-                                    {loading === command.key && <FontAwesomeIcon icon={faSpinner} className="mr-2 " fontSize={20} spin style={{ "--fa-animation-duration": "1s", "--fa-animation-timing": "ease" }} />}
+                                    {loading === command.key && <FontAwesomeIcon icon={faSpinner} className="mr-2 " fontSize={20} spin style={{ "--fa-animation-duration": "1s", "--fa-animation-timing": "ease-in" }} />}
                                     <Text component='span'>{command.label}</Text>
                                 </CommandItem>
                             })}
                         </CommandGroup>
                     }
                 })}
-
-
-                {/* <CommandGroup heading="Suggestions">
-                        <CommandItem
-                            value='calendar'
-                            keywords={['calendar', 'date', 'time']}
-                            onSelect={(val) => {
-                                console.log("Selected", val)
-                            }}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            <span>Calendar</span>
-                        </CommandItem>
-                        <CommandItem>
-                            <FaceIcon className="mr-2 h-4 w-4" />
-                            <span>Search Emoji</span>
-                        </CommandItem>
-                        <CommandItem disabled>
-                            <RocketIcon className="mr-2 h-4 w-4" />
-                            <span>Launch</span>
-                        </CommandItem>
-                    </CommandGroup>
-                    <CommandSeparator />
-                    <CommandGroup heading="Settings">
-                        <CommandItem>
-                            <PersonIcon className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                            <CommandShortcut>⌘P</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem>
-                            <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-                            <span>Mail</span>
-                            <CommandShortcut>⌘B</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem>
-                            <GearIcon className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
-                            <CommandShortcut>⌘S</CommandShortcut>
-                        </CommandItem>
-                    </CommandGroup> */}
-                {/* </ScrollArea> */}
             </CommandList>
         </CommandDialog>
     )
