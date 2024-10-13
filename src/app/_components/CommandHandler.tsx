@@ -29,8 +29,8 @@ const defaultCommands: CommandGroups[] = [
                 keywords: ["save", "user"],
                 onSelect: ({ saveUserFunc, close }) => {
                     if (saveUserFunc) {
-                        saveUserFunc()
                         close()
+                        setTimeout(() => saveUserFunc(), 100)
                     }
                 },
                 disabled({ saveDisabled }) {
@@ -154,7 +154,8 @@ const defaultCommands: CommandGroups[] = [
                 keywords: ["reload", "page", "refresh"],
                 onSelect: ({ router, close }) => {
                     close()
-                    router.refresh()
+                    setTimeout(() => router.refresh(), 100)
+
                 },
             }
         ],
