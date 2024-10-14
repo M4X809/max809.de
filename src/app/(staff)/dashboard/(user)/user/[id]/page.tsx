@@ -21,6 +21,8 @@ import AccGroup from '../_userpage-components/AccGroup';
 import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
 import ManageQrCodes from '../_userpage-components/ManageQrCodes';
 import Link from 'next/link';
+import { TRPCError } from '@trpc/server';
+import { redirect } from 'next/navigation';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 
@@ -41,6 +43,10 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 
     const user = await api.management.getUser(params.id)
+
+    if (!user) {
+        redirect("/dashboard/user-management")
+    }
 
     const accountActions = async () => {
         if (await hasPermission(["deleteUser", "resetPermissions", "logoutAllDevices"]))

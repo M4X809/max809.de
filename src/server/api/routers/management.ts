@@ -44,10 +44,8 @@ export const managementRouter = createTRPCRouter({
 			where: (users, { eq }) => eq(users.id, input),
 		});
 		if (!user) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: "No user found with that ID.",
-			});
+			console.warn("No User was Found");
+			return undefined;
 		}
 
 		return user;
