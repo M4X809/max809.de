@@ -9,7 +9,7 @@ import type { CommandGroups, } from '~/components/ui/command'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Text } from '@mantine/core'
 import { useIsAdmin, useIsStaff, usePermission } from '~/lib/cUtils'
-import { faArrowRightToBracket, faArrowsRotate, faIcons, faNote, faQrcode, faSave, faScrewdriverWrench, faSpinner, faStopwatch, faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons'
+import { faArrowRightToBracket, faArrowsRotate, faIcons, faList, faNote, faQrcode, faSave, faScrewdriverWrench, faSpinner, faStopwatch, faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons'
 import { usePathname, useRouter } from 'next/navigation'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { twMerge } from 'tailwind-merge'
@@ -50,7 +50,7 @@ const defaultCommands: CommandGroups[] = [
     },
     {
         type: "group",
-        permission: ["viewUser"],
+        permission: ["viewUser", "viewWhitelist"],
         heading: "Staff Dashboard",
         commands: [
             {
@@ -75,7 +75,19 @@ const defaultCommands: CommandGroups[] = [
                     close()
                 },
                 permission: ["viewUser"],
+            },
+            {
+                icon: faList,
+                key: "loginWhitelist",
+                label: "Login Whitelist",
+                keywords: ["login", "whitelist", "staff"],
+                onSelect: ({ close, router }) => {
+                    router.push("/dashboard/login-whitelist")
+                    close()
+                },
+                permission: ["viewWhitelist"],
             }
+
         ],
     },
     {
@@ -249,16 +261,16 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
                 {commands?.map((command) => {
                     if (command.type === "separator") {
                         if (command.permission && !hasPermission(command.permission)) return null
-                        if (command.requireAdmin && !isAdmin) return null
-                        if (command.requireStaff && !isStaff) return null
+                        if (command.requireAdmin && !isAdmin()) return null
+                        if (command.requireStaff && !isStaff()) return null
                         if (command.onlyOnPath && !command.onlyOnPath.every((path) => currentPath.includes(path))) return null
 
                         return <CommandSeparator key={command.key} alwaysRender={command.alwaysRender} />
                     }
                     if (command.type === "group") {
                         if (command.permission && !hasPermission(command.permission)) return null
-                        if (command.requireAdmin && !isAdmin) return null
-                        if (command.requireStaff && !isStaff) return null
+                        if (command.requireAdmin && !isAdmin()) return null
+                        if (command.requireStaff && !isStaff()) return null
                         if (command.onlyOnPath && !command.onlyOnPath.every((path) => currentPath.includes(path))) return null
 
 
@@ -270,9 +282,10 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
                                 if (!command) return null
 
 
+
                                 if (command.permission && !hasPermission(command.permission)) return null
-                                if (command.requireAdmin && !isAdmin) return null
-                                if (command.requireStaff && !isStaff) return null
+                                if (command.requireAdmin && !isAdmin()) return null
+                                if (command.requireStaff && !isStaff()) return null
                                 if (command.onlyOnPath && !command.onlyOnPath.every((path) => currentPath.includes(path))) return null
                                 if (typeof command.prefetch !== "undefined" && typeof window !== "undefined" && mounted) { router.prefetch(command.prefetch); /** console.log("prefetching", command.prefetch) */ }
                                 return <CommandItem

@@ -28,6 +28,10 @@ const signinErrors = {
         title: "Unable to sign in",
         description: "The sign in link is no longer valid. It may have been used already or it may have expired.",
     },
+    Callback: {
+        title: "Unable to sign in",
+        description: "The sign in attempt failed. Please try again.",
+    },
 }
 
 
@@ -74,6 +78,8 @@ export default async function ErrorPage({ searchParams }: { searchParams: Record
     if (session?.user.id) {
         return redirect("/")
     }
+
+
 
     const currentError = error ? signinErrors[error as keyof typeof signinErrors] : signinErrors.default
 

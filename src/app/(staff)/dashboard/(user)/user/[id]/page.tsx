@@ -2,7 +2,7 @@
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faUserShield, faUser } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Title, Grid, Tooltip, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group } from '@mantine/core';
+import { Title, Grid, Tooltip, Card, Center, Avatar, rem, Container, GridCol, Box, Stack, Group, Button, Text } from '@mantine/core';
 import React from 'react'
 import { hasPermission, onPageAllowed } from '~/lib/sUtils';
 import { api } from '~/trpc/server'
@@ -20,6 +20,7 @@ import { perms } from "~/permissions";
 import AccGroup from '../_userpage-components/AccGroup';
 import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
 import ManageQrCodes from '../_userpage-components/ManageQrCodes';
+import Link from 'next/link';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
 
@@ -123,12 +124,33 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         </Card>
                     </GridCol>
                     {await hasPermission(["setAdmin", "setStaff"]) &&
-
                         <GridCol span={6}>
                             <Card px={25} className={twMerge(className)}>
                                 <AccGroup user={user} session={session} />
                             </Card>
                         </GridCol>}
+                    {await hasPermission(["viewWhitelist"]) &&
+                        <GridCol span={6}>
+                            <Card px={15} className={twMerge(className)}>
+                                <Button
+                                    prefetch={false}
+                                    disabled={!user.whiteListId}
+                                    title={`View Whitelist - ${user.name}`}
+                                    className='bg-white/10 hover:bg-white/20'
+                                    component={Link}
+                                    href={`/dashboard/login-whitelist?search=${user.id}`}
+                                >
+                                    {!!user.whiteListId && <Text truncate fz={13} fw={500}>
+                                        View Whitelist - {user.name}
+                                    </Text>}
+                                    {!user.whiteListId && <Text truncate fz={13} fw={500}>
+                                        User not in Whitelist
+                                    </Text>}
+                                </Button>
+                            </Card>
+                        </GridCol>
+
+                    }
                 </Grid>
             </React.Fragment>
         );

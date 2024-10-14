@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge';
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { usePermission } from '~/lib/cUtils';
+import { useIsAdmin, useIsStaff, usePermission } from '~/lib/cUtils';
 import type { Session } from 'next-auth';
 
 type multi = {
@@ -24,6 +24,8 @@ type multi = {
     version?: string;
     disabled?: boolean;
     permissions?: string[];
+    requireAdmin?: boolean;
+    requireStaff?: boolean;
 };
 
 type item = {
@@ -37,6 +39,8 @@ type item = {
     disabled?: boolean;
     depth?: number;
     permission?: string;
+    requireAdmin?: boolean;
+    requireStaff?: boolean;
 };
 type divider = {
     type: "divider";
@@ -51,6 +55,8 @@ type divider = {
     */
     pos?: "center" | "left" | "right";
     permissions?: string[];
+    requireAdmin?: boolean;
+    requireStaff?: boolean;
 };
 type childItem = {
     type?: "item";
@@ -62,6 +68,8 @@ type childItem = {
     version?: string;
     disabled?: boolean;
     permission?: string;
+    requireAdmin?: boolean;
+    requireStaff?: boolean;
 };
 
 export type NavMenuItemProps = item | divider | multi;
@@ -102,6 +110,10 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
     const data = inputData
     const pathname = usePathname();
     const hasPermission = usePermission(session);
+    const isAdmin = useIsAdmin(session);
+    const isStaff = useIsStaff(session);
+
+
 
     const [openStates, setOpenStates] = useSessionStorage<{
         [key: string]: boolean;
@@ -120,6 +132,9 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
     const content = data.map((item, index) => {
         if (item.type === "divider") {
             if (item?.permissions?.length && !hasPermission(item.permissions)) return null;
+            if (item?.requireAdmin && !isAdmin()) return null;
+            if (item?.requireStaff && !isStaff()) return null;
+
             return (
                 <Divider
                     color={"#f0f0f0"}
@@ -143,6 +158,9 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
         }
         if (item.type === "item") {
             if (item?.permission && !hasPermission(item.permission)) return null;
+            if (item?.requireAdmin && !isAdmin()) return null;
+            if (item?.requireStaff && !isStaff()) return null;
+
 
             const currentPath = pathname
             const itemPath = item.to
@@ -166,6 +184,9 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
         if (item.type === "multi") {
             const children = item.children.map((child) => {
                 if (child.permission && !hasPermission(child.permission)) return null;
+                if (child?.requireAdmin && !isAdmin()) return null;
+                if (child?.requireStaff && !isStaff()) return null;
+
                 const currentPath = pathname
                 const childPath = child.to
                 const isActive = childPath === currentPath;
@@ -188,6 +209,9 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
             });
 
             if (item?.permissions?.length && !hasPermission(item.permissions)) return null
+            if (item?.requireAdmin && !isAdmin()) return null;
+            if (item?.requireStaff && !isStaff()) return null;
+
 
             const isAnyChildActive = item.children.some((child) => {
                 const childPath = child.to

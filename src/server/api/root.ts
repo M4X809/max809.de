@@ -3,6 +3,7 @@ import { codesRouter } from "./routers/codes";
 import { cubeRouter } from "./routers/cube";
 import { managementRouter } from "./routers/management";
 import { accountRouter } from "./routers/account";
+import { whitelistRouter } from "./routers/whitelist";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
 	cube: cubeRouter,
 	management: managementRouter,
 	account: accountRouter,
+	whitelist: whitelistRouter,
 	// post: postRouter,
 });
 

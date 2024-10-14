@@ -74,6 +74,7 @@ export const users = createTable("user", {
 	staff: boolean("staff").default(false),
 	permissions: text("permissions").array().notNull().default([]),
 	config: json("config").notNull().default({}).$type<Config>(),
+	whiteListId: varchar("whiteListId", { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -178,4 +179,18 @@ export const emojis = createTable("emoji-icon", {
 	lastCalledAt: timestamp("last_called_at", { withTimezone: true })
 		.notNull()
 		.default(sql`CURRENT_TIMESTAMP`),
+});
+export const loginWhitelist = createTable("login_whitelist", {
+	whiteListId: varchar("whiteListId", { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	userId: varchar("user_id", { length: 255 }).references(() => users.id),
+	email: varchar("email", { length: 255 }).unique().notNull(),
+	new: boolean("new").default(true),
+	hasLoggedIn: boolean("has_logged_in").default(false),
+	lastLogin: timestamp("last_login", { withTimezone: true }),
+	allowed: boolean("allowed").default(false),
+	oAuthProvider: varchar("oAuthProvider", { length: 255 }),
+	oAuthProviderAccountId: varchar("oAuthProviderAccountId", { length: 255 }),
 });
