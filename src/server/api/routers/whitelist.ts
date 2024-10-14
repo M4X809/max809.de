@@ -52,7 +52,6 @@ export const whitelistRouter = createTRPCRouter({
 					orderBy: (loginWhitelist, { desc }) => [
 						desc(loginWhitelist.lastLogin),
 						desc(loginWhitelist.allowed),
-						// desc(loginWhitelist.new),
 					],
 					offset: (input.page - 1) * input.limit,
 					limit: input.limit,

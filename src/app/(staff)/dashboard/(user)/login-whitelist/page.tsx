@@ -32,10 +32,7 @@ export const metadata: Metadata = {
         url: "https://max809.de/dashboard/login-whitelist",
         locale: "en_US",
     }
-
 }
-
-
 
 export default async function LoginWhitelist({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
     await onPageAllowed("viewWhitelist")
@@ -45,7 +42,6 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
     const session = await getServerAuthSession()
 
     const hasViewUserPage = await hasPermission("viewUserPage")
-
 
     return (
         <Box className="rounded-lg bg-[rgba(255,255,255,0.1)] backdrop-blur-lg py-8 px-5 w-full h-fit">
@@ -62,12 +58,8 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
                     </form>
                     <Search />
                 </Group>
-
                 <WhitelistPagination totalRows={whiteList.total} />
-
-
             </Group>
-
 
             <Table className="w-full ">
                 <TableCaption>Login Whitelist.</TableCaption>
@@ -94,61 +86,52 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {
-                        whiteList.data.map(async (whitelist) => {
-                            return (
-                                <TableRow key={whitelist.whiteListId} className="hover:bg-transparent text-white">
-                                    {/* <TableCell >
-                                        <Text truncate fz={14} inline >
-                                            {whitelist.whiteListId}
-                                        </Text>
-                                    </TableCell> */}
-                                    <TableCell>
-                                        <Text
-                                            className={hasViewUserPage ? "hover:underline text-blue-400 hover:text-blue-500" : ""}
-                                            component={hasViewUserPage ? Link : undefined}
-                                            href={hasViewUserPage ? `/dashboard/user/${whitelist.userId}` : "#"}
-                                            prefetch={false}
-                                            truncate fz={14} inline >
-                                            {whitelist.userId}
-                                        </Text>
-                                    </TableCell>
-                                    <TableCell>{whitelist.email}</TableCell>
-                                    <TableCell>{whitelist.oAuthProviderAccountId}</TableCell>
-                                    <TableCell>
-                                        <Text truncate fz={14} inline tt={"capitalize"} >
-                                            {whitelist.oAuthProvider}
-                                        </Text>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Center>{whitelist.new ? <Text fz={14} inline c={"green"}>Yes</Text> : <Text fz={14} inline c={"red"}>No</Text>}</Center>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Center>{whitelist.allowed ? <Text fz={14} inline c={"green"}>Allowed</Text> : <Text fz={14} inline c={"red"}>Denied</Text>}</Center>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Center>
-                                            {whitelist.lastLogin ?
-                                                <LastLogin date={whitelist.lastLogin} />
-                                                : "Never"
-                                            }
-                                        </Center>
-                                    </TableCell>
-
-                                    {await hasPermission(["editWhitelistStatus", "deleteWhitelistEntry"]) && <TableCell>
-                                        <Center>
-                                            <ActionButtons
-                                                whiteListId={whitelist.whiteListId}
-                                                session={session}
-                                                allowed={whitelist.allowed}
-                                            />
-                                        </Center>
-                                    </TableCell>}
-
-                                </TableRow>
-                            )
-                        })
-                    }
+                    {whiteList.data.map(async (whitelist) => {
+                        return (
+                            <TableRow key={whitelist.whiteListId} className="hover:bg-transparent text-white">
+                                <TableCell>
+                                    <Text
+                                        className={hasViewUserPage ? "hover:underline text-blue-400 hover:text-blue-500" : ""}
+                                        component={hasViewUserPage ? Link : undefined}
+                                        href={hasViewUserPage ? `/dashboard/user/${whitelist.userId}` : "#"}
+                                        prefetch={false}
+                                        truncate fz={14} inline >
+                                        {whitelist.userId}
+                                    </Text>
+                                </TableCell>
+                                <TableCell>{whitelist.email}</TableCell>
+                                <TableCell>{whitelist.oAuthProviderAccountId}</TableCell>
+                                <TableCell>
+                                    <Text truncate fz={14} inline tt={"capitalize"} >
+                                        {whitelist.oAuthProvider}
+                                    </Text>
+                                </TableCell>
+                                <TableCell>
+                                    <Center>{whitelist.new ? <Text fz={14} inline c={"green"}>Yes</Text> : <Text fz={14} inline c={"red"}>No</Text>}</Center>
+                                </TableCell>
+                                <TableCell>
+                                    <Center>{whitelist.allowed ? <Text fz={14} inline c={"green"}>Allowed</Text> : <Text fz={14} inline c={"red"}>Denied</Text>}</Center>
+                                </TableCell>
+                                <TableCell>
+                                    <Center>
+                                        {whitelist.lastLogin ?
+                                            <LastLogin date={whitelist.lastLogin} />
+                                            : "Never"
+                                        }
+                                    </Center>
+                                </TableCell>
+                                {await hasPermission(["editWhitelistStatus", "deleteWhitelistEntry"]) && <TableCell>
+                                    <Center>
+                                        <ActionButtons
+                                            whiteListId={whitelist.whiteListId}
+                                            session={session}
+                                            allowed={whitelist.allowed}
+                                        />
+                                    </Center>
+                                </TableCell>}
+                            </TableRow>
+                        )
+                    })}
                 </TableBody>
             </Table>
         </Box >

@@ -43,9 +43,7 @@ export const ActionButtons = ({ whiteListId, allowed, session }: { whiteListId: 
                     return "You cannot change the status of admins."
                 }
                 return errorAllowed.message
-
             }
-
 
             toast.error("Error changing status.", {
                 id: "changing-status-error",
@@ -63,15 +61,6 @@ export const ActionButtons = ({ whiteListId, allowed, session }: { whiteListId: 
 
     return (
         <Group wrap="nowrap" gap={5}>
-            {/* <Switch
-                disabled={isPendingAllowed}
-                checked={allowedState}
-                onChange={(e) => {
-                    setAllowedState(e.target.checked)
-                    handleStateChange(e.target.checked)
-                    // setAllowed({ id: id, allowed: e.target.checked })
-                }}
-            /> */}
             {hasPermission("editWhitelistStatus") && <ActionIcon size={"sm"}
                 disabled={isPendingAllowed}
                 loading={isPendingAllowed}
@@ -108,15 +97,8 @@ export const LastLogin = ({ date }: { date: Date | null | undefined }) => {
 
 
 export const Search = () => {
-    // const [{ search: searchState }, setWhitelistParams] = useQueryStates(whitelistParser)
     const [searchState, setSearchState] = useQueryState('search', whitelistParser.search)
     const [search, setSearch] = useState<string>(searchState ?? "")
-
-    // useEffect(() => {
-    //     setSearch(searchState)
-    // }, [searchState])
-
-    // const [{ search }, setWhitelistParams] = useQueryStates(whitelistParser)
     const router = useRouter()
 
     const waitAndChange = useDebouncedCallback((_search: string) => {
@@ -126,8 +108,6 @@ export const Search = () => {
             router.refresh()
         }, 100)
     }, 1000)
-
-
 
     return (
         <TextInput
@@ -164,14 +144,7 @@ export const Search = () => {
             }
         />
     )
-
-
-
 }
-
-
-
-
 
 export const WhitelistPagination = ({ totalRows }: { totalRows: number }) => {
     const router = useRouter()
@@ -186,21 +159,17 @@ export const WhitelistPagination = ({ totalRows }: { totalRows: number }) => {
     const { active, next, last, first, previous } = usePagination({ total: totalPages, page, onChange: setPage })
 
 
-
     const waitAndChange = useDebouncedCallback(() => {
         setPageState(page)
         setLimitState(Number.parseInt(`${limit}`))
-
         setTimeout(() => {
             router.refresh()
         }, 100)
     }, 250)
 
-
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
         waitAndChange()
-
     }, [active, limit, waitAndChange])
 
     const disabled = () => {
@@ -214,9 +183,6 @@ export const WhitelistPagination = ({ totalRows }: { totalRows: number }) => {
             <Group>
                 <Select
                     w={100}
-                    styles={{
-
-                    }}
                     classNames={{
                         wrapper: "bg-transparent",
                         input: "text-white bg-[rgba(255,255,255,0.05)] rounded-md",
@@ -227,14 +193,11 @@ export const WhitelistPagination = ({ totalRows }: { totalRows: number }) => {
                     onChange={(e) => {
                         setLimit(e ?? "10")
                     }}
-
                     data={["1", "5", "10", "20", "50", "100"]}
                     defaultValue={"10"}
                     allowDeselect={false}
                 />
             </Group>
-
-
             <Group py={10} wrap="nowrap" justify="space-between">
                 <Group>
                     <Text fz={13} fw={500} c={"dimmed"}>
