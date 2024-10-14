@@ -29,6 +29,9 @@ export const env = createEnv({
 		GITHUB_CLIENT_ID: z.string(),
 		GITHUB_CLIENT_SECRET: z.string(),
 
+		SPOTIFY_CLIENT_ID: z.string(),
+		SPOTIFY_CLIENT_SECRET: z.string(),
+
 		NPM_FONT_AWESOME: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 
@@ -65,6 +68,9 @@ export const env = createEnv({
 
 		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
 		GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+
+		SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
+		SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
 
 		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
