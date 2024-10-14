@@ -151,17 +151,38 @@ export const authOptions: NextAuthOptions = {
 
 				if (isUUID) {
 					if (user.admin) {
-						void db
-							.update(loginWhitelist)
-							.set({
-								new: false,
-								allowed: true,
-								hasLoggedIn: true,
-								lastLogin: new Date(),
-							})
-							.where(eq(loginWhitelist.userId, user.id))
-							.execute();
-						await saveAddData();
+						const adminWhitelist = await db.query.loginWhitelist.findFirst({
+							where: (loginWhitelist, { eq }) => eq(loginWhitelist.userId, user.id),
+						});
+
+						if (adminWhitelist) {
+							void db
+								.update(loginWhitelist)
+								.set({
+									new: false,
+									allowed: true,
+									hasLoggedIn: true,
+									lastLogin: new Date(),
+								})
+								.where(eq(loginWhitelist.userId, user.id))
+								.execute();
+							await saveAddData();
+						} else {
+							void db
+								.insert(loginWhitelist)
+								.values({
+									email: user.email!,
+									oAuthProvider: account?.provider,
+									oAuthProviderAccountId: account?.providerAccountId,
+									userId: user.id,
+									new: false,
+									allowed: true,
+									hasLoggedIn: true,
+									lastLogin: new Date(),
+								})
+								.execute();
+						}
+
 						return true;
 					}
 
