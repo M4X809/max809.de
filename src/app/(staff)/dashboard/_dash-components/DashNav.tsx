@@ -3,7 +3,7 @@ import { Box, Container, type MantineSize } from "@mantine/core"
 import type { Session } from "next-auth"
 import NavSidebar, { type NavMenuItemProps } from "~/app/_components/NavSidebar"
 
-const DashNav = ({ children, session, size = "lg" }: { children: React.ReactNode, session: Session | null | undefined, size?: MantineSize | (string & {}) | number }) => {
+const DashNav = ({ session }: { session: Session | null | undefined }) => {
     const elements = (): NavMenuItemProps[] => {
         const data: NavMenuItemProps[] = [
             {
@@ -37,12 +37,7 @@ const DashNav = ({ children, session, size = "lg" }: { children: React.ReactNode
     }
 
     return (
-        <Box>
-            <NavSidebar elements={elements()} session={session} />
-            <Container size={size} >
-                {children}
-            </Container>
-        </Box>
+        <NavSidebar elements={elements()} session={session} />
     )
 }
 

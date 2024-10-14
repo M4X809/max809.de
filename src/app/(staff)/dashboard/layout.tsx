@@ -19,12 +19,10 @@ export default async function DashboardLayout({
                 withDashboardButton={false}
                 session={session}
             >
-                <DashNav session={session}>
-                    <Box className="h-full w-full mt-10" >
-
-                        {children}
-                    </Box>
-                </DashNav>
+                <DashNav session={session} />
+                <Box className="h-full w-full mt-10" >
+                    {children}
+                </Box>
             </Shell>
         </HydrateClient>
     );
