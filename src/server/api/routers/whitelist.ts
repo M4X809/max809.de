@@ -23,9 +23,19 @@ export const whitelistRouter = createTRPCRouter({
 				});
 			}
 
-			const lengthProm = db
-				.select({ count: sql`COUNT(*)` })
-				.from(loginWhitelist)
+			const totalRowsProm = ctx.db.query.loginWhitelist
+				.findMany({
+					where: (loginWhitelist, { ilike, or }) =>
+						input.search.length > 0
+							? or(
+									ilike(loginWhitelist.email, `%${input.search}%`),
+									ilike(loginWhitelist.oAuthProviderAccountId, `%${input.search}%`),
+									ilike(loginWhitelist.userId, `%${input.search}%`),
+									ilike(loginWhitelist.oAuthProvider, `%${input.search}%`),
+								)
+							: undefined,
+					columns: { whiteListId: true },
+				})
 				.execute();
 
 			const whitelistProm = ctx.db.query.loginWhitelist
@@ -49,11 +59,14 @@ export const whitelistRouter = createTRPCRouter({
 				})
 				.execute();
 
-			const [length, whitelist] = await Promise.all([lengthProm, whitelistProm]);
+			const [whitelist, totalRows] = await Promise.all([
+				whitelistProm,
+				totalRowsProm,
+			]);
 
 			return {
 				data: whitelist,
-				total: length[0]?.count as number,
+				total: totalRows.length,
 				showing: whitelist.length,
 				page: input.page,
 			};
