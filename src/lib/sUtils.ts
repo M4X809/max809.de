@@ -72,7 +72,6 @@ export async function onPageAllowed(
 
 	const hasPerm = await hasPermission(permission);
 	if (hasPerm) return;
-	console.log("permission", permission);
 	return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
 }
 // MARK: Set Nested Value
@@ -124,7 +123,7 @@ export function checkConf(config: object | undefined | null) {
 export const checkWhitelist = async ({
 	user,
 }: {
-	user: User;
+	user: Pick<User, "id">;
 }): Promise<void> => {
 	const dbUser = await db.query.users.findFirst({
 		where: (users, { eq }) => eq(users.id, user.id),

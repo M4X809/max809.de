@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { api } from '~/trpc/react'
 
-import { refreshAction } from './RefreshAction'
+import { refreshAction } from '../../../../../RefreshAction'
 import { SubmitButton } from '~/app/_components/SubmitButton'
 import { useMounted } from '@mantine/hooks'
 import { toast } from 'sonner'
@@ -206,7 +206,7 @@ const UserSaveButton = () => {
         }
     }, [loading, router])
 
-    const refreshActionWithId = refreshAction.bind(null, id)
+    const refreshActionWithId = refreshAction.bind(null, `/dashboard/user/${id}`)
     return (
         <Group gap={5}>
             <ActionIcon

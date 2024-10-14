@@ -54,6 +54,7 @@ declare module "next-auth" {
 	// @ts-ignore
 	interface User extends AdapterUser {
 		limit?: number;
+		admin?: boolean;
 		staff?: boolean;
 		permissions?: string[];
 		email?: string;
@@ -71,11 +72,6 @@ declare module "next-auth" {
 	}
 
 	type SessionType = Session | null | undefined;
-
-	// interface User {
-	//   // ...other properties
-	//   // role: UserRole;
-	// }
 }
 
 /**
@@ -114,15 +110,39 @@ export const authOptions: NextAuthOptions = {
 			account: Account | null;
 			profile?: Profile & { image_url?: string; banner_url?: string };
 		}) {
-			console.log(
-				chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
-			);
-			console.log(
-				chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
-			);
-			console.log(
-				chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
-			);
+			// console.log(
+			// 	chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
+			// );
+			// console.log(
+			// 	chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
+			// );
+			// console.log(
+			// 	chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
+			// );
+
+			const saveAddData = async () => {
+				try {
+					const dbUser = await db.query.users.findFirst({
+						where: (users, { eq }) => eq(users.id, user.id),
+					});
+
+					const checkConfig = checkConf(dbUser?.config);
+
+					if (dbUser) {
+						await db
+							.update(users)
+							.set({
+								banner: profile?.banner_url,
+								config: checkConfig.data ?? dbUser.config,
+							})
+							.where(eq(users.id, user.id))
+							.execute();
+					}
+				} catch (error) {
+					console.error("error", error);
+				}
+			};
+
 			try {
 				const { success: isUUID, data: uuid } = z
 					.string()
@@ -130,7 +150,22 @@ export const authOptions: NextAuthOptions = {
 					.safeParse(user.id);
 
 				if (isUUID) {
-					console.log(chalk.green("uuid", uuid));
+					if (user.admin) {
+						void db
+							.update(loginWhitelist)
+							.set({
+								new: false,
+								allowed: true,
+								hasLoggedIn: true,
+								lastLogin: new Date(),
+							})
+							.where(eq(loginWhitelist.userId, user.id))
+							.execute();
+						await saveAddData();
+						return true;
+					}
+
+					console.log(chalk.green("User ID", uuid));
 					const whitelist = await db.query.loginWhitelist.findFirst({
 						where: (loginWhitelist, { eq }) => eq(loginWhitelist.userId, uuid),
 					});
@@ -140,8 +175,7 @@ export const authOptions: NextAuthOptions = {
 							.insert(loginWhitelist)
 							.values({
 								userId: uuid,
-								email: user.email,
-								lastLogin: new Date(),
+								email: user.email!,
 								oAuthProvider: account?.provider,
 								oAuthProviderAccountId: account?.providerAccountId,
 							})
@@ -171,15 +205,18 @@ export const authOptions: NextAuthOptions = {
 							.update(loginWhitelist)
 							.set({
 								lastLogin: new Date(),
+								hasLoggedIn: true,
 							})
 							.where(eq(loginWhitelist.userId, uuid))
 							.execute();
+
+						await saveAddData();
 						return true;
 					}
 				}
 
 				if (!isUUID) {
-					console.log(chalk.red("not uuid", user.id));
+					console.log(chalk.red("Provider ID", user.id));
 					const whitelist = await db.query.loginWhitelist.findFirst({
 						where: (loginWhitelist, { eq }) =>
 							eq(loginWhitelist.oAuthProviderAccountId, user.id),
@@ -189,8 +226,7 @@ export const authOptions: NextAuthOptions = {
 						await db
 							.insert(loginWhitelist)
 							.values({
-								email: user.email,
-								lastLogin: new Date(),
+								email: user.email!,
 								oAuthProvider: account?.provider,
 								oAuthProviderAccountId: account?.providerAccountId,
 							})
@@ -207,10 +243,11 @@ export const authOptions: NextAuthOptions = {
 							.update(loginWhitelist)
 							.set({
 								lastLogin: new Date(),
+								hasLoggedIn: true,
 							})
 							.where(eq(loginWhitelist.oAuthProviderAccountId, user.id))
 							.execute();
-
+						await saveAddData();
 						return true;
 					}
 				}
@@ -220,52 +257,6 @@ export const authOptions: NextAuthOptions = {
 			}
 
 			return false;
-
-			// client.identify({
-			// 	distinctId: user.id,
-			// 	properties: {
-			// 		name: `${user.name}${env.NODE_ENV === "development" ? " DEV" : ""}`,
-			// 		id: user.id,
-			// 	},
-			// });
-			// const signInAllowed = await client.isFeatureEnabled("sign-in", user.id);
-			// client.capture({
-			// 	event: "sign-in",
-			// 	distinctId: user.id,
-			// });
-			// console.log("sign in allowed", signInAllowed, user.id);
-			// if (!signInAllowed) {
-			// 	return false;
-			// }
-			// client.capture({
-			// 	event: "sign-in",
-			// 	distinctId: user.id,
-			// });
-
-			// ________ DONT DELETE _________
-
-			// try {
-			// 	const dbUser = await db.query.users.findFirst({
-			// 		where: (users, { eq }) => eq(users.id, user.id),
-			// 	});
-
-			// 	const checkConfig = checkConf(dbUser?.config);
-
-			// 	if (dbUser) {
-			// 		await db
-			// 			.update(users)
-			// 			.set({
-			// 				banner: profile?.banner_url,
-			// 				config: checkConfig.data ?? dbUser.config,
-			// 			})
-			// 			.where(eq(users.id, user.id))
-			// 			.execute();
-			// 	}
-			// } catch (error) {
-			// 	console.error("error", error);
-			// }
-
-			// return true;
 		},
 	},
 	theme: {

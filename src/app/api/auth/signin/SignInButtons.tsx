@@ -33,6 +33,7 @@ export const GitHubSignInButton = () => {
     const [loading, setLoading] = useState(false)
     return (
         <Button
+            loading={loading}
             onClick={async () => {
                 setLoading(true)
                 await signIn("github")

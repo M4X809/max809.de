@@ -1,7 +1,7 @@
 "use client";
 
 import clsx, { type ClassValue } from "clsx";
-import type { Session } from "next-auth";
+import type { SessionType } from "next-auth";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -34,15 +34,16 @@ export function formatTime(msInput: number | string): string {
 			: `${sStr}.${msStr}`;
 }
 
-export function useIsStaff(session: Session | null | undefined) {
+export function useIsStaff(session: SessionType) {
 	return function isStaff() {
 		if (!session) return false;
-		if (session.user.admin || session.user.staff) return true;
+		if (session.user.admin === true) return true;
+		if (session.user.staff === true) return true;
 		return false;
 	};
 }
 
-export function useIsAdmin(session: Session | null | undefined) {
+export function useIsAdmin(session: SessionType) {
 	return function isAdmin() {
 		if (!session) return false;
 		if (session.user.admin) return true;
@@ -50,7 +51,7 @@ export function useIsAdmin(session: Session | null | undefined) {
 	};
 }
 
-export function usePermission(session: Session | null | undefined) {
+export function usePermission(session: SessionType) {
 	return function hasPermission(permission: string | string[]) {
 		if (!session) return false;
 		if (session.user.admin) return true;

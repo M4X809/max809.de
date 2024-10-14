@@ -186,11 +186,10 @@ export const loginWhitelist = createTable("login_whitelist", {
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
 	userId: varchar("user_id", { length: 255 }).references(() => users.id),
-	email: varchar("email", { length: 255 }).unique(),
+	email: varchar("email", { length: 255 }).unique().notNull(),
 	new: boolean("new").default(true),
-	lastLogin: timestamp("last_login", { withTimezone: true }).$onUpdate(
-		() => new Date(),
-	),
+	hasLoggedIn: boolean("has_logged_in").default(false),
+	lastLogin: timestamp("last_login", { withTimezone: true }),
 	allowed: boolean("allowed").default(false),
 	oAuthProvider: varchar("oAuthProvider", { length: 255 }),
 	oAuthProviderAccountId: varchar("oAuthProviderAccountId", { length: 255 }),

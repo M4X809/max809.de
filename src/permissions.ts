@@ -12,6 +12,10 @@ import {
 	faRightLeft,
 	faToolbox,
 	faCommand,
+	faList,
+	faPaperclip,
+	faPenToSquare,
+	faBan,
 } from "@fortawesome/pro-duotone-svg-icons";
 import type { Permissions as PermissionsType, Perm } from "./types";
 import type { Session } from "next-auth";
@@ -143,6 +147,36 @@ export const allPerms: PermissionsType[] = [
 		],
 	},
 	{
+		name: "Whitelist",
+		icon: faList,
+		perms: [
+			{
+				icon: faEye,
+				perm: "viewWhitelist",
+				name: "View Whitelist",
+			},
+			{
+				icon: faPaperclip,
+				name: "Manage Whitelist",
+				children: [
+					{
+						icon: faPenToSquare,
+						perm: "editWhitelistStatus",
+						name: "Edit Whitelist Status",
+						danger: true,
+					},
+					{
+						icon: faBan,
+						perm: "deleteWhitelistEntry",
+						name: "Delete Whitelist",
+						danger: true,
+						blocked: true,
+					},
+				],
+			},
+		],
+	},
+	{
 		name: "Misc",
 		icon: faToolbox,
 		perms: [
@@ -160,33 +194,33 @@ export const perms = async ({
 }: {
 	session: Session | null;
 }): Promise<PermissionsType[]> => {
-	const calculatePermsAndChildrenCount = (item: { perms: string | any[] }) => {
-		const permsCount = item.perms ? item.perms.length : 0;
-		let childrenCount = 0;
+	// const calculatePermsAndChildrenCount = (item: { perms: string | any[] }) => {
+	// 	const permsCount = item.perms ? item.perms.length : 0;
+	// 	let childrenCount = 0;
 
-		if (item.perms) {
-			for (const perm of item.perms) {
-				if (perm?.children) {
-					childrenCount += perm.children.length;
-				}
-			}
-		}
+	// 	if (item.perms) {
+	// 		for (const perm of item.perms) {
+	// 			if (perm?.children) {
+	// 				childrenCount += perm.children.length;
+	// 			}
+	// 		}
+	// 	}
 
-		return permsCount + childrenCount;
-	};
+	// 	return permsCount + childrenCount;
+	// };
 
 	const userPerms = session?.user.permissions ?? [];
 
-	const sortedPerms = filteredPerms(session, allPerms, userPerms).sort(
-		(a: { perms: string | any[] }, b: { perms: string | any[] }) => {
-			const countA = calculatePermsAndChildrenCount(a);
-			const countB = calculatePermsAndChildrenCount(b);
+	// const sortedPerms = filteredPerms(session, allPerms, userPerms).sort(
+	// 	(a: { perms: string | any[] }, b: { perms: string | any[] }) => {
+	// 		const countA = calculatePermsAndChildrenCount(a);
+	// 		const countB = calculatePermsAndChildrenCount(b);
 
-			return countB - countA; // Sort in descending order
-		},
-	);
+	// 		return countB - countA; // Sort in descending order
+	// 	},
+	// );
 
-	return sortedPerms;
+	return filteredPerms(session, allPerms, userPerms);
 };
 
 const filteredPerms = (
