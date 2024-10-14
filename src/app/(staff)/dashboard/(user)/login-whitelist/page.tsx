@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { SubmitButton } from "~/app/_components/SubmitButton"
 import { refreshAction } from "~/app/RefreshAction"
 import type { Metadata } from "next"
+import Link from "next/link"
 
 
 export const metadata: Metadata = {
@@ -42,6 +43,8 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
     const whiteList = await api.whitelist.getWhitelist({ page, limit, search: search })
     const refreshActionWithPath = refreshAction.bind(null, "/dashboard/login-whitelist")
     const session = await getServerAuthSession()
+
+    const hasViewUserPage = await hasPermission("viewUserPage")
 
 
     return (
@@ -101,7 +104,12 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
                                         </Text>
                                     </TableCell> */}
                                     <TableCell>
-                                        <Text truncate fz={14} inline >
+                                        <Text
+                                            className={hasViewUserPage ? "hover:underline text-blue-400 hover:text-blue-500" : ""}
+                                            component={hasViewUserPage ? Link : undefined}
+                                            href={hasViewUserPage ? `/dashboard/user/${whitelist.userId}` : "#"}
+                                            prefetch={false}
+                                            truncate fz={14} inline >
                                             {whitelist.userId}
                                         </Text>
                                     </TableCell>
