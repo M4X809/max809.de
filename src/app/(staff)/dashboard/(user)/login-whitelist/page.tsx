@@ -10,6 +10,30 @@ import { faArrowsRotate } from "@fortawesome/pro-duotone-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { SubmitButton } from "~/app/_components/SubmitButton"
 import { refreshAction } from "~/app/RefreshAction"
+import type { Metadata } from "next"
+
+
+export const metadata: Metadata = {
+    metadataBase: new URL('https://max809.de'),
+    title: "Login Whitelist",
+    openGraph: {
+        title: "Login Whitelist",
+        images: [
+            {
+                url: "/max809.webp",
+                width: 1200,
+                height: 630,
+                alt: "max809.de",
+            },
+        ],
+        type: "website",
+        siteName: "max809.de",
+        url: "https://max809.de/dashboard/login-whitelist",
+        locale: "en_US",
+    }
+
+}
+
 
 
 export default async function LoginWhitelist({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {

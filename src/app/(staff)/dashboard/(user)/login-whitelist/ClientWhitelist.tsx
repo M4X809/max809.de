@@ -10,7 +10,7 @@ import ReactTimeAgo from "react-time-ago"
 import { useDebouncedCallback, useMounted, usePagination } from "@mantine/hooks"
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight, faSwap, faTrash } from "@fortawesome/pro-duotone-svg-icons"
+import { faChevronLeft, faChevronRight, faChevronsLeft, faChevronsRight, faSwap, faTrash, faX } from "@fortawesome/pro-duotone-svg-icons"
 import ClientIcon from "~/app/_components/ClientIcon"
 import { api } from "~/trpc/react"
 import { whitelistParser } from "./whitelistParams"
@@ -19,7 +19,7 @@ import { usePermission } from "~/lib/cUtils"
 import { toast } from "sonner"
 import { DismissButton } from "~/components/ui/sonner"
 
-TimeAgo.addLocale(en)
+TimeAgo.addDefaultLocale(en)
 
 export const ActionButtons = ({ whiteListId, allowed, session }: { whiteListId: string, allowed: boolean | undefined | null, session: SessionType }) => {
     const router = useRouter()
@@ -146,6 +146,22 @@ export const Search = () => {
                 setSearch(e.target.value)
                 waitAndChange(e.target.value)
             }}
+            rightSection={
+                <ActionIcon
+                    size={"sm"}
+                    variant="transparent"
+                    className="text-slate-500 hover:text-slate-400"
+                    onClick={() => {
+                        setSearch("")
+                        setSearchState("")
+                        setTimeout(() => {
+                            router.refresh()
+                        }, 100)
+                    }}
+                >
+                    <FontAwesomeIcon icon={faX} swapOpacity />
+                </ActionIcon>
+            }
         />
     )
 
