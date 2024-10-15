@@ -40,7 +40,13 @@ export const generateMetadata = ({ params }: { params: Record<string, string | s
 
     const { error } = searchParamsCache.all()
 
-    const currentError = error ? signinErrors[error as keyof typeof signinErrors] : signinErrors.default
+    let currentError = signinErrors[error as keyof typeof signinErrors]
+
+    // console.log("currentError", currentError)
+
+    if (!currentError) currentError = signinErrors.default
+
+
 
 
     return {
@@ -81,7 +87,11 @@ export default async function ErrorPage({ searchParams }: { searchParams: Record
 
 
 
-    const currentError = error ? signinErrors[error as keyof typeof signinErrors] : signinErrors.default
+    let currentError = signinErrors[error as keyof typeof signinErrors]
+
+    console.log("currentError", currentError)
+
+    if (!currentError) currentError = signinErrors.default
 
     return (
         <HydrateClient>
