@@ -1,10 +1,12 @@
 "use client"
 
 import { faDiscord, faGithub, faSpotify } from "@fortawesome/free-brands-svg-icons"
+import { faEnvelope } from "@fortawesome/pro-duotone-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Button } from "@mantine/core"
+import { ActionIcon, Button, TextInput } from "@mantine/core"
 import { signIn } from "next-auth/react"
 import { useState } from "react"
+import { set, z } from "zod"
 
 
 
@@ -67,5 +69,72 @@ export const SpotifySignInButton = () => {
             leftSection={<FontAwesomeIcon fixedWidth fontSize={20} icon={faSpotify} />}>
             Sign in with Spotify
         </Button>
+    )
+}
+export const EmailSignInButton = () => {
+    const [loading, setLoading] = useState(false)
+    const [email, setEmail] = useState("")
+    const [error, setError] = useState<string | null>(null)
+
+    return (
+        <form>
+            <TextInput
+                id={"input-email-for-email-provider"}
+                type="email"
+                name="email"
+                placeholder="email@example.com"
+                styles={{
+                    wrapper: {
+                        background: "transparent",
+                    },
+                    input: {
+                        background: "rgba(255,255,255,0.05)",
+                    }
+                }}
+                value={email}
+                onBlur={() => {
+                    const isEmail = z.string().email().safeParse(email)
+                    if (isEmail.error && email.length > 0) {
+                        setError("Invalid Email")
+                        return
+                    }
+                    setError(null)
+
+
+
+                }}
+                onChange={(e) => {
+                    const isEmail = z.string().email().safeParse(e.target.value)
+                    if (isEmail.success) {
+                        setError(null)
+                    }
+
+                    setEmail(e.target.value)
+                }}
+                error={error}
+                label="Sing in with Email"
+                description={"Only available to existing accounts (Sign in)"}
+                rightSection={
+                    <ActionIcon
+                        loading={loading}
+                        onClick={async () => {
+                            const isEmail = z.string().email().safeParse(email)
+                            if (!isEmail.success) {
+                                setError("Invalid Email")
+                                return
+                            }
+                            setLoading(true)
+
+                            await signIn("email", {
+                                email,
+                            })
+                        }}
+                        variant="light"
+                    >
+                        <FontAwesomeIcon fixedWidth fontSize={20} icon={faEnvelope} />
+                    </ActionIcon>
+                }
+            />
+        </form>
     )
 }

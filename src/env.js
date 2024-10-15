@@ -32,6 +32,12 @@ export const env = createEnv({
 		SPOTIFY_CLIENT_ID: z.string(),
 		SPOTIFY_CLIENT_SECRET: z.string(),
 
+		EMAIL_SERVER_HOST: z.string(),
+		EMAIL_SERVER_PORT: z.string(),
+		EMAIL_SERVER_USER: z.string(),
+		EMAIL_SERVER_PASSWORD: z.string(),
+		EMAIL_FROM: z.string(),
+
 		NPM_FONT_AWESOME: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 
@@ -71,6 +77,13 @@ export const env = createEnv({
 
 		SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
 		SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
+
+		EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
+		EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
+		EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
+		EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
+		EMAIL_FROM: process.env.EMAIL_FROM,
+
 
 		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
