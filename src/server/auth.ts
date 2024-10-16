@@ -72,7 +72,7 @@ declare module "next-auth" {
 			expanded?: string[];
 		};
 		global?: {
-			openCommandKey?: keyof typeof Key | keyof (typeof Key)[];
+			openCommandKey?: Key | Key[];
 		};
 	}
 
@@ -155,7 +155,7 @@ export const authOptions: NextAuthOptions = {
 							.update(users)
 							.set({
 								banner: profile?.banner_url,
-								config: checkConfig.data ?? dbUser.config,
+								config: checkConfig.data ?? (dbUser.config as any),
 							})
 							.where(eq(users.id, user.id))
 							.execute();
@@ -312,7 +312,7 @@ export const authOptions: NextAuthOptions = {
 	pages: {
 		signIn: "/api/auth/signin",
 		error: "/api/auth/error",
-		verifyRequest: "/api/auth/verify-request",
+		verifyRequest: "/api/auth/verify",
 	},
 	secret: env.NEXTAUTH_SECRET,
 	adapter: DrizzleAdapter(db, {

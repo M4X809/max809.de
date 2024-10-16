@@ -108,9 +108,7 @@ export function checkConf(config: object | undefined | null) {
 				}),
 			global: z
 				.object({
-					openCommandKey: z.string().default("F1") as
-						| z.ZodType<keyof typeof Key>
-						| z.ZodType<keyof (typeof Key)[]>,
+					openCommandKey: z.string().default("F1"),
 				})
 				.default({
 					openCommandKey: "F1",
@@ -160,8 +158,6 @@ export const checkWhitelist = async ({
 			.execute();
 	}
 };
-
-
 
 export function emailHtml(params: { url: string; host: string }) {
 	const { url, host } = params;

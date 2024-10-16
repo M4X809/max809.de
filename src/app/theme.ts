@@ -2,6 +2,7 @@
 import {
 	ActionIcon,
 	Button,
+	Input,
 	Tooltip,
 	TooltipFloating,
 	type MantineThemeOverride,
@@ -40,6 +41,18 @@ export const theme: MantineThemeOverride = {
 			},
 			classNames: {
 				tooltip: " backdrop-blur-xl ",
+			},
+		}),
+		Input: Input.extend({
+			defaultProps: {
+				styles: {
+					wrapper: {
+						background: "transparent",
+					},
+					input: {
+						background: "rgba(255,255,255,0.05)",
+					},
+				},
 			},
 		}),
 	},

@@ -3,7 +3,12 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { hasPermission, isAdmin } from "~/lib/sUtils";
+import {
+	checkConf,
+	hasPermission,
+	isAdmin,
+	setNestedValue,
+} from "~/lib/sUtils";
 import { qrCodes, sessions, users } from "~/server/db/schema";
 
 import {
@@ -654,6 +659,102 @@ export const managementRouter = createTRPCRouter({
 			revalidatePath(`/dashboard/user/${input.userId}`);
 			return {
 				success: true,
+			};
+		}),
+
+	updateLoginWithEmail: protectedProcedure
+		.input(
+			z.object({
+				userId: z.string(),
+				allowSigninWithEmail: z.boolean(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("editUser"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, input.userId),
+			});
+
+			if (!user) {
+				throw new TRPCError({
+					message: "User not Found with that ID.",
+					code: "NOT_FOUND",
+				});
+			}
+
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					message: "You are not authorized to perform this action. (Edit Admins)",
+					code: "FORBIDDEN",
+				});
+			}
+
+			await ctx.db
+				.update(users)
+				.set({
+					allowSigninWithEmail: input.allowSigninWithEmail,
+				})
+				.where(eq(users.id, input.userId))
+				.execute();
+
+			return {
+				success: true,
+			};
+		}),
+	setConfig: protectedProcedure
+		.input(
+			z.object({
+				path: z.string(),
+				value: z
+					.string()
+					.or(z.boolean())
+					.or(z.number().or(z.array(z.string()))),
+				userId: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("editUser"))) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const user = await ctx.db.query.users.findFirst({
+				where: (users, { eq }) => eq(users.id, ctx.session.user.id),
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No user found with that ID.",
+				});
+			}
+
+			if (user.admin && !(await isAdmin())) {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const newConf = setNestedValue(user.config, input.path, input.value);
+			const checkedConfig = checkConf(newConf);
+			await ctx.db
+				.update(users)
+				.set({
+					config: checkedConfig.data ?? (user.config as any),
+				})
+				.where(eq(users.id, input.userId))
+				.execute();
+
+			return {
+				status: "success",
 			};
 		}),
 });
