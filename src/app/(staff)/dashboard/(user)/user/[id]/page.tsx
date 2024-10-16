@@ -13,7 +13,6 @@ import ClientIcon from '~/app/_components/ClientIcon';
 import type { Metadata } from 'next';
 import Permissions from '../_userpage-components/Permissions';
 import { getServerAuthSession } from '~/server/auth';
-import { ManagementStoreProvider } from '~/providers/management-store-provider';
 import UserSaveButton from '../_userpage-components/UserSaveButton';
 
 import { perms } from "~/permissions";
@@ -21,17 +20,13 @@ import AccGroup from '../_userpage-components/AccGroup';
 import { DeleteUserButton, LogoutAllDevicesButton, ResetPermissionsButton } from './AccountActionButtons';
 import ManageQrCodes from '../_userpage-components/ManageQrCodes';
 import Link from 'next/link';
-import { TRPCError } from '@trpc/server';
 import { redirect } from 'next/navigation';
+import UserConfig from '../_userpage-components/UserConfig';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-
-    return {
-        metadataBase: new URL('https://max809.de'),
-
-        title: "User Management",
-        icons: [{ rel: "icon", url: "/max809.webp" }],
-    }
+export const metadata: Metadata = {
+    metadataBase: new URL('https://max809.de'),
+    title: "User Management",
+    icons: [{ rel: "icon", url: "/max809.webp" }],
 }
 
 
@@ -39,8 +34,6 @@ export default async function UserPage({ params }: { params: { id: string } }) {
     await onPageAllowed("viewUserPage")
     const session = await getServerAuthSession()
     const className = "bg-[rgba(255,255,255,0.1)] backdrop-blur-lg rounded-lg"
-
-
 
     const user = await api.management.getUser(params.id)
 
@@ -91,7 +84,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             <React.Fragment>
                 <Grid columns={6}>
                     {/* User Card */}
-                    <GridCol span={6}>
+                    <GridCol span={6} order={1}>
                         <Card px={25} className={twMerge(className)}>
                             {await hasPermission(["editUser", "editUserPermissions", "setStaff", "setAdmin", "changeQrLimits"]) && <Box className='absolute left-4 top-4'>
                                 <UserSaveButton />
@@ -130,13 +123,13 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         </Card>
                     </GridCol>
                     {await hasPermission(["setAdmin", "setStaff"]) &&
-                        <GridCol span={6}>
+                        <GridCol span={6} order={2}>
                             <Card px={25} className={twMerge(className)}>
                                 <AccGroup user={user} session={session} />
                             </Card>
                         </GridCol>}
                     {await hasPermission(["viewWhitelist"]) &&
-                        <GridCol span={6}>
+                        <GridCol span={6} order={{ base: 3, md: 2 }}>
                             <Card px={15} className={twMerge(className)}>
                                 <Button
                                     prefetch={false}
@@ -155,7 +148,15 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                                 </Button>
                             </Card>
                         </GridCol>
-
+                    }
+                    {await hasPermission(["editUser"]) &&
+                        <GridCol span={6} order={{ base: 2, md: 3 }}>
+                            <Card px={15} className={twMerge(className)}>
+                                <UserConfig
+                                    user={user}
+                                />
+                            </Card>
+                        </GridCol>
                     }
                 </Grid>
             </React.Fragment>

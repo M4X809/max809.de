@@ -223,7 +223,7 @@ const defaultCommands: CommandGroups[] = [
 ]
 
 
-const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { session: SessionType, commands?: CommandGroups[], keys?: keyof typeof Key | keyof typeof Key[] }) => {
+const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { session: SessionType, commands?: CommandGroups[], keys?: Key | Key[] | string | string[] }) => {
     const [opened, { toggle, close }] = useDisclosure(false)
     const [loading, setLoading] = useState<string | undefined>(undefined)
     const mounted = useMounted()
@@ -239,11 +239,15 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
     const isAdmin = useIsAdmin(session)
     const isStaff = useIsStaff(session)
 
+    const waitingForInput = useManagementStore((state) => state.waitingForInput)
+
+    const disabled = waitingForInput
+
     useHotkeys(keys as string | readonly string[], () => {
         toggle()
     }, {
         preventDefault: true,
-        enabled: true,
+        enabled: !disabled,
         enableOnContentEditable: true,
         enableOnFormTags: ["INPUT", "TEXTAREA", "SELECT"],
     })

@@ -75,6 +75,7 @@ export const users = createTable("user", {
 	permissions: text("permissions").array().notNull().default([]),
 	config: json("config").notNull().default({}).$type<Config>(),
 	whiteListId: varchar("whiteListId", { length: 255 }),
+	allowSigninWithEmail: boolean("allowSigninWithEmail").default(false).notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

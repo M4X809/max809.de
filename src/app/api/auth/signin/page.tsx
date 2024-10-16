@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Center, Stack, Title } from "@mantine/core";
 import Shell from "~/app/_components/Shell";
 import { HydrateClient } from "~/trpc/server";
-import { DiscordSignInButton, GitHubSignInButton, SpotifySignInButton } from "./SignInButtons";
+import { DiscordSignInButton, EmailSignInButton, GitHubSignInButton, SpotifySignInButton } from "./SignInButtons";
 import { searchParamsCache } from '../searchParams'
 import ErrorBox from "~/app/_components/ErrorBox";
 import type { Metadata } from "next";
@@ -40,17 +40,11 @@ export default async function SignIn({
     searchParams: Record<string, string | string[] | undefined>
 }) {
     const { error, callbackUrl } = searchParamsCache.parse(searchParams)
-
     const session = await getServerAuthSession()
-
 
     if (session?.user.id && !error) {
         return redirect(callbackUrl.length > 0 ? callbackUrl : "/")
     }
-
-
-
-
 
     const signinErrors: Record<string | "default", string> = {
         default: "Unable to sign in.",
@@ -92,6 +86,7 @@ export default async function SignIn({
                             <DiscordSignInButton />
                             <GitHubSignInButton />
                             <SpotifySignInButton />
+                            <EmailSignInButton />
                             <Button
                                 size="compact-sm"
                                 component={Link}

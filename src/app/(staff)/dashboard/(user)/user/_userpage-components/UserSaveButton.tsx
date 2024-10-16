@@ -35,6 +35,14 @@ const UserSaveButton = () => {
     const limitChanged = useManagementStore((state) => state.limitChanged)
     const setLimitChanged = useManagementStore((state) => state.setLimitChanged)
 
+    const loginWithEmail = useManagementStore((state) => state.loginWithEmail)
+    const loginWithEmailChanged = useManagementStore((state) => state.loginWithEmailChanged)
+    const setLoginWithEmailChanged = useManagementStore((state) => state.setLoginWithEmailChanged)
+
+    const openCommandKey = useManagementStore((state) => state.openCommandKey)
+    const openCommandKeyChanged = useManagementStore((state) => state.openCommandKeyChanged)
+    const setOpenCommandKeyChanged = useManagementStore((state) => state.setOpenCommandKeyChanged)
+
     const saveUserCounter = useManagementStore((state) => state.saveUserCounter)
     const setSaveDisabled = useManagementStore((state) => state.setSaveDisabled)
 
@@ -44,10 +52,13 @@ const UserSaveButton = () => {
     const { mutate: updateStaff, isPending: isUpdatingStaff, isSuccess: isUpdatedStaff, error: updateErrorStaff, reset: resetStaffMutation, isError: isStaffError } = api.management.updateStaffRole.useMutation()
     const { mutate: updateAdmin, isPending: isUpdatingAdmin, isSuccess: isUpdatedAdmin, error: updateErrorAdmin, reset: resetAdminMutation, isError: isAdminError } = api.management.updateAdminRole.useMutation()
     const { mutate: updateLimit, isPending: isUpdatingLimit, isSuccess: isUpdatedLimit, error: updateErrorLimit, reset: resetLimitMutation, isError: isLimitError } = api.management.updateQrLimit.useMutation()
+    const { mutate: updateLoginWithEmail, isPending: isUpdatingLoginWithEmail, isSuccess: isUpdatedLoginWithEmail, error: updateErrorLoginWithEmail, reset: resetLoginWithEmailMutation, isError: isLoginWithEmailError } = api.management.updateLoginWithEmail.useMutation()
 
-    const unsavedChanges = permissionsChanged || staffChanged || adminChanged || limitChanged
-    const loading = (isUpdating || isUpdatingStaff || isUpdatingAdmin || isUpdatingLimit) && !(updateError || updateErrorStaff || updateErrorAdmin || updateErrorLimit)
-    const hasError = (isPermissionsError || isStaffError || isAdminError || isLimitError) && !loading
+    const { mutate: setConfig, isPending: isUpdatingConfig, isSuccess: isUpdatedConfig, error: updateErrorConfig, reset: resetConfigMutation, isError: isConfigError, } = api.management.setConfig.useMutation()
+
+    const unsavedChanges = permissionsChanged || staffChanged || adminChanged || limitChanged || loginWithEmailChanged || openCommandKeyChanged
+    const loading = (isUpdating || isUpdatingStaff || isUpdatingAdmin || isUpdatingLimit || isUpdatingLoginWithEmail || isUpdatingConfig) && !(updateError || updateErrorStaff || updateErrorAdmin || updateErrorLimit || updateErrorLoginWithEmail || updateErrorConfig)
+    const hasError = (isPermissionsError || isStaffError || isAdminError || isLimitError || isLoginWithEmailError || isConfigError) && !loading
 
 
     const errorKeys = {
@@ -55,6 +66,8 @@ const UserSaveButton = () => {
         updateErrorAdmin: "Update Role",
         updateErrorLimit: "Update Qr Limit ",
         updateErrorStaff: "Update Role",
+        updateErrorConfig: "Update Config",
+        updateErrorLoginWithEmail: "Update Login With Email",
     }
 
     useEffect(() => {
@@ -70,6 +83,9 @@ const UserSaveButton = () => {
         resetStaffMutation()
         resetAdminMutation()
         resetLimitMutation()
+        resetLoginWithEmailMutation()
+        resetConfigMutation()
+
 
 
         if (permissionsChanged) {
@@ -84,6 +100,13 @@ const UserSaveButton = () => {
         if (limitChanged && limit) {
             updateLimit({ limit: typeof limit === "string" ? Number.parseInt(limit) : limit, id: id })
         }
+        if (loginWithEmailChanged) {
+            updateLoginWithEmail({ allowSigninWithEmail: loginWithEmail, userId: id })
+        }
+        if (openCommandKeyChanged) {
+            setConfig({ path: "global.openCommandKey", value: openCommandKey, userId: id })
+        }
+
     }
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -106,6 +129,8 @@ const UserSaveButton = () => {
             updateErrorAdmin: updateErrorAdmin ? updateErrorAdmin : undefined,
             updateErrorLimit: updateErrorLimit ? updateErrorLimit : undefined,
             updateErrorStaff: updateErrorStaff ? updateErrorStaff : undefined,
+            updateErrorLoginWithEmail: updateErrorLoginWithEmail ? updateErrorLoginWithEmail : undefined,
+            updateErrorConfig: updateErrorConfig ? updateErrorConfig : undefined,
         }
 
         const filteredObject = Object.fromEntries(
@@ -131,7 +156,7 @@ const UserSaveButton = () => {
             return [key, value?.message]
         }))
         setErrorOject(errorStack)
-    }, [updateError, updateErrorAdmin, updateErrorLimit, updateErrorStaff, loading, hasError, router])
+    }, [updateError, updateErrorAdmin, updateErrorLimit, updateErrorStaff, loading, hasError, router, updateErrorLoginWithEmail, updateErrorConfig])
 
     useEffect(() => {
 
@@ -192,8 +217,18 @@ const UserSaveButton = () => {
             setErrorOject((state) => ({ ...state, updateErrorLimit: undefined }))
         }
 
+        if (isUpdatedLoginWithEmail) {
+            setLoginWithEmailChanged(false)
+            setErrorOject((state) => ({ ...state, updateErrorLoginWithEmail: undefined }))
+        }
 
-    }, [isUpdated, setPermissionsChanged, isUpdatedStaff, setStaffChanged, isUpdatedAdmin, setAdminChanged, isUpdatedLimit, setLimitChanged])
+        if (isUpdatedConfig) {
+            setOpenCommandKeyChanged(false)
+            setErrorOject((state) => ({ ...state, updateErrorConfig: undefined }))
+        }
+
+
+    }, [isUpdated, setPermissionsChanged, isUpdatedStaff, setStaffChanged, isUpdatedAdmin, setAdminChanged, isUpdatedLimit, setLimitChanged, isUpdatedLoginWithEmail, setLoginWithEmailChanged, isUpdatedConfig, setOpenCommandKeyChanged])
 
 
 

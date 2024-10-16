@@ -1,4 +1,5 @@
 "use client";
+import type { Key } from "ts-key-enum";
 import { createStore } from "zustand";
 
 export type ManagementStore = {
@@ -37,6 +38,21 @@ export type ManagementStore = {
 	setLimitChanged: (limitChanged: boolean) => void;
 	limit: number | null | string;
 	setLimit: (limit: number | null | string) => void;
+
+	waitingForInput: boolean;
+	setWaitingForInput: (
+		waitingForInput: boolean | ((prev: boolean) => boolean),
+	) => void;
+
+	loginWithEmailChanged: boolean;
+	setLoginWithEmailChanged: (loginWithEmailChanged: boolean) => void;
+	loginWithEmail: boolean;
+	setLoginWithEmail: (loginWithEmail: boolean) => void;
+
+	openCommandKeyChanged: boolean;
+	setOpenCommandKeyChanged: (openCommandKeyChanged: boolean) => void;
+	openCommandKey: string | Key | Key[] | number;
+	setOpenCommandKey: (openCommandKey: string | Key | Key[] | number) => void;
 };
 
 export const createManagementStore = () => {
@@ -96,5 +112,27 @@ export const createManagementStore = () => {
 		setLimit: (limit) => {
 			set(() => ({ limit }));
 		},
+
+		waitingForInput: false,
+		setWaitingForInput: (waitingForInput) => {
+			set(() => ({
+				waitingForInput:
+					typeof waitingForInput === "function"
+						? waitingForInput(get().waitingForInput)
+						: waitingForInput,
+			}));
+		},
+
+		loginWithEmailChanged: false,
+		setLoginWithEmailChanged: (loginWithEmailChanged) =>
+			set(() => ({ loginWithEmailChanged })),
+		loginWithEmail: false,
+		setLoginWithEmail: (loginWithEmail) => set(() => ({ loginWithEmail })),
+
+		openCommandKeyChanged: false,
+		setOpenCommandKeyChanged: (openCommandKeyChanged) =>
+			set(() => ({ openCommandKeyChanged })),
+		openCommandKey: "",
+		setOpenCommandKey: (openCommandKey) => set(() => ({ openCommandKey })),
 	}));
 };

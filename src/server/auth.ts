@@ -12,6 +12,7 @@ import type { Adapter, AdapterUser } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
 import SpotifyProvider from "next-auth/providers/spotify";
+import EmailProvider from "next-auth/providers/email";
 
 import { PostHog } from "posthog-node";
 
@@ -26,10 +27,12 @@ import {
 } from "~/server/db/schema";
 
 import { eq } from "drizzle-orm";
-import { checkConf, checkWhitelist } from "~/lib/sUtils";
+import { checkConf, checkWhitelist, emailHtml } from "~/lib/sUtils";
 import type { Key } from "ts-key-enum";
 import chalk from "chalk";
 import { z } from "zod";
+
+import { createTransport } from "nodemailer";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -69,7 +72,7 @@ declare module "next-auth" {
 			expanded?: string[];
 		};
 		global?: {
-			openCommandKey?: keyof typeof Key | keyof (typeof Key)[];
+			openCommandKey?: Key | Key[];
 		};
 	}
 
@@ -107,20 +110,37 @@ export const authOptions: NextAuthOptions = {
 			user,
 			account,
 			profile,
+			// email,
 		}: {
 			user: User | AdapterUser;
 			account: Account | null;
 			profile?: Profile & { image_url?: string; banner_url?: string };
 		}) {
+			console.log(
+				chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
+			);
+			console.log(
+				chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
+			);
+			console.log(
+				chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
+			);
 			// console.log(
-			// 	chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
+			// 	chalk.hex("#ffff00").bold("profile", JSON.stringify(email, null, 2)),
 			// );
-			// console.log(
-			// 	chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
-			// );
-			// console.log(
-			// 	chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
-			// );
+
+			if (account?.provider === "email") {
+				const dbUser = await db.query.users.findFirst({
+					where: (users, { eq }) => eq(users.email, account.providerAccountId),
+				});
+				if (!dbUser) {
+					return false;
+				}
+
+				if (!dbUser.allowSigninWithEmail) {
+					return false;
+				}
+			}
 
 			const saveAddData = async () => {
 				try {
@@ -135,7 +155,7 @@ export const authOptions: NextAuthOptions = {
 							.update(users)
 							.set({
 								banner: profile?.banner_url,
-								config: checkConfig.data ?? dbUser.config,
+								config: checkConfig.data ?? (dbUser.config as any),
 							})
 							.where(eq(users.id, user.id))
 							.execute();
@@ -291,6 +311,8 @@ export const authOptions: NextAuthOptions = {
 	},
 	pages: {
 		signIn: "/api/auth/signin",
+		error: "/api/auth/error",
+		verifyRequest: "/api/auth/verify",
 	},
 	secret: env.NEXTAUTH_SECRET,
 	adapter: DrizzleAdapter(db, {
@@ -340,6 +362,39 @@ export const authOptions: NextAuthOptions = {
 			clientId: env.SPOTIFY_CLIENT_ID,
 			clientSecret: env.SPOTIFY_CLIENT_SECRET,
 			allowDangerousEmailAccountLinking: false,
+		}),
+		EmailProvider({
+			maxAge: 60 * 60, // 1 hour
+			secret: env.NEXTAUTH_SECRET,
+			server: {
+				host: env.EMAIL_SERVER_HOST,
+				port: Number.parseInt(env.EMAIL_SERVER_PORT),
+				auth: {
+					user: env.EMAIL_SERVER_USER,
+					pass: env.EMAIL_SERVER_PASSWORD,
+				},
+			},
+			from: env.EMAIL_FROM,
+			async sendVerificationRequest(params) {
+				const { identifier, url, provider } = params;
+				const { host } = new URL(url);
+				// NOTE: You are not required to use `nodemailer`, use whatever you want.
+				const transport = createTransport(provider.server);
+				const result = await transport.sendMail({
+					to: identifier,
+					from: provider.from,
+					subject: `Sign in to ${host}`,
+					text: text({ url, host }),
+					html: emailHtml({ url, host }),
+				});
+				const failed = result.rejected.concat(result.pending).filter(Boolean);
+				if (failed.length) {
+					throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
+				}
+				function text({ url, host }: { url: string; host: string }) {
+					return `Sign in to ${host}\n${url}\n\n`;
+				}
+			},
 		}),
 		/**
 		 * ...add more providers here.

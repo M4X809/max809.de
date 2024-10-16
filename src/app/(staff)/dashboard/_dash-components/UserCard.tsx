@@ -22,6 +22,7 @@ export type User = {
     staff: boolean | null;
     permissions: string[];
     config: Config | null;
+    allowSigninWithEmail: boolean
 }
 
 const UserCard = async ({ user }: { user: Omit<User, "email" | "limit">, admin?: boolean, staff?: boolean, id?: string }) => {

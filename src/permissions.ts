@@ -57,7 +57,6 @@ export const allPerms: PermissionsType[] = [
 						perm: "editUser",
 						icon: faGear,
 						danger: true,
-						disabled: true,
 					},
 					{
 						name: "Edit Permissions",

@@ -42,7 +42,7 @@ export const accountRouter = createTRPCRouter({
 			await db
 				.update(users)
 				.set({
-					config: checkedConfig.data ?? user.config,
+					config: checkedConfig.data ?? (user.config as any),
 				})
 				.where(eq(users.id, ctx.session.user.id))
 				.execute();
