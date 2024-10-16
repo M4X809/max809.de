@@ -1,7 +1,7 @@
 "use client"
 
 import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Stack, Text, Title } from '@mantine/core'
-import type { Session } from 'next-auth';
+import type { SessionType } from 'next-auth';
 import React, { useEffect } from 'react'
 import { useAppStore } from '~/providers/app-store-provider';
 
@@ -22,7 +22,7 @@ import { useIsStaff } from '../../lib/cUtils';
 import ErrorBox from './ErrorBox';
 
 
-function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, forceHideHeader = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: Session | null | undefined, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean, forceHideHeader?: boolean }) {
+function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, forceHideHeader = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: SessionType, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean, forceHideHeader?: boolean }) {
     const posthog = usePostHog()
     const path = usePathname()
     const os = useOs()
@@ -45,23 +45,20 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
     const isMounted = useMounted()
 
 
+    // const debugPosthog = false
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
         send_event: true,
     })
 
-    // useDidUpdate(() => {
-    //     if (!isMounted) return
-    //     refreshSession()
-    //     console.log("session", session)
-    // }, [isMounted, session])
-
-
-
-
     useEffect(() => {
         if (!session) return
         setSession(session)
-        posthog.identify(session?.user?.id)
+        posthog.identify(session?.user?.id, {
+            name: session?.user?.name,
+            email: session?.user?.email,
+            id: session?.user?.id,
+            whitelistId: session?.user?.whiteListId,
+        })
 
     }, [session, setSession, posthog])
 
@@ -79,7 +76,7 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
                 posthog.debug(false)
             }
         }
-    }, [debugPosthog, posthog.debug])
+    }, [posthog.debug, debugPosthog])
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {

@@ -52,6 +52,7 @@ declare module "next-auth" {
 			staff?: boolean;
 			permissions?: string[];
 			config?: Config;
+			whiteListId?: string;
 			// ...other properties
 			// role: UserRole;
 		} & DefaultSession["user"];
