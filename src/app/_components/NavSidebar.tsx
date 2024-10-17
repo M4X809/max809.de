@@ -1,8 +1,8 @@
 "use client"
-import { faChevronsRight } from '@fortawesome/pro-duotone-svg-icons';
+import { faChevronsRight, faX } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Center, Divider, Grid, NavLink, ScrollArea, Stack, Tooltip } from '@mantine/core'
-import { useHover, useSessionStorage } from '@mantine/hooks';
+import { useDisclosure, useHover, useMediaQuery, useSessionStorage } from '@mantine/hooks';
 import React from 'react'
 import { twMerge } from 'tailwind-merge';
 
@@ -63,7 +63,7 @@ type childItem = {
     label: string;
     to: string;
     icon: IconProp;
-    onClick?: () => void;
+    onClick?: () => void
     tooltip?: string;
     version?: string;
     disabled?: boolean;
@@ -261,28 +261,46 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
 const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], session: Session | null | undefined; }) => {
     const { hovered: triggerHovered, ref: triggerRef } = useHover();
     const { hovered: contentHovered, ref: contentRef } = useHover();
-    const open = triggerHovered || contentHovered
+
+    const [opened, { toggle, close }] = useDisclosure(false);
+
+    const isMobile = useMediaQuery('(max-width: 40em)', true, {
+        getInitialValueInEffect: false,
+    });
+
+    const open = !isMobile ? triggerHovered || contentHovered : opened
 
     return (
         <>
             <Box
                 ref={triggerRef}
-                className="fixed left-0 bottom-0 h-[calc(100%-100px)]  border-red-400 w-[100px]  ">
+                className="fixed left-0 bottom-0 h-[calc(100%-100px)]  w-[100px]  ">
             </Box>
             <Box
                 ref={contentRef}
                 className={twMerge("fixed left-0 top-1/2 transform -translate-y-1/2 -translate-x-[100%]  w-full  xs:w-[300px] h-2/3 transition-transform ease-in-out duration-300 z-[1000] ", open && "-translate-x-0")}>
                 <Box
-                    className="fixed  right-0 top-1/2 transform -translate-y-1/2 h-5 w-5 translate-x-full bg-[rgba(0,0,0,0.04)] backdrop-blur-lg rounded-md p-3"
+                    className="fixed   right-0 top-1/2 transform -translate-y-1/2 h-5 w-5 translate-x-full bg-[rgba(0,0,0,0.04)] backdrop-blur-lg rounded-md p-3"
                 >
-                    <Center className={twMerge('h-full transition-transform ease-in-out duration-300', open && "rotate-180")}>
+                    <Center className={twMerge('h-full transition-transform ease-in-out duration-300 ', open && "rotate-180")}>
                         <FontAwesomeIcon icon={faChevronsRight} />
                     </Center>
-
                 </Box>
-
+                <Box
+                    onClick={() => toggle()}
+                    className="fixed  border-red-400  right-0 top-1/2 transform -translate-y-1/2 h-16 w-10 translate-x-full" />
                 <ScrollArea className='bg-[rgba(0,0,0,0.04)] h-full rounded-md backdrop-blur-lg  border border-slate-700/20 '>
+                    <Box
+                        onClick={() => toggle()}
+                        className={twMerge("absolute  border-red-400  right-0 top-0 h-10 w-10", !isMobile && "hidden")} >
+                        <FontAwesomeIcon icon={faX} fixedWidth className='absolute  right-1 text-lg w-6 h-6' />
+                    </Box>
                     <NavMenu
+                        close={{
+                            close: close,
+                            isMobile: isMobile,
+                        }}
+
                         session={session}
                         nameSpace='staff-dashboard'
                         inputData={elements}

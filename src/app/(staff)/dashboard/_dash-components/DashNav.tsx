@@ -1,3 +1,4 @@
+"use client"
 import { faHome, faList, faScrewdriverWrench, faUser } from "@fortawesome/pro-duotone-svg-icons"
 import { Box, Container, type MantineSize } from "@mantine/core"
 import type { Session } from "next-auth"
@@ -31,6 +32,7 @@ const DashNav = ({ session }: { session: Session | null | undefined }) => {
                 to: "/dashboard/login-whitelist",
                 icon: faList,
                 permission: "viewWhitelist",
+
             }
         ]
         return data
