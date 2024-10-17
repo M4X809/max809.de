@@ -1,13 +1,13 @@
 "use client"
 
-import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Stack, Text, Title } from '@mantine/core'
+import { AppShell, type AppShellProps, Box, Button, Dialog, Group, Stack, Text, Title, TooltipFloating } from '@mantine/core'
 import type { SessionType } from 'next-auth';
 import React, { useEffect } from 'react'
 import { useAppStore } from '~/providers/app-store-provider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { faHeart, faHome, faScrewdriverWrench } from '@fortawesome/pro-duotone-svg-icons'
+import { faGearComplex, faHeart, faHome, faScrewdriverWrench } from '@fortawesome/pro-duotone-svg-icons'
 
 import pkg from "~/../package.json";
 import { usePostHog } from 'posthog-js/react';
@@ -22,7 +22,42 @@ import { useIsStaff } from '../../lib/cUtils';
 import ErrorBox from './ErrorBox';
 
 
-function Shell({ children, session, title = "SetMe", redirect = false, withLoginButton, withDashboardButton = true, withHomeButton = false, forceHideHeader = false, ...props }: Omit<AppShellProps, "padding" | "navbar"> & { session?: SessionType, title?: string, redirect?: string | boolean, withLoginButton?: boolean, withDashboardButton?: boolean, withHomeButton?: boolean, forceHideHeader?: boolean }) {
+function Shell({ children,
+    session,
+    title = "SetMe",
+    redirect = false,
+    withLoginButton = true,
+    withDashboardButton = true,
+    withHomeButton = false,
+    withSettingsButton = true,
+    forceHideHeader = false,
+    ...props }: Omit<AppShellProps, "padding" | "navbar"> & {
+        session?: SessionType,
+        title?: string,
+        redirect?: string | boolean,
+        /**
+         * @default true
+         */
+        withLoginButton?: boolean,
+        /**
+         * @default true
+         */
+        withDashboardButton?: boolean,
+        /**
+         * @default false
+         */
+        withHomeButton?: boolean,
+        /**
+         * @default true
+         */
+        withSettingsButton?: boolean,
+        /**
+         * Forces the header to be hidden
+         * @default false
+         */
+        forceHideHeader?: boolean
+
+    }) {
     const posthog = usePostHog()
     const path = usePathname()
     const os = useOs()
@@ -41,9 +76,6 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
 
 
     const setSession = useAppStore((state) => state.setSession)
-    const refreshSession = useAppStore((state) => state.refreshSession)
-    const isMounted = useMounted()
-
 
     // const debugPosthog = false
     const debugPosthog = posthog.isFeatureEnabled("debug-posthog", {
@@ -112,7 +144,7 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
                         >
                             <AppShell.Main className='h-full flex flex-col w-full ' px={{ base: 0, md: undefined }}>
                                 {/* {!timerRunning &&  */}
-                                <Group justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
+                                <Group wrap='nowrap' justify="space-between" align="center" className={twMerge("select-none transition-opacity duration-500", hideHeader && "opacity-0")}  >
                                     <Stack gap={0}>
                                         {!!redirect && <Link href={redirect.toString()} >
                                             <Title>
@@ -123,20 +155,32 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
                                             {title}
                                         </Title>}
                                     </Stack>
-                                    <Group justify='end' gap={1}>
+                                    <Group wrap='nowrap' justify='end' gap={1}>
+
+
                                         {withLoginButton && <AuthButton session={session} />}
+                                        {withSettingsButton && session &&
+                                            <TooltipFloating
+                                                label="Account Settings"
+                                                position='left'
+                                            >
+                                                <Link
+                                                    href={"/"}
+                                                    className={twMerge("rounded-full bg-white/10 px-3 py-1 md:px-4 md:py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
+                                                    <FontAwesomeIcon icon={faGearComplex} fixedWidth />
+                                                </Link>
+                                            </TooltipFloating>
+                                        }
                                         {withDashboardButton && isStaff() && !withHomeButton && <Link
                                             href={"/dashboard"}
-                                            prefetch={true}
-                                            className={twMerge("rounded-full bg-white/10 px-4 py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
+                                            className={twMerge("rounded-full bg-white/10 px-3 py-1 md:px-4 md:py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
                                             <FontAwesomeIcon icon={faScrewdriverWrench} fixedWidth />
                                         </Link>
                                         }
 
                                         {withHomeButton && isStaff() && !withDashboardButton && <Link
                                             href={"/"}
-                                            prefetch={true}
-                                            className={twMerge("rounded-full bg-white/10 px-4 py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
+                                            className={twMerge("rounded-full bg-white/10 px-3 py-1 md:px-4 md:py-2  hover:bg-white/20 text-nowrap h-full  transition-colors duration-500")} >
                                             <FontAwesomeIcon icon={faHome} fixedWidth />
                                         </Link>}
 
@@ -146,7 +190,6 @@ function Shell({ children, session, title = "SetMe", redirect = false, withLogin
                                                 visible={true}
                                             />
                                         }
-
                                     </Group>
                                 </Group>
                                 {/* // } */}
