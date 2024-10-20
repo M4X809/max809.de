@@ -70,11 +70,6 @@ RUN ls -la .next
 
 # Stage 3: set up the locale
 
-ENV TZ="CET"
-ENV LANG="de_DE.UTF-8"
-ENV LANGUAGE="de_DE:de"
-ENV LC_ALL="en_US.UTF-8"
-
 # Stage 4: Run the application with node/npm
 FROM node:22-slim AS runner
 
@@ -135,6 +130,11 @@ COPY --from=builder /app/.next/static ./.next/static
 # ARG UPLOADTHING_TOKEN
 # ARG PAT_1
 
+
+ENV TZ="CET"
+ENV LANG="de_DE.UTF-8"
+ENV LANGUAGE="de_DE:de"
+ENV LC_ALL="en_US.UTF-8"
 
 
 # Expose the port Next.js runs on
