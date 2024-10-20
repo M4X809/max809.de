@@ -10,7 +10,6 @@ import { feedSearchParamsParser } from './feedSearchParams'
 import { DatePicker } from '@mantine/dates'
 import { useDebouncedCallback } from '@mantine/hooks'
 
-new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
 
 export const DayPagination = () => {

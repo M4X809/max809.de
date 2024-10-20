@@ -20,7 +20,6 @@ import CommandHandler from "./_components/CommandHandler";
 import { getServerAuthSession } from "~/server/auth";
 import { hasPermission } from "~/lib/sUtils";
 import { ManagementStoreProvider } from "~/providers/management-store-provider";
-import { DatesProvider } from "@mantine/dates";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),

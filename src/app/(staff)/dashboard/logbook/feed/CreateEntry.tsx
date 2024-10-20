@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DismissButton } from "~/components/ui/sonner";
 
-new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
 const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
     const router = useRouter()

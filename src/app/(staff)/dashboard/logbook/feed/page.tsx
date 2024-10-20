@@ -8,7 +8,6 @@ import React from "react";
 import { DayPagination, EntryButtons } from "./EntryButtons";
 import { feedSearchParamsCache } from "./feedSearchParams";
 
-new Intl.DateTimeFormat('de-DE', { dateStyle: 'full', timeStyle: 'full' })
 
 
 export default async function LogbookFeed({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
