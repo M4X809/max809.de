@@ -8,5 +8,8 @@ import {
 
 export const searchParamsCache = createSearchParamsCache({
 	// List your search param keys and associated parsers here:
-	t: parseAsString.withDefault(""),
+	t: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
+	callbackUrl: parseAsString
+		.withDefault("")
+		.withOptions({ clearOnDefault: true }),
 });

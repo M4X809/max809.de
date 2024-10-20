@@ -8,6 +8,7 @@ import { db } from "~/server/db";
 import chalk from "chalk";
 import { eq } from "drizzle-orm";
 import { loginWhitelist, users } from "~/server/db/schema";
+import { headers } from "next/headers";
 
 export function getDomain(url: string = env.NEXTAUTH_URL) {
 	if (url.startsWith("http://")) return url;
@@ -59,20 +60,31 @@ export async function onPageAllowed(
 	 */
 	permission?: string | string[] | "staff" | "admin",
 ): Promise<void> {
+	const headersList = headers();
+
 	if (!permission || permission === "admin") {
 		const admin = await isAdmin();
 		if (admin) return;
-		return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+		return redirect(
+			`/noPerm?t=${new Date().getTime()}&callbackUrl=${headersList.get("x-pathname")}`,
+			RedirectType.replace,
+		);
 	}
 	if (permission === "staff") {
 		const staff = await isStaff();
 		if (staff) return;
-		return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+		return redirect(
+			`/noPerm?t=${new Date().getTime()}&callbackUrl=${headersList.get("x-pathname")}`,
+			RedirectType.replace,
+		);
 	}
 
 	const hasPerm = await hasPermission(permission);
 	if (hasPerm) return;
-	return redirect(`/noPerm?t=${new Date().getTime()}`, RedirectType.replace);
+	return redirect(
+		`/noPerm?t=${new Date().getTime()}&callbackUrl=${headersList.get("x-pathname")}`,
+		RedirectType.replace,
+	);
 }
 // MARK: Set Nested Value
 export function setNestedValue<T extends object>(

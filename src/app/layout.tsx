@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import '@mantine/core/styles.css';
 import '@mantine/dropzone/styles.css';
 import '@mantine/code-highlight/styles.css';
+import '@mantine/dates/styles.css';
 
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
@@ -19,6 +20,7 @@ import CommandHandler from "./_components/CommandHandler";
 import { getServerAuthSession } from "~/server/auth";
 import { hasPermission } from "~/lib/sUtils";
 import { ManagementStoreProvider } from "~/providers/management-store-provider";
+import { DatesProvider } from "@mantine/dates";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://max809.de'),
@@ -35,7 +37,7 @@ export default async function RootLayout({
   const session = await getServerAuthSession()
 
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="de-DE" className={`${GeistSans.variable}`}>
       <head>
       </head>
       <body
@@ -54,6 +56,7 @@ export default async function RootLayout({
                 <QrCodeStoreProvider>
                   <ManagementStoreProvider>
                     <ModalsProvider>
+
 
                       <Toaster
                         closeButton

@@ -12,7 +12,7 @@ export default async function DashboardLayout({
     return (
         <HydrateClient>
             <Shell
-                title='Staff Dashboard'
+                title='Dashboard'
                 redirect={"/dashboard"}
                 withLoginButton
                 withHomeButton

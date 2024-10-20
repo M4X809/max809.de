@@ -2,6 +2,7 @@ import { relations, type SQL, sql } from "drizzle-orm";
 // import { float } from "drizzle-orm/mysql-core";
 import {
 	boolean,
+	date,
 	doublePrecision,
 	index,
 	integer,
@@ -194,4 +195,36 @@ export const loginWhitelist = createTable("login_whitelist", {
 	allowed: boolean("allowed").default(false),
 	oAuthProvider: varchar("oAuthProvider", { length: 255 }),
 	oAuthProviderAccountId: varchar("oAuthProviderAccountId", { length: 255 }),
+});
+
+export const logbookFeed = createTable("logbook_feed", {
+	id: varchar("id", { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	createdById: varchar("created_by", { length: 255 })
+		.notNull()
+		.references(() => users.id),
+	createdAt: timestamp("created_at", { withTimezone: true })
+		.default(sql`CURRENT_TIMESTAMP`)
+		.notNull(),
+
+	type: varchar("type", { length: 255 })
+		.default("entry")
+		.notNull()
+		.$type<"entry" | "start" | "end" | "pause">(),
+	streetName: varchar("street_name", { length: 255 }).default("").notNull(),
+	kmState: varchar("km_state", { length: 255 }).default("").notNull(),
+	startTime: timestamp("start_time", {
+		mode: "date",
+		withTimezone: true,
+	}),
+	endTime: timestamp("end_time", {
+		mode: "date",
+		withTimezone: true,
+	}),
+	date: timestamp("date", {
+		mode: "date",
+		withTimezone: true,
+	}).default(sql`CURRENT_DATE`),
 });

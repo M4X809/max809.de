@@ -2,7 +2,7 @@
 import { faChevronsRight, faX } from '@fortawesome/pro-duotone-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Center, Divider, Grid, NavLink, ScrollArea, Stack, Tooltip } from '@mantine/core'
-import { useDisclosure, useHover, useMediaQuery, useSessionStorage } from '@mantine/hooks';
+import { useDisclosure, useHover, useLocalStorage, useMediaQuery, useMounted } from '@mantine/hooks';
 import React from 'react'
 import { twMerge } from 'tailwind-merge';
 
@@ -12,6 +12,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useIsAdmin, useIsStaff, usePermission } from '~/lib/cUtils';
 import type { Session } from 'next-auth';
+import { useAppStore } from '~/providers/app-store-provider';
 
 type multi = {
     type: "multi";
@@ -115,7 +116,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
 
 
 
-    const [openStates, setOpenStates] = useSessionStorage<{
+    const [openStates, setOpenStates] = useLocalStorage<{
         [key: string]: boolean;
     }>({ key: nameSpace, defaultValue: {} });
 
@@ -259,14 +260,23 @@ const NavMenu: React.FC<NavMenuProps> = ({ inputData, nameSpace, close, inputPar
 
 
 const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], session: Session | null | undefined; }) => {
+    const mounted = useMounted()
+
     const { hovered: triggerHovered, ref: triggerRef } = useHover();
     const { hovered: contentHovered, ref: contentRef } = useHover();
 
     const [opened, { toggle, close }] = useDisclosure(false);
 
-    const isMobile = useMediaQuery('(max-width: 40em)', true, {
+    const os = useAppStore((state) => state.os)
+
+    const _isMobile = useMediaQuery('(max-width: 40em)', true, {
         getInitialValueInEffect: false,
-    });
+    })
+
+    const isMobile = _isMobile || os === "ios" || os === "android"
+
+
+    // console.log("isMobile", isMobile)
 
     const open = !isMobile ? triggerHovered || contentHovered : opened
 
@@ -290,11 +300,11 @@ const NavSidebar = ({ elements, session }: { elements: NavMenuItemProps[], sessi
                     onClick={() => toggle()}
                     className="fixed  border-red-400  right-0 top-1/2 transform -translate-y-1/2 h-16 w-10 translate-x-full" />
                 <ScrollArea className='bg-[rgba(0,0,0,0.04)] h-full rounded-md backdrop-blur-lg  border border-slate-700/20 '>
-                    <Box
+                    {mounted && <Box
                         onClick={() => toggle()}
-                        className={twMerge("absolute  border-red-400  right-0 top-0 h-10 w-10", !isMobile && "hidden")} >
+                        className={twMerge("absolute  border-red-400 right-0 top-0 h-10 w-10", !isMobile && "hidden")} >
                         <FontAwesomeIcon icon={faX} fixedWidth className='absolute  right-1 text-lg w-6 h-6' />
-                    </Box>
+                    </Box>}
                     <NavMenu
                         close={{
                             close: close,

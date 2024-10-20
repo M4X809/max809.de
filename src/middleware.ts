@@ -8,8 +8,9 @@ import { headers } from "next/headers";
 import chalk from "chalk";
 
 export function middleware(request: NextRequest) {
-	const headersList = headers();
-	const requestHeaders = new Headers(headersList);
+	// const headersList = headers();
+	// const requestHeaders = new Headers(headersList);
+	const requestHeaders = new Headers(request.headers);
 
 	// console.log(request.nextUrl.pathname);
 
@@ -52,13 +53,18 @@ export function middleware(request: NextRequest) {
 		});
 	}
 
+	requestHeaders.set("x-pathname", request.nextUrl.pathname);
+	// console.log("request.nextUrl.pathname", request.nextUrl.pathname);
+
 	return NextResponse.next({
-		headers: requestHeaders,
+		request: {
+			headers: requestHeaders,
+		},
 	});
 }
 
 export const config = {
-	matcher: ["/ingest/:path*"],
+	matcher: ["/ingest/:path*", "/:path*"],
 };
 
 // export const ghMiddleware = GHMiddleware;

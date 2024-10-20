@@ -9,7 +9,7 @@ import type { CommandGroups, } from '~/components/ui/command'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Text } from '@mantine/core'
 import { useIsAdmin, useIsStaff, usePermission } from '~/lib/cUtils'
-import { faArrowRightToBracket, faArrowsRotate, faIcons, faList, faNote, faQrcode, faSave, faScrewdriverWrench, faSpinner, faStopwatch, faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons'
+import { faArrowRightToBracket, faArrowsRotate, faFileContract, faIcons, faList, faNote, faQrcode, faSave, faScrewdriverWrench, faSpinner, faStopwatch, faUser, faUserShield } from '@fortawesome/pro-duotone-svg-icons'
 import { usePathname, useRouter } from 'next/navigation'
 import { useManagementStore } from '~/providers/management-store-provider'
 import { twMerge } from 'tailwind-merge'
@@ -51,7 +51,7 @@ const defaultCommands: CommandGroups[] = [
     {
         type: "group",
         permission: ["viewUser", "viewWhitelist"],
-        heading: "Staff Dashboard",
+        heading: "Dashboard",
         commands: [
             {
                 icon: faScrewdriverWrench,
@@ -86,7 +86,19 @@ const defaultCommands: CommandGroups[] = [
                     close()
                 },
                 permission: ["viewWhitelist"],
+            },
+            {
+                icon: faFileContract,
+                key: "logbook",
+                label: "Logbook",
+                keywords: ["logbook", "staff"],
+                onSelect: ({ close, router }) => {
+                    router.push("/dashboard/logbook")
+                    close()
+                },
+                // permission: ["viewWhitelist"],
             }
+
 
         ],
     },
