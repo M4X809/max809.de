@@ -110,6 +110,16 @@ COPY --from=deps /root/.cache/puppeteer /root/.cache/puppeteer
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+
+USER root
+RUN localedef -i de_DE -f UTF-8 de_DE.UTF-8
+RUN echo "LANG=\"de_DE.UTF-8\"" > /etc/locale.conf
+RUN ln -s -f /usr/share/zoneinfo/CET /etc/localtime
+USER root
+ENV LANG de_DE.UTF-8
+ENV LANGUAGE de_DE.UTF-8
+ENV LC_ALL de_DE.UTF-8
+
 # ARG DATABASE_URL
 
 # ARG NEXTAUTH_SECRET

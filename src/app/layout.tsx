@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/max809.webp" }],
 };
 
+new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full", });
 
 
 export default async function RootLayout({
