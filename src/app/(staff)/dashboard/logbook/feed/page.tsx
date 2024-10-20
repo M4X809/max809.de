@@ -6,10 +6,11 @@ import { api } from "~/trpc/server";
 import { TRPCError } from "@trpc/server";
 import React from "react";
 import { EntryButtons } from "./EntryButtons";
+import { feedSearchParamsCache } from "./feedSearchParams";
 
 
 
-export default async function LogbookFeed() {
+export default async function LogbookFeed({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
     await onPageAllowed("viewLogbookFeed")
     let data: {
         streetNames: string[];
@@ -48,10 +49,14 @@ export default async function LogbookFeed() {
         }[]
         day: Date
 
+
     } | undefined = undefined
 
+    const { day } = feedSearchParamsCache.parse(searchParams)
+
+
     try {
-        data = await api.logbook.getEntries({ day: new Date().toLocaleDateString() })
+        data = await api.logbook.getEntries({ day: day ? day.toLocaleDateString() : "20.10.2024" })
     } catch (err) {
 
         console.log("err", err)
