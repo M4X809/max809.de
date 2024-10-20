@@ -5,6 +5,7 @@ import { onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import { TRPCError } from "@trpc/server";
 import React from "react";
+import { EntryButtons } from "./EntryButtons";
 
 
 
@@ -118,9 +119,12 @@ export default async function LogbookFeed() {
 
 
                         {startTime && <Stack gap={1}>
-                            <Title order={4}>
-                                Arbeits Begin
-                            </Title>
+                            <Group className="justify-between ">
+                                <Title order={4}>
+                                    Arbeits Begin
+                                </Title>
+                                <EntryButtons id={startTime.id} />
+                            </Group>
                             <Group className="justify-between md:justify-start">
                                 <Text fz={15}  >
                                     Uhrzeit: {startTime.startTime?.toLocaleTimeString()}
@@ -148,9 +152,13 @@ export default async function LogbookFeed() {
                                 <React.Fragment key={entry.id}>
 
                                     <Stack key={entry.id} gap={1}>
-                                        <Title order={4}>
-                                            Pause
-                                        </Title>
+
+                                        <Group className="justify-between ">
+                                            <Title order={4}>
+                                                Pause
+                                            </Title>
+                                            <EntryButtons id={entry.id} />
+                                        </Group>
                                         <Group className="justify-between md:justify-start">
                                             <Text fz={15} >
                                                 Von: {entry.startTime?.toLocaleTimeString()}
@@ -185,9 +193,12 @@ export default async function LogbookFeed() {
                             if (entry.type === "entry") return (
                                 <React.Fragment key={entry.id}>
                                     <Stack key={entry.id} gap={1}>
-                                        <Title order={4}>
-                                            Straße: {entry.streetName}
-                                        </Title>
+                                        <Group className="justify-between ">
+                                            <Title order={4}>
+                                                Straße: {entry.streetName || "Keine Straße angegeben"}
+                                            </Title>
+                                            <EntryButtons id={entry.id} />
+                                        </Group>
                                         <Group className="justify-between md:justify-start">
                                             <Text fz={15}  >
                                                 Von: {entry.startTime?.toLocaleTimeString()}
@@ -222,11 +233,13 @@ export default async function LogbookFeed() {
                         {endTime &&
                             <React.Fragment>
                                 {entries.length > 0 && <Divider my={10} />}
-
                                 <Stack gap={1}>
-                                    <Title order={4}>
-                                        Arbeits Ende
-                                    </Title>
+                                    <Group className="justify-between ">
+                                        <Title order={4}>
+                                            Arbeits Ende
+                                        </Title>
+                                        <EntryButtons id={endTime.id} />
+                                    </Group>
                                     <Group
                                         className="justify-between md:justify-start"
                                     >
