@@ -134,7 +134,7 @@ COPY --from=builder /app/.next/static ./.next/static
 ENV TZ="CET"
 ENV LANG="de_DE.UTF-8"
 ENV LANGUAGE="de_DE:de"
-ENV LC_ALL="en_US.UTF-8"
+ENV LC_ALL="de_DE.UTF-8"
 
 
 # Expose the port Next.js runs on
