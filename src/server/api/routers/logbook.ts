@@ -54,7 +54,7 @@ export const logbookRouter = createTRPCRouter({
 			z.object({
 				// dd.mm.yyyy or d.m.yyyy (d = day, m = month, yyyy = year)
 				// day: z.string().regex(/^\d{2}\.\d{1 , 2}\.\d{4}$/),
-				day: z.string().regex(/^\d{1,2}\.\d{1,2}\.\d{4}$/),
+				day: z.string().regex(/^\d{1,2}[./]\d{1,2}[./]\d{4}$/),
 			}),
 		)
 		.query(async ({ ctx, input }) => {
