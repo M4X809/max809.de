@@ -2,14 +2,12 @@ import { relations, type SQL, sql } from "drizzle-orm";
 // import { float } from "drizzle-orm/mysql-core";
 import {
 	boolean,
-	date,
 	doublePrecision,
 	index,
 	integer,
 	json,
 	pgTableCreator,
 	primaryKey,
-	serial,
 	text,
 	timestamp,
 	varchar,

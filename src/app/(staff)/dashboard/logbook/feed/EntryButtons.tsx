@@ -1,12 +1,129 @@
 "use client"
-import { faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
+import { faCalendarAlt, faChevronLeft, faChevronRight, faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Button } from '@mantine/core'
-import React from 'react'
+import { ActionIcon, Button, Center, Group, Modal, VisuallyHidden } from '@mantine/core'
+import { useRouter } from 'next/navigation'
+import { useQueryState } from 'nuqs'
+import React, { useEffect, useState } from 'react'
 import { api } from '~/trpc/react'
+import { feedSearchParamsParser } from './feedSearchParams'
+import { DatePicker } from '@mantine/dates'
+import { useDebouncedCallback } from '@mantine/hooks'
+
+
+
+
+export const DayPagination = () => {
+    const router = useRouter()
+    const [day, setDay] = useQueryState('day', feedSearchParamsParser.day)
+    const [datePickerOpen, setDatePickerOpen] = useState(false)
+
+    const [day2, month, year] = day.split(".").map(Number);
+
+    const [datePickerState, setDatePickerState] = useState<Date | undefined | null>(new Date(year!, month! - 1, day2))
+
+
+    const callbackInput = useDebouncedCallback((date: Date | undefined | null) => {
+        if (!date) return
+        setDay(date.toLocaleDateString())
+        setTimeout(() => {
+            router.refresh()
+        }, 100)
+    }, 0)
+
+    const callbackPagination = useDebouncedCallback((dateString: string) => {
+        if (!dateString) return
+        setDay(dateString)
+        setTimeout(() => {
+            router.refresh()
+        }, 10)
+    }, 0)
+
+
+
+
+    return (
+        <>
+            <Modal
+                centered
+                opened={datePickerOpen}
+                onClose={() => {
+                    setDatePickerOpen(false)
+                }}
+                withCloseButton={false}
+                bg={"transparent"}
+                classNames={{
+                    overlay: "bg-[rgba(0,0,0,0.3)] ",
+                    body: "bg-transparent",
+                    inner: "bg-transparent",
+                    root: "bg-transparent",
+                    content: " bg-[rgba(0,0,0,0.25)] backdrop-blur-2xl rounded-md",
+                }}
+
+
+            >
+                <Center>
+                    <DatePicker
+                        value={datePickerState}
+                        onChange={(date) => {
+                            setDatePickerState(date)
+                            callbackInput(date)
+                            setDatePickerOpen(false)
+
+                        }}
+                    />
+                </Center>
+
+
+            </Modal>
+
+
+            <Group wrap='nowrap' gap={1}>
+                <ActionIcon
+                    onClick={() => {
+                        const previousDay = new Date(year!, month! - 1, day2! - 1).toLocaleDateString()
+                        callbackPagination(previousDay)
+                    }}
+                >
+                    <VisuallyHidden>Previous Day</VisuallyHidden>
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                </ActionIcon>
+                <ActionIcon
+                    onClick={() => {
+                        const nextDay = new Date(year!, month! - 1, day2! + 1).toLocaleDateString()
+                        callbackPagination(nextDay)
+                    }}
+                >
+                    <VisuallyHidden>Next Day</VisuallyHidden>
+                    <FontAwesomeIcon icon={faChevronRight} />
+                </ActionIcon>
+                <ActionIcon
+                    onClick={() => {
+                        setDatePickerOpen(true)
+                    }}
+                >
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                </ActionIcon>
+            </Group>
+        </>
+    )
+
+
+}
+
+
+
+
 
 export const EntryButtons = ({ id }: { id: string }) => {
+    const router = useRouter()
     const { mutate: deleteEntry, isPending: isDeleting, isSuccess: isDeleteSuccess, error: deleteError, reset: resetDeleteMutation } = api.logbook.deleteEntry.useMutation()
+
+    useEffect(() => {
+        if (isDeleteSuccess) {
+            router.refresh()
+        }
+    }, [isDeleteSuccess, router])
 
 
     return (

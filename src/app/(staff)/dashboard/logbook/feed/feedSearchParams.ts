@@ -6,9 +6,12 @@ import {
 } from "nuqs/server";
 // Note: import from 'nuqs/server' to avoid the "use client" directive
 
-export const feedSearchParamsCache = createSearchParamsCache({
-	// List your search param keys and associated parsers here:
-	day: parseAsIsoDateTime
-		.withDefault(new Date())
+export const feedSearchParamsParser = {
+	day: parseAsString
+		.withDefault(new Date().toLocaleDateString())
 		.withOptions({ clearOnDefault: true }),
-});
+};
+
+export const feedSearchParamsCache = createSearchParamsCache(
+	feedSearchParamsParser,
+);

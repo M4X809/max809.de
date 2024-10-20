@@ -13,9 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DismissButton } from "~/components/ui/sonner";
 
-
 const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
-
     const router = useRouter()
     const { mutate: createEntry, isPending: isCreating, isSuccess: isCreated, error: createError } = api.logbook.createEntry.useMutation()
 
@@ -91,8 +89,8 @@ const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
             let endDate: Date | undefined = undefined
 
             const [startHours, startMinutes] = startTimeString.split(':').map(Number);
-
             const [endHours, endMinutes] = endTimeString.split(':').map(Number);
+
 
             if (values.startTime) {
                 const _startDate = new Date(date)
@@ -176,9 +174,16 @@ const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                     classNames={{
                         calendarHeader: "text-white bg-[rgba(0,0,0,0.15)] rounded-md",
                         calendarHeaderControl: "bg-[rgba(0,0,0,0.05)]",
-                        day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white",
-
+                        day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white hover:bg-red-500",
+                        input: "bg-[rgba(255,255,255,0.05)] text-white",
                     }}
+                    styles={{
+                        day: {
+                            // @ts-ignore
+                            "--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+                        }
+                    }}
+
                     popoverProps={{
                         classNames: {
                             dropdown: "bg-[rgba(0,0,0,0.2)] backdrop-blur-xl rounded-md",

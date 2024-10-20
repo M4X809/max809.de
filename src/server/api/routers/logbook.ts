@@ -6,6 +6,8 @@ import { db } from "~/server/db";
 import { logbookFeed, loginWhitelist, sessions } from "~/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 
+new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
+
 export const logbookRouter = createTRPCRouter({
 	createEntry: protectedProcedure
 		.input(
@@ -50,7 +52,9 @@ export const logbookRouter = createTRPCRouter({
 	getEntries: protectedProcedure
 		.input(
 			z.object({
-				day: z.string().regex(/^\d{2}\.\d{2}\.\d{4}$/),
+				// dd.mm.yyyy or d.m.yyyy (d = day, m = month, yyyy = year)
+				// day: z.string().regex(/^\d{2}\.\d{1 , 2}\.\d{4}$/),
+				day: z.string().regex(/^\d{1,2}\.\d{1,2}\.\d{4}$/),
 			}),
 		)
 		.query(async ({ ctx, input }) => {
@@ -68,7 +72,7 @@ export const logbookRouter = createTRPCRouter({
 			const startDate = new Date(year!, month! - 1, day, 0, 0, 0);
 			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
 
-			const entries = await ctx.db.query.logbookFeed.findMany({
+			const entriesProm = ctx.db.query.logbookFeed.findMany({
 				where: (logbookFeed, { eq, between, and, or }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
@@ -77,7 +81,7 @@ export const logbookRouter = createTRPCRouter({
 				orderBy: (logbookFeed, { desc, asc }) => asc(logbookFeed.startTime),
 			});
 
-			const startAndEndTime = await ctx.db.query.logbookFeed.findMany({
+			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
 				where: (logbookFeed, { eq, between, and, or }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
@@ -86,7 +90,7 @@ export const logbookRouter = createTRPCRouter({
 				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
 			});
 
-			const previousStreetNames = await ctx.db.query.logbookFeed
+			const previousStreetNamesProm = ctx.db.query.logbookFeed
 				.findMany({
 					columns: { streetName: true },
 					orderBy: (logbookFeed, { desc }) => desc(logbookFeed.streetName),
@@ -96,6 +100,12 @@ export const logbookRouter = createTRPCRouter({
 					result.filter((value, index, self) => self.indexOf(value) === index),
 				)
 				.then((result) => result.filter(Boolean));
+
+			const [startAndEndTime, previousStreetNames, entries] = await Promise.all([
+				startAndEndTimeProm,
+				previousStreetNamesProm,
+				entriesProm,
+			]);
 
 			// console.log("entries", entries);
 			// console.log("startAndEndTime", startAndEndTime);

@@ -5,9 +5,10 @@ import { onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import { TRPCError } from "@trpc/server";
 import React from "react";
-import { EntryButtons } from "./EntryButtons";
+import { DayPagination, EntryButtons } from "./EntryButtons";
 import { feedSearchParamsCache } from "./feedSearchParams";
 
+new Intl.DateTimeFormat('de-DE', { dateStyle: 'full', timeStyle: 'full' })
 
 
 export default async function LogbookFeed({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
@@ -53,10 +54,11 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
     } | undefined = undefined
 
     const { day } = feedSearchParamsCache.parse(searchParams)
+    console.log("day", day)
 
 
     try {
-        data = await api.logbook.getEntries({ day: day ? day.toLocaleDateString() : "20.10.2024" })
+        data = await api.logbook.getEntries({ day: day })
     } catch (err) {
 
         console.log("err", err)
@@ -111,17 +113,17 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                 >
 
                     <Stack gap={4}>
-
-                        <Title order={2}>
-                            {/* weekday (Montag -> Freitag) */}
-                            {data?.day.toLocaleString("de-DE", {
-                                weekday: "long",
-                            })}
-                            {" "}
-                            {data?.day.toLocaleDateString()}
-                        </Title>
-
-
+                        <Group justify="space-between" >
+                            <Title order={3}>
+                                {/* weekday (Montag -> Freitag) */}
+                                {data?.day.toLocaleString("de-DE", {
+                                    weekday: "long",
+                                })}
+                                {" "}
+                                {data?.day.toLocaleDateString()}
+                            </Title>
+                            <DayPagination />
+                        </Group>
 
                         {startTime && <Stack gap={1}>
                             <Group className="justify-between ">
@@ -132,7 +134,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                             </Group>
                             <Group className="justify-between md:justify-start">
                                 <Text fz={15}  >
-                                    Uhrzeit: {startTime.startTime?.toLocaleTimeString()}
+                                    Uhrzeit: {startTime.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                 </Text>
                                 <Text fz={15} >
                                     Kilometer Stand: {Number.parseInt(startTime.kmState, 10).toLocaleString("de-DE", {
@@ -166,10 +168,10 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                         </Group>
                                         <Group className="justify-between md:justify-start">
                                             <Text fz={15} >
-                                                Von: {entry.startTime?.toLocaleTimeString()}
+                                                Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                             <Text fz={15}  >
-                                                Bis: {entry.endTime?.toLocaleTimeString()}
+                                                Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
                                         <Group className="justify-between md:justify-start">
@@ -206,10 +208,10 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                         </Group>
                                         <Group className="justify-between md:justify-start">
                                             <Text fz={15}  >
-                                                Von: {entry.startTime?.toLocaleTimeString()}
+                                                Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                             <Text fz={15}  >
-                                                Bis: {entry.endTime?.toLocaleTimeString()}
+                                                Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
                                         <Group className="justify-between md:justify-start">
@@ -250,7 +252,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                     >
 
                                         <Text fz={15}  >
-                                            Uhrzeit: {endTime.endTime?.toLocaleTimeString()}
+                                            Uhrzeit: {endTime.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                         </Text>
                                     </Group>
                                     <Group
