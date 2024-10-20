@@ -68,7 +68,14 @@ RUN npm run build
 # Check the build output
 RUN ls -la .next
 
-# Stage 3: Run the application with node/npm
+# Stage 3: set up the locale
+
+ENV TZ="CET"
+ENV LANG="de_DE.UTF-8"
+ENV LANGUAGE="de_DE:de"
+ENV LC_ALL="en_US.UTF-8"
+
+# Stage 4: Run the application with node/npm
 FROM node:22-slim AS runner
 
 # Set the working directory inside the container
@@ -111,14 +118,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
 
-USER root
-RUN localedef -i de_DE -f UTF-8 de_DE.UTF-8
-RUN echo "LANG=\"de_DE.UTF-8\"" > /etc/locale.conf
-RUN ln -s -f /usr/share/zoneinfo/CET /etc/localtime
-USER root
-ENV LANG de_DE.UTF-8
-ENV LANGUAGE de_DE.UTF-8
-ENV LC_ALL de_DE.UTF-8
+
 
 # ARG DATABASE_URL
 
