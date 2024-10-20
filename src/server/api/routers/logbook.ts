@@ -65,6 +65,8 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 
+			input.day = input.day.replaceAll("/", ".");
+
 			console.log("input", input);
 
 			const [day, month, year] = input.day.split(".").map(Number);
