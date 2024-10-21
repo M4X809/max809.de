@@ -151,7 +151,7 @@ export const checkWhitelist = async ({
 	});
 
 	if (whitelist) {
-		console.log(chalk.yellow("whitelist", JSON.stringify(whitelist, null, 2)));
+		// console.log(chalk.yellow("whitelist", JSON.stringify(whitelist, null, 2)));
 
 		await db
 			.update(users)

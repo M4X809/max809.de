@@ -13,10 +13,6 @@ const config = {
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
-	i18n: {
-		locales: ["de", "en"],
-		defaultLocale: "de",
-	},
 
 	skipTrailingSlashRedirect: true,
 	devIndicators: {

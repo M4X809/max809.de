@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Center, Stack, Title } from "@mantine/core";
 import Shell from "~/app/_components/Shell";
 import { HydrateClient } from "~/trpc/server";
-import { DiscordSignInButton, EmailSignInButton, GitHubSignInButton, SpotifySignInButton } from "./SignInButtons";
+import { DiscordSignInButton, EmailSignInButton, GitHubSignInButton, GoogleSignInButton, SpotifySignInButton } from "./SignInButtons";
 import { searchParamsCache } from '../searchParams'
 import ErrorBox from "~/app/_components/ErrorBox";
 import type { Metadata } from "next";
@@ -86,6 +86,7 @@ export default async function SignIn({
                             <DiscordSignInButton />
                             <GitHubSignInButton />
                             <SpotifySignInButton />
+                            <GoogleSignInButton />
                             <EmailSignInButton />
                             <Button
                                 size="compact-sm"
