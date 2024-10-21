@@ -50,9 +50,11 @@ const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
     useEffect(() => {
         if (isCreated) {
             const type = form.values.type
+            const date = form.values.date
             form.reset()
             form.setValues({
                 type: type === "pause" ? "entry" : type,
+                date: date,
             })
 
 
