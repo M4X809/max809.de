@@ -1,6 +1,8 @@
 "use client"
 
-import { Button, type ButtonProps } from "@mantine/core";
+import { faSignInAlt, faSignOutAlt } from "@fortawesome/pro-duotone-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Box, Button, Text, Tooltip, TooltipFloating, type ButtonProps } from "@mantine/core";
 import { useTimeout } from "@mantine/hooks";
 import type { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
@@ -35,9 +37,21 @@ export const AuthButton = ({ session, onlySignIn = false, ...props }: { session:
                     await signIn()
                 }
             }}
-            className={twMerge("rounded-full bg-white/10 px-8 py-2 font-semibold no-underline  hover:bg-white/20 text-nowrap h-full transition-colors duration-500 ", confirmSignOut ? " bg-blue-500 hover:bg-blue-500 " : "")}
+            className={twMerge("rounded-full bg-white/10 px-3 py-1 md:px-4 md:py-2  hover:bg-white/20 text-nowrap h-full transition-colors duration-500 ", confirmSignOut ? " bg-blue-500 hover:bg-blue-500 " : "")}
         >
-            {session ? confirmSignOut ? "Confirm Sign Out" : `Sign out: ${session.user?.name}` : "Sign in"}
+            <TooltipFloating
+                label={session ? confirmSignOut ? "Confirm Sign Out" : `Sign out: ${session.user?.name}` : "Sign in"}
+                position="left"
+            >
+                <Box>
+                    <Text className="hidden md:block" fw={600}>
+                        {session ? confirmSignOut ? "Confirm Sign Out" : `Sign out: ${session.user?.name}` : "Sign in"}
+                    </Text>
+                    <Text className="md:hidden" fw={600}>
+                        {session ? confirmSignOut ? "Confirm Sign Out" : <FontAwesomeIcon icon={faSignOutAlt} fixedWidth /> : <FontAwesomeIcon icon={faSignInAlt} fixedWidth />}
+                    </Text>
+                </Box>
+            </TooltipFloating>
         </Button>
     );
 

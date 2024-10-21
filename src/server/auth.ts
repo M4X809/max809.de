@@ -13,6 +13,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import GithubProvider from "next-auth/providers/github";
 import SpotifyProvider from "next-auth/providers/spotify";
 import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
 
 import { PostHog } from "posthog-node";
 
@@ -396,6 +397,10 @@ export const authOptions: NextAuthOptions = {
 					return `Sign in to ${host}\n${url}\n\n`;
 				}
 			},
+		}),
+		GoogleProvider({
+			clientId: env.GOOGLE_CLIENT_ID,
+			clientSecret: env.GOOGLE_CLIENT_SECRET,
 		}),
 		/**
 		 * ...add more providers here.
