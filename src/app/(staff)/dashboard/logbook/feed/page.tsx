@@ -6,6 +6,7 @@ import { api } from "~/trpc/server";
 import React from "react";
 import { DayPagination, EntryButtons } from "./EntryButtons";
 import { feedSearchParamsCache } from "./feedSearchParams";
+import { redirect } from "next/navigation";
 
 
 
@@ -58,9 +59,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
     try {
         data = await api.logbook.getEntries({ day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day })
     } catch (err) {
-
-        console.log("err", err)
-        return <div>Error</div>
+        redirect("/dashboard/logbook/feed")
     }
     // console.log("entries", data)
 
