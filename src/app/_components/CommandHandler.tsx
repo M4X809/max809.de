@@ -50,7 +50,7 @@ const defaultCommands: CommandGroups[] = [
     },
     {
         type: "group",
-        permission: ["viewUser", "viewWhitelist"],
+        permission: ["viewUser", "viewWhitelist", "redirectToLogbook"],
         heading: "Dashboard",
         commands: [
             {
@@ -96,7 +96,7 @@ const defaultCommands: CommandGroups[] = [
                     router.push("/dashboard/logbook")
                     close()
                 },
-                // permission: ["viewWhitelist"],
+                permission: ["viewLogbookFeed"],
             }
 
 

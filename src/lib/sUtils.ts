@@ -35,12 +35,41 @@ export async function isAdmin(): Promise<boolean> {
 }
 
 export async function hasPermission(
+	permission: string[],
+	haveAllPermissions: true,
+	ignoreAdmin?: boolean,
+): Promise<boolean>;
+
+export async function hasPermission(
 	permission: string | string[],
+	haveAllPermissions?: false,
+	ignoreAdmin?: boolean,
+): Promise<boolean>;
+
+export async function hasPermission(
+	/**
+	 * Permission can be a string or an array of strings
+	 */
+	permission: string | string[],
+	/**
+	 * If the user has all permissions in the array
+	 */
+	haveAllPermissions = false,
+
+	/**
+	 * If set to True, the admin will also require the permission
+	 */
+	ignoreAdmin = false,
 ): Promise<boolean> {
 	const session = await getServerAuthSession();
 	if (!session?.user.id) return false;
-	if (session.user.admin) return true;
+	if (session.user.admin && !ignoreAdmin) return true;
 	if (Array.isArray(permission)) {
+		if (haveAllPermissions) {
+			if (permission.every((perm) => session.user.permissions?.includes(perm)))
+				return true;
+			return false;
+		}
 		if (permission.some((perm) => session.user.permissions?.includes(perm)))
 			return true;
 		return false;
@@ -59,6 +88,16 @@ export async function onPageAllowed(
 	 * If permission is not provided, it will check if the user is an admin.
 	 */
 	permission?: string | string[] | "staff" | "admin",
+
+	/**
+	 * If the user has all permissions in the array
+	 */
+	haveAllPermissions = false,
+
+	/**
+	 * If set to True, the admin will also require the permission
+	 */
+	ignoreAdmin = false,
 ): Promise<void> {
 	const headersList = headers();
 
@@ -79,7 +118,16 @@ export async function onPageAllowed(
 		);
 	}
 
-	const hasPerm = await hasPermission(permission);
+	if (Array.isArray(permission) && haveAllPermissions) {
+		const hasPerm = await hasPermission(permission, true, ignoreAdmin);
+		if (hasPerm) return;
+		return redirect(
+			`/noPerm?t=${new Date().getTime()}&callbackUrl=${headersList.get("x-pathname")}`,
+			RedirectType.replace,
+		);
+	}
+
+	const hasPerm = await hasPermission(permission, false, ignoreAdmin);
 	if (hasPerm) return;
 	return redirect(
 		`/noPerm?t=${new Date().getTime()}&callbackUrl=${headersList.get("x-pathname")}`,

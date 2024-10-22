@@ -11,6 +11,7 @@ const DashNav = ({ session }: { session: Session | null | undefined }) => {
                 type: "divider",
                 label: "Info",
                 icon: faHome,
+                requireStaff: true,
             },
             {
                 type: "item",

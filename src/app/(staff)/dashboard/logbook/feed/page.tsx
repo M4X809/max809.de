@@ -1,9 +1,8 @@
-import { Box, Card, Container, Divider, Group, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Card, Container, Divider, Group, Stack, Text, Title } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import CreateEntry from "./CreateEntry";
 import { onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
-import { TRPCError } from "@trpc/server";
 import React from "react";
 import { DayPagination, EntryButtons } from "./EntryButtons";
 import { feedSearchParamsCache } from "./feedSearchParams";
@@ -57,14 +56,11 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
 
 
     try {
-        data = await api.logbook.getEntries({ day: day })
+        data = await api.logbook.getEntries({ day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day })
     } catch (err) {
 
         console.log("err", err)
         return <div>Error</div>
-
-
-
     }
     // console.log("entries", data)
 

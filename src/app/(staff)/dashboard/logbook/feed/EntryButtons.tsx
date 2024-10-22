@@ -10,21 +10,34 @@ import { feedSearchParamsParser } from './feedSearchParams'
 import { DatePicker } from '@mantine/dates'
 import { useDebouncedCallback } from '@mantine/hooks'
 
+// new Intl.DateTimeFormat("de-DE", {
+//     dateStyle: "full",
+//     timeStyle: "full",
+//     localeMatcher: "best fit",
+// });
 
 
 export const DayPagination = () => {
     const router = useRouter()
     const [day, setDay] = useQueryState('day', feedSearchParamsParser.day)
     const [datePickerOpen, setDatePickerOpen] = useState(false)
-
     const [day2, month, year] = day.split(".").map(Number);
+    console.log("day", day)
+    console.log("day2", day2)
+    console.log("month", month)
+    console.log("year", year)
+
+    useEffect(() => {
+        if (!day) return
+        if (day.includes("Invalid")) setDay(new Date().toLocaleDateString("de-DE"))
+    }, [day, setDay])
+
+
 
     const [datePickerState, setDatePickerState] = useState<Date | undefined | null>(new Date(year!, month! - 1, day2))
-
-
     const callbackInput = useDebouncedCallback((date: Date | undefined | null) => {
         if (!date) return
-        setDay(date.toLocaleDateString())
+        setDay(date.toLocaleDateString("de-DE"))
         setTimeout(() => {
             router.refresh()
         }, 100)
@@ -36,7 +49,15 @@ export const DayPagination = () => {
         setTimeout(() => {
             router.refresh()
         }, 10)
-    }, 0)
+    }, 100)
+
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        if (datePickerOpen) {
+            setDatePickerState(new Date(year!, month! - 1, day2))
+        }
+    }, [datePickerOpen])
 
 
 
@@ -80,7 +101,9 @@ export const DayPagination = () => {
             <Group wrap='nowrap' gap={1}>
                 <ActionIcon
                     onClick={() => {
-                        const previousDay = new Date(year!, month! - 1, day2! - 1).toLocaleDateString()
+                        const previousDay = new Date(year!, month! - 1, day2! - 1).toLocaleDateString("de-DE")
+                        console.log("previousDay", previousDay)
+
                         callbackPagination(previousDay)
                     }}
                 >
@@ -89,7 +112,8 @@ export const DayPagination = () => {
                 </ActionIcon>
                 <ActionIcon
                     onClick={() => {
-                        const nextDay = new Date(year!, month! - 1, day2! + 1).toLocaleDateString()
+                        const nextDay = new Date(year!, month! - 1, day2! + 1).toLocaleDateString("de-DE")
+                        console.log("nextDay", nextDay)
                         callbackPagination(nextDay)
                     }}
                 >

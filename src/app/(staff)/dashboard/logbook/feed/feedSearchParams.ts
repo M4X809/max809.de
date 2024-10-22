@@ -8,7 +8,7 @@ import {
 
 export const feedSearchParamsParser = {
 	day: parseAsString
-		.withDefault(new Date().toLocaleDateString())
+		.withDefault(new Date().toLocaleDateString("de-DE"))
 		.withOptions({ clearOnDefault: true }),
 };
 

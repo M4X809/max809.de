@@ -6,7 +6,6 @@ import { twMerge } from "tailwind-merge"
 import { useForm } from "@mantine/form";
 import { DateInput, TimeInput } from '@mantine/dates';
 import { useMounted } from "@mantine/hooks";
-import "dayjs/locale/de"
 import { api } from "~/trpc/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -121,6 +120,7 @@ const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
 
         )
         }>
+
             <Box
                 className={twMerge("grid grid-cols-1 md:grid-cols-2  gap-x-5")}
             >

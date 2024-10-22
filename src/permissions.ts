@@ -19,6 +19,7 @@ import {
 	faFileContract,
 	faHome,
 	faFeed,
+	faArrowRightFromArc,
 } from "@fortawesome/pro-duotone-svg-icons";
 import type { Permissions as PermissionsType, Perm } from "./types";
 import type { Session } from "next-auth";
@@ -187,12 +188,21 @@ export const allPerms: PermissionsType[] = [
 				name: "Dashboard",
 				perm: "viewLogbook",
 				danger: true,
+				blocked: true,
 			},
 			{
 				icon: faFeed,
 				name: "Feed",
 				perm: "viewLogbookFeed",
 				danger: true,
+				blocked: true,
+			},
+			{
+				icon: faArrowRightFromArc,
+				name: "Redirect to Logbook",
+				perm: "redirectToLogbook",
+				danger: true,
+				blocked: true,
 			},
 		],
 	},

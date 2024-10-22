@@ -9,7 +9,8 @@ import {
 	TooltipFloating,
 	type MantineThemeOverride,
 } from "@mantine/core";
-import { DatePicker, TimeInput } from "@mantine/dates";
+import { DateInput, DatePicker, TimeInput } from "@mantine/dates";
+import "dayjs/locale/de";
 
 export const theme: MantineThemeOverride = {
 	focusRing: "never",
@@ -72,21 +73,47 @@ export const theme: MantineThemeOverride = {
 		}),
 		DatePicker: DatePicker.extend({
 			classNames: {
-				calendarHeader: "text-white bg-[rgba(0,0,0,0.15)] rounded-md",
-				calendarHeaderControl: "bg-[rgba(0,0,0,0.05)]",
-				day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white data-[today=true]:bg-[rgba(255,255,255,0.3)] ",
+				calendarHeader:
+					"bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
+				calendarHeaderControl:
+					"bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
+				day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white",
+			},
+			defaultProps: {
+				locale: "de",
 			},
 			styles: {
 				day: {
-					// @ts-ignore
+					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+				},
+				calendarHeader: {
+					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+				},
+				calendarHeaderControl: {
 					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
 				},
 			},
-			// popoverProps:{
-			// 	classNames: {
-			// 		dropdown: "bg-[rgba(0,0,0,0.2)] backdrop-blur-xl rounded-md",
-			// 	},
-			// }
+		}),
+		DateInput: DateInput.extend({
+			classNames: {
+				calendarHeader: "bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] ",
+				calendarHeaderControl: "bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)]",
+				day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white",
+			},
+			defaultProps: {
+				locale: "de",
+			},
+			styles: {
+				day: {
+					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+				},
+				calendarHeader: {
+					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+				},
+				calendarHeaderControl: {
+					"--mantine-color-dark-5": "rgba(255,255,255,0.1)",
+				},
+			},
 		}),
 
 		Select: Select.extend({
