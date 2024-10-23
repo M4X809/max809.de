@@ -146,8 +146,9 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
     const { mutate: createEntry, isPending: isCreating, isSuccess: isCreated, error: createError } = api.logbook.createEntry.useMutation()
     const { mutate: updateEntry, isPending: isUpdating, isSuccess: isUpdated, error: updateError } = api.logbook.updateEntry.useMutation()
 
-    const [_day, setDay] = useQueryState('day', feedSearchParamsParser.day)
+    const [day, setDay] = useQueryState('day', feedSearchParamsParser.day)
 
+    const [day2, month, year] = day.split(".").map(Number);
 
 
     const form = useForm({
@@ -158,7 +159,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             kmState: initialValues?.kmState ?? "",
             startTime: initialValues?.startTime?.toLocaleTimeString() ?? "",
             endTime: initialValues?.endTime?.toLocaleTimeString() ?? "",
-            date: initialValues?.date ?? new Date(),
+            date: initialValues?.date ?? new Date(year!, month! - 1, day2),
             note: initialValues?.note ?? "",
             unpaidBreak: initialValues?.unpaidBreak ?? false,
         },

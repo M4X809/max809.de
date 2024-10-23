@@ -170,7 +170,8 @@ export const logbookRouter = createTRPCRouter({
 				.then((result) =>
 					result.filter((value, index, self) => self.indexOf(value) === index),
 				)
-				.then((result) => result.filter(Boolean));
+				.then((result) => result.filter(Boolean))
+				.then((result) => result.sort((a, b) => a.localeCompare(b)));
 
 			const [startAndEndTime, unpaidBreaks, previousStreetNames, entries] =
 				await Promise.all([
