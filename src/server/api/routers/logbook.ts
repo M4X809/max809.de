@@ -18,6 +18,7 @@ export const logbookRouter = createTRPCRouter({
 				startTime: z.date().optional(),
 				endTime: z.date().optional(),
 				date: z.date(),
+				note: z.string().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -41,7 +42,56 @@ export const logbookRouter = createTRPCRouter({
 					startTime,
 					endTime,
 					date: input.date,
+					note: input.note,
 				})
+				.execute();
+
+			return {
+				success: true,
+			};
+		}),
+
+	updateEntry: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				type: z.enum(["entry", "start", "end", "pause"]),
+				streetName: z.string().optional().default(""),
+				kmState: z.string().optional().default(""),
+				startTime: z.date().optional(),
+				endTime: z.date().optional(),
+				date: z.date(),
+				note: z.string().optional(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewLogbookFeed"))) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+			const entry = await ctx.db.query.logbookFeed.findFirst({
+				where: (logbookFeed, { eq }) => eq(logbookFeed.id, input.id),
+			});
+			if (!entry) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No Entry found with that ID.",
+				});
+			}
+			await ctx.db
+				.update(logbookFeed)
+				.set({
+					type: input.type ?? entry.type,
+					streetName: input.streetName ?? entry.streetName,
+					kmState: input.kmState ?? entry.kmState,
+					startTime: input.startTime ?? entry.startTime,
+					endTime: input.endTime ?? entry.endTime,
+					date: input.date ?? entry.date,
+					note: input.note ?? entry.note,
+				})
+				.where(eq(logbookFeed.id, input.id))
 				.execute();
 
 			return {
@@ -128,8 +178,62 @@ export const logbookRouter = createTRPCRouter({
 						kmState: entry.kmState,
 						startTime: entry.startTime,
 						endTime: entry.endTime,
+						note: entry.note,
 					};
 				}),
+			};
+		}),
+	getEntryById: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewLogbookFeed"))) {
+				return new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+			const entryProm = ctx.db.query.logbookFeed.findFirst({
+				where: (logbookFeed, { eq }) => eq(logbookFeed.id, input.id),
+			});
+
+			const previousStreetNamesProm = ctx.db.query.logbookFeed
+				.findMany({
+					columns: { streetName: true },
+					orderBy: (logbookFeed, { desc }) => desc(logbookFeed.streetName),
+				})
+				.then((result) => result.map((entry) => entry.streetName))
+				.then((result) =>
+					result.filter((value, index, self) => self.indexOf(value) === index),
+				)
+				.then((result) => result.filter(Boolean));
+
+			const [entry, previousStreetNames] = await Promise.all([
+				entryProm,
+				previousStreetNamesProm,
+			]);
+
+			if (!entry) {
+				return new TRPCError({
+					code: "NOT_FOUND",
+					message: "No Entry found with that ID.",
+				});
+			}
+			return {
+				previousStreetNames,
+				id: entry.id,
+				createdById: entry.createdById,
+				createdAt: entry.createdAt,
+				type: entry.type,
+				streetName: entry.streetName,
+				kmState: entry.kmState,
+				startTime: entry.startTime,
+				endTime: entry.endTime,
+				note: entry.note,
+				date: entry.date,
 			};
 		}),
 

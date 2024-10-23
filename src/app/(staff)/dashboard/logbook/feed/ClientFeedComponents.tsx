@@ -1,7 +1,7 @@
 "use client"
-import { faCalendarAlt, faChevronLeft, faChevronRight, faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
+import { faCalendarAlt, faChevronLeft, faChevronRight, faEdit, faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Autocomplete, Box, Button, Center, Group, Modal, Select, TextInput, VisuallyHidden } from '@mantine/core'
+import { ActionIcon, Autocomplete, Box, Button, Center, Group, Modal, Select, Textarea, TextInput, VisuallyHidden } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useQueryState } from 'nuqs'
 import React, { useEffect, useState } from 'react'
@@ -13,6 +13,8 @@ import { useForm } from '@mantine/form'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { DismissButton } from '~/components/ui/sonner'
+import type { FeedEntry } from './page'
+import Link from 'next/link'
 
 
 export const DayPagination = () => {
@@ -88,6 +90,7 @@ export const DayPagination = () => {
             </Modal>
             <Group wrap='nowrap' gap={1}>
                 <ActionIcon
+                    className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
                     onClick={() => {
                         const previousDay = new Date(year!, month! - 1, day2! - 1).toLocaleDateString("de-DE")
                         console.log("previousDay", previousDay)
@@ -98,6 +101,7 @@ export const DayPagination = () => {
                     <FontAwesomeIcon icon={faChevronLeft} />
                 </ActionIcon>
                 <ActionIcon
+                    className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
                     onClick={() => {
                         const nextDay = new Date(year!, month! - 1, day2! + 1).toLocaleDateString("de-DE")
                         console.log("nextDay", nextDay)
@@ -108,6 +112,7 @@ export const DayPagination = () => {
                     <FontAwesomeIcon icon={faChevronRight} />
                 </ActionIcon>
                 <ActionIcon
+                    className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
                     onClick={() => {
                         setDatePickerOpen(true)
                     }}
@@ -120,7 +125,7 @@ export const DayPagination = () => {
 }
 
 export const EntryButtons = ({ id }: { id: string }) => {
-    // const router = useRouter()
+    const router = useRouter()
     // const { mutate: deleteEntry, isPending: isDeleting, isSuccess: isDeleteSuccess, error: deleteError, reset: resetDeleteMutation } = api.logbook.deleteEntry.useMutation()
 
     // useEffect(() => {
@@ -131,37 +136,42 @@ export const EntryButtons = ({ id }: { id: string }) => {
 
 
     return (
-        <></>
-        // <ActionIcon
-        //     variant='light'
-        //     className='text-slate-500 hover:text-slate-400'
-        //     onClick={() => {
-        //         deleteEntry({ id: id })
-        //     }}
-        //     loading={isDeleting}
-        //     disabled={isDeleting}
-        // >
-        //     <FontAwesomeIcon icon={faTrashCan} />
+        // <></>
+        <ActionIcon
+            variant='filled'
+            className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
+            component={Link}
+            href={`/dashboard/logbook/feed/${id}`}
+            prefetch={false}
 
-        // </ActionIcon>
+        >
+            <FontAwesomeIcon icon={faEdit} />
+
+        </ActionIcon>
     )
 }
 
 
 
-export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
+export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNames: string[], initialValues?: FeedEntry | undefined | null, entryId?: string | undefined | null }) => {
     const router = useRouter()
     const { mutate: createEntry, isPending: isCreating, isSuccess: isCreated, error: createError } = api.logbook.createEntry.useMutation()
+    const { mutate: updateEntry, isPending: isUpdating, isSuccess: isUpdated, error: updateError } = api.logbook.updateEntry.useMutation()
+
+    const [_day, setDay] = useQueryState('day', feedSearchParamsParser.day)
+
+
 
     const form = useForm({
         mode: 'controlled',
         initialValues: {
-            type: "entry" as "start" | "end" | "pause" | "entry",
-            streetName: "",
-            kmState: "",
-            startTime: "",
-            endTime: "",
-            date: new Date(),
+            type: initialValues?.type ?? "entry" as "start" | "end" | "pause" | "entry",
+            streetName: initialValues?.streetName ?? "",
+            kmState: initialValues?.kmState ?? "",
+            startTime: initialValues?.startTime?.toLocaleTimeString() ?? "",
+            endTime: initialValues?.endTime?.toLocaleTimeString() ?? "",
+            date: initialValues?.date ?? new Date(),
+            note: initialValues?.note ?? "",
         },
         validateInputOnChange: true,
         validateInputOnBlur: true,
@@ -180,7 +190,17 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        if (isCreated) {
+        if (isCreated || isUpdated) {
+
+            if (isUpdated) {
+                console.log("isUpdated", isUpdated)
+                // router.push("/dashboard/logbook/feed")
+                router.refresh()
+
+                router.push(`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`)
+                return
+            }
+
             const type = form.values.type
             const date = form.values.date
             form.reset()
@@ -188,23 +208,34 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                 type: type === "pause" ? "entry" : type,
                 date: date,
             })
-            router.refresh()
+            setDay(date.toLocaleDateString("de-DE"))
+            setTimeout(() => {
+                router.refresh()
+            }, 100)
+
         }
 
-        if (createError) {
+        if (createError || updateError) {
             toast.error("Fehler beim Erstellen des Eintrags.", {
                 id: "creating-error",
                 cancel: <DismissButton id="creating-error" />,
                 description: (
                     <Box>
-                        {createError.message}
+                        {createError?.message ?? updateError?.message}
                     </Box>
                 ),
             })
         }
-    }, [isCreated, form.reset, router, createError, form.setValues])
+    }, [isCreated, form.reset, router, createError, form.setValues, updateError, isUpdating, isUpdated])
 
 
+    // useEffect(() => {
+    //     return () => {
+    //         router.refresh()
+    //     }
+
+
+    // }, [router])
 
 
 
@@ -231,14 +262,29 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                 endDate = _endDate
             }
 
-            createEntry({
-                type: values.type,
-                streetName: values.streetName,
-                kmState: values.kmState,
-                startTime: startDate,
-                endTime: endDate,
-                date: date,
-            })
+            if (entryId) {
+                updateEntry({
+                    id: entryId,
+                    type: values.type,
+                    streetName: values.streetName,
+                    kmState: values.kmState,
+                    startTime: startDate,
+                    endTime: endDate,
+                    date: date,
+                    note: values.note,
+                })
+
+            } else {
+                createEntry({
+                    type: values.type,
+                    streetName: values.streetName,
+                    kmState: values.kmState,
+                    startTime: startDate,
+                    endTime: endDate,
+                    date: date,
+                    note: values.note,
+                })
+            }
         })}>
 
             <Box className={twMerge("grid grid-cols-1 md:grid-cols-2  gap-x-5")}>
@@ -258,7 +304,7 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                 {form.values.type === "entry" && <Autocomplete
                     className={twMerge("transit")}
                     pt={10}
-                    label="Straßen Name"
+                    label="Straßenname"
                     data={streetNames}
                     {...form.getInputProps('streetName')}
                 />}
@@ -272,15 +318,26 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                     {form.values.type !== "end" && <TimeInput
                         aria-label="Time" type="time"
                         className={twMerge("w-[50%] md:w-full", form.values.type === "start" && "w-full col-span-2")}
-                        label="Start Zeitpunkt"
+                        label="Startzeitpunkt"
                         {...form.getInputProps('startTime')}
                     />}
                     {form.values.type !== "start" && <TimeInput
                         className={twMerge("w-[50%] md:w-full", form.values.type === "end" && "w-full col-span-2")}
-                        label="End Zeitpunkt"
+                        label="Endzeitpunkt"
                         {...form.getInputProps('endTime')}
                     />}
                 </Group>
+                <Textarea
+                    className='md:col-span-2'
+                    autosize
+                    minRows={2}
+                    maxRows={4}
+                    // resize="vertical"
+                    pt={10}
+                    label="Notiz"
+                    {...form.getInputProps('note')}
+
+                />
                 <DateInput
                     className="md:col-span-2 md:w-[calc(50%-(1.25rem/2))] "
                     pt={10}
@@ -305,7 +362,7 @@ export const CreateEntry = ({ streetNames }: { streetNames: string[] }) => {
                     {...form.getInputProps('date')}
                 />
                 {<Button
-                    loading={isCreating}
+                    loading={isCreating || isUpdating}
                     type="submit"
                     mt={15}
                 >

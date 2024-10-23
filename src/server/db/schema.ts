@@ -225,4 +225,5 @@ export const logbookFeed = createTable("logbook_feed", {
 		mode: "date",
 		withTimezone: true,
 	}).default(sql`CURRENT_DATE`),
+	note: text("note"),
 });
