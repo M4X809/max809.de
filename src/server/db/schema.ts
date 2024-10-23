@@ -1,4 +1,4 @@
-import { relations, type SQL, sql } from "drizzle-orm";
+import { or, relations, type SQL, sql } from "drizzle-orm";
 // import { float } from "drizzle-orm/mysql-core";
 import {
 	boolean,
@@ -11,6 +11,7 @@ import {
 	text,
 	timestamp,
 	varchar,
+	pgEnum,
 } from "drizzle-orm/pg-core";
 import type { Config } from "next-auth";
 import type { AdapterAccount } from "next-auth/adapters";
@@ -226,4 +227,5 @@ export const logbookFeed = createTable("logbook_feed", {
 		withTimezone: true,
 	}).default(sql`CURRENT_DATE`),
 	note: text("note"),
+	unpaidBreak: boolean("unpaid_break"),
 });

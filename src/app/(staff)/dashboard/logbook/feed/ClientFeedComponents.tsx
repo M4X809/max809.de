@@ -1,7 +1,7 @@
 "use client"
 import { faCalendarAlt, faChevronLeft, faChevronRight, faEdit, faTrashCan } from '@fortawesome/pro-duotone-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ActionIcon, Autocomplete, Box, Button, Center, Group, Modal, Select, Textarea, TextInput, VisuallyHidden } from '@mantine/core'
+import { ActionIcon, Autocomplete, Box, Button, Center, Group, Modal, Select, Switch, Text, Textarea, TextInput, VisuallyHidden } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useQueryState } from 'nuqs'
 import React, { useEffect, useState } from 'react'
@@ -15,6 +15,7 @@ import { twMerge } from 'tailwind-merge'
 import { DismissButton } from '~/components/ui/sonner'
 import type { FeedEntry } from './page'
 import Link from 'next/link'
+import { z } from 'zod'
 
 
 export const DayPagination = () => {
@@ -88,7 +89,7 @@ export const DayPagination = () => {
                     />
                 </Center>
             </Modal>
-            <Group wrap='nowrap' gap={1}>
+            <Group wrap='nowrap' gap={5}>
                 <ActionIcon
                     className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
                     onClick={() => {
@@ -125,28 +126,15 @@ export const DayPagination = () => {
 }
 
 export const EntryButtons = ({ id }: { id: string }) => {
-    const router = useRouter()
-    // const { mutate: deleteEntry, isPending: isDeleting, isSuccess: isDeleteSuccess, error: deleteError, reset: resetDeleteMutation } = api.logbook.deleteEntry.useMutation()
-
-    // useEffect(() => {
-    //     if (isDeleteSuccess) {
-    //         router.refresh()
-    //     }
-    // }, [isDeleteSuccess, router])
-
-
     return (
-        // <></>
         <ActionIcon
             variant='filled'
             className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white'
             component={Link}
             href={`/dashboard/logbook/feed/${id}`}
             prefetch={false}
-
         >
             <FontAwesomeIcon icon={faEdit} />
-
         </ActionIcon>
     )
 }
@@ -172,6 +160,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             endTime: initialValues?.endTime?.toLocaleTimeString() ?? "",
             date: initialValues?.date ?? new Date(),
             note: initialValues?.note ?? "",
+            unpaidBreak: initialValues?.unpaidBreak ?? false,
         },
         validateInputOnChange: true,
         validateInputOnBlur: true,
@@ -180,10 +169,15 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             streetName: (value) => {
                 const isEntry = form.values.type === "entry"
                 if (!isEntry) return false
+
+
                 return value.length > 0 ? false : 'Der Name darf nicht leer sein.'
             },
             kmState: (value) => {
-                return value.length > 0 ? false : 'Der Kilometerstand darf nicht leer sein.'
+                const { error, data, success } = z.string().regex(/^[0-9]+$/im).safeParse(value)
+
+                if (error) return "Der Kilometerstand muss eine Zahl sein und darf nicht leer sein."
+                return false
             },
         },
     });
@@ -195,9 +189,12 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             if (isUpdated) {
                 console.log("isUpdated", isUpdated)
                 // router.push("/dashboard/logbook/feed")
-                router.refresh()
-
                 router.push(`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`)
+
+                setTimeout(() => {
+                    router.refresh()
+                }, 100)
+
                 return
             }
 
@@ -272,6 +269,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                     endTime: endDate,
                     date: date,
                     note: values.note,
+                    unpaidBreak: values.type === "pause" ? values.unpaidBreak ?? false : undefined,
                 })
 
             } else {
@@ -283,6 +281,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                     endTime: endDate,
                     date: date,
                     note: values.note,
+                    unpaidBreak: values.type === "pause" ? values.unpaidBreak ?? false : undefined,
                 })
             }
         })}>
@@ -302,6 +301,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                     ]}
                 />
                 {form.values.type === "entry" && <Autocomplete
+                    withAsterisk
                     className={twMerge("transit")}
                     pt={10}
                     label="Straßenname"
@@ -310,6 +310,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                 />}
                 {<TextInput
                     type="tel"
+                    withAsterisk
                     pt={10}
                     label="Kilometerstand"
                     {...form.getInputProps('kmState')}
@@ -317,16 +318,37 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                 <Group wrap="nowrap" pt={10} className="md:col-span-2 md:gap-x-5 gap-x-2">
                     {form.values.type !== "end" && <TimeInput
                         aria-label="Time" type="time"
+                        required
                         className={twMerge("w-[50%] md:w-full", form.values.type === "start" && "w-full col-span-2")}
                         label="Startzeitpunkt"
                         {...form.getInputProps('startTime')}
                     />}
                     {form.values.type !== "start" && <TimeInput
+                        required
                         className={twMerge("w-[50%] md:w-full", form.values.type === "end" && "w-full col-span-2")}
                         label="Endzeitpunkt"
                         {...form.getInputProps('endTime')}
                     />}
                 </Group>
+                {
+                    form.values.type === "pause" && <Switch
+                        classNames={{
+                            body: "align-middle flex",
+                        }}
+                        mt={15}
+                        className={twMerge("w-[50%] md:w-full")}
+                        label="Unbezahlte Pause"
+                        description="Diese Pause wird nicht in der Summe berücksichtigt."
+                        checked={form.values.unpaidBreak}
+                        onChange={(e) => {
+                            form.setValues({
+                                unpaidBreak: e.target.checked,
+                            })
+                        }}
+
+                    />
+                }
+
                 <Textarea
                     className='md:col-span-2'
                     autosize
@@ -361,13 +383,16 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                     label="Datum"
                     {...form.getInputProps('date')}
                 />
-                {<Button
+                <Button
                     loading={isCreating || isUpdating}
                     type="submit"
                     mt={15}
                 >
                     Speichern
-                </Button>}
+                </Button>
+                <Text mt={15} fz={14} c={"var(--mantine-color-error)"} >
+                    * Pflichtfelder
+                </Text>
             </Box>
         </form >
     )

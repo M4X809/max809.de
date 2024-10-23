@@ -1,6 +1,6 @@
 import { Card, Container, Divider, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
-import { onPageAllowed } from "~/lib/sUtils";
+import { onPageAllowed, timeDifference } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
 import { DayPagination, EntryButtons, CreateEntry } from "./ClientFeedComponents";
@@ -19,10 +19,12 @@ export type FeedEntry = {
     startTime: Date | null;
     endTime: Date | null;
     note?: string | null;
+    unpaidBreak?: boolean | null;
 }
 
 export type FeedData = {
     streetNames: string[];
+    totalWorkTime: string;
     startTime: FeedEntry | undefined;
     endTime: FeedEntry | undefined;
     entries: FeedEntry[]
@@ -38,7 +40,9 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
     try {
         data = await api.logbook.getEntries({ day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day })
     } catch (err) {
-        redirect("/dashboard/logbook/feed")
+        console.log("err", err)
+        // redirect("/dashboard/logbook/feed")
+        return <div>Error</div>
     }
 
     const startTime = data?.startTime
@@ -53,46 +57,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
         const kmDifference = endKmState - startKmState;
         return kmDifference.toLocaleString("de-DE")
     }
-
-    function timeDifference(startTime: string, endTime: string): string {
-        // Helper function to convert "hh:mm" to total minutes
-        function toMinutes(time: string): number | null {
-            const parts = time.split(':');
-            if (parts.length !== 2) return null;
-
-            const hours = Number(parts[0]);
-            const minutes = Number(parts[1]);
-
-            if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
-
-            return hours * 60 + minutes;
-        }
-
-        // Convert both times to minutes
-        const startMinutes = toMinutes(startTime);
-        const endMinutes = toMinutes(endTime);
-
-        // If either time is invalid, return an error or handle the case
-        if (startMinutes === null || endMinutes === null) {
-            throw new Error("Invalid time format");
-        }
-
-        // Calculate the difference in minutes, handling cases where endTime < startTime (crossing midnight)
-        let diffMinutes = endMinutes - startMinutes;
-        if (diffMinutes < 0) {
-            diffMinutes += 24 * 60; // Add 24 hours' worth of minutes to account for crossing midnight
-        }
-
-        // Convert minutes back to "hh:mm" format
-        const hours = Math.floor(diffMinutes / 60);
-        const minutes = diffMinutes % 60;
-
-        // Ensure the result is always in "hh:mm" format
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-    }
-
-    // Example usage:
-    console.log(timeDifference("23:45", "01:15")); // Output: "01:30"
 
 
 
@@ -177,7 +141,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                     <Stack key={entry.id} gap={1}>
                                         <Group className="justify-between ">
                                             <Title order={4}>
-                                                Pause
+                                                Pause {entry.unpaidBreak ? "(Unbezahlt)" : ""}
                                             </Title>
                                             <EntryButtons id={entry.id} />
                                         </Group>
@@ -300,10 +264,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                             Uhrzeit: {endTime.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                         </Text>
                                         {!!startTime?.startTime && !!endTime?.endTime && <Text fz={15}>
-                                            Arbeitszeit: {timeDifference(
-                                                startTime!.startTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
-                                                endTime!.endTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
-                                            )}
+                                            Arbeitszeit: {data?.totalWorkTime}
                                         </Text>}
                                     </Group>
                                     <Group

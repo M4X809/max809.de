@@ -409,3 +409,96 @@ style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical
 	
 	`;
 }
+
+/**
+ * Helper function to convert "hh:mm" to total minutes
+ */
+export function toMinutes(time: string): number | null {
+	const parts = time.split(":");
+	if (parts.length < 2) return null;
+
+	const hours = Number(parts[0]);
+	const minutes = Number(parts[1]);
+
+	if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+
+	return hours * 60 + minutes;
+}
+
+export function timeAddition(time1: string, time2: string): string {
+	// Convert both times to minutes
+	const minutesTime1 = toMinutes(time1);
+	const minutesTime2 = toMinutes(time2);
+
+	// If either time is invalid, return an error or handle the case
+	if (minutesTime1 === null || minutesTime2 === null) {
+		throw new Error("Invalid time format");
+	}
+
+	// Calculate the total minutes by adding both times
+	let totalMinutes = minutesTime1 + minutesTime2;
+
+	// Modulo 1440 to ensure the time wraps around if greater than 24 hours (24 * 60 = 1440 minutes)
+	totalMinutes = totalMinutes % (24 * 60);
+
+	// Convert minutes back to "hh:mm" format
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+
+	// Return the result in "hh:mm" format
+	return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+// Example usage:
+// console.log(timeAddition("10:15", "14:30")); // Output: "00:45" (since it goes over 24 hours)
+// console.log(timeAddition("03:40", "02:30")); // Output: "06:10"
+
+export function timeSubtraction(time1: string, time2: string): string {
+	// Convert both times to minutes
+	const minutesTime1 = toMinutes(time1);
+	const minutesTime2 = toMinutes(time2);
+
+	// If either time is invalid, return an error or handle the case
+	if (minutesTime1 === null || minutesTime2 === null) {
+		throw new Error("Invalid time format");
+	}
+
+	// Calculate the difference in minutes
+	let diffMinutes = minutesTime1 - minutesTime2;
+
+	// Convert the absolute difference back to "hh:mm" format
+	const isNegative = diffMinutes < 0;
+	diffMinutes = Math.abs(diffMinutes); // Work with absolute difference for formatting
+
+	const hours = Math.floor(diffMinutes / 60);
+	const minutes = diffMinutes % 60;
+
+	// Format the result as "hh:mm", adding a negative sign if needed
+	const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+	return isNegative ? `-${formattedTime}` : formattedTime;
+}
+
+export function timeDifference(startTime: string, endTime: string): string {
+	// Convert both times to minutes
+	const startMinutes = toMinutes(startTime);
+	const endMinutes = toMinutes(endTime);
+
+	// If either time is invalid, return an error or handle the case
+	if (startMinutes === null || endMinutes === null) {
+		throw new Error("Invalid time format");
+	}
+
+	// Calculate the difference in minutes, handling cases where endTime < startTime (crossing midnight)
+	let diffMinutes = endMinutes - startMinutes;
+	if (diffMinutes < 0) {
+		diffMinutes += 24 * 60; // Add 24 hours' worth of minutes to account for crossing midnight
+	}
+
+	// Convert minutes back to "hh:mm" format
+	const hours = Math.floor(diffMinutes / 60);
+	const minutes = diffMinutes % 60;
+
+	// Ensure the result is always in "hh:mm" format
+	return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}

@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { hasPermission, isAdmin } from "~/lib/sUtils";
+import {
+	hasPermission,
+	isAdmin,
+	timeAddition,
+	timeDifference,
+	timeSubtraction,
+} from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { db } from "~/server/db";
 import { logbookFeed, loginWhitelist, sessions } from "~/server/db/schema";
@@ -19,6 +25,7 @@ export const logbookRouter = createTRPCRouter({
 				endTime: z.date().optional(),
 				date: z.date(),
 				note: z.string().optional(),
+				unpaidBreak: z.boolean().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -43,6 +50,7 @@ export const logbookRouter = createTRPCRouter({
 					endTime,
 					date: input.date,
 					note: input.note,
+					unpaidBreak: input.unpaidBreak,
 				})
 				.execute();
 
@@ -61,6 +69,7 @@ export const logbookRouter = createTRPCRouter({
 				startTime: z.date().optional(),
 				endTime: z.date().optional(),
 				date: z.date(),
+				unpaidBreak: z.boolean().optional(),
 				note: z.string().optional(),
 			}),
 		)
@@ -90,6 +99,7 @@ export const logbookRouter = createTRPCRouter({
 					endTime: input.endTime ?? entry.endTime,
 					date: input.date ?? entry.date,
 					note: input.note ?? entry.note,
+					unpaidBreak: input.unpaidBreak ?? entry.unpaidBreak,
 				})
 				.where(eq(logbookFeed.id, input.id))
 				.execute();
@@ -130,7 +140,16 @@ export const logbookRouter = createTRPCRouter({
 						between(logbookFeed.date, startDate, endDate),
 						or(eq(logbookFeed.type, "entry"), eq(logbookFeed.type, "pause")),
 					),
-				orderBy: (logbookFeed, { desc, asc }) => asc(logbookFeed.startTime),
+				orderBy: (logbookFeed, { asc }) => asc(logbookFeed.startTime),
+			});
+
+			const unpaidBreaksProm = ctx.db.query.logbookFeed.findMany({
+				where: (logbookFeed, { eq, between, and }) =>
+					and(
+						between(logbookFeed.date, startDate, endDate),
+						and(eq(logbookFeed.type, "pause"), eq(logbookFeed.unpaidBreak, true)),
+					),
+				orderBy: (logbookFeed, { asc }) => asc(logbookFeed.startTime),
 			});
 
 			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
@@ -153,11 +172,49 @@ export const logbookRouter = createTRPCRouter({
 				)
 				.then((result) => result.filter(Boolean));
 
-			const [startAndEndTime, previousStreetNames, entries] = await Promise.all([
-				startAndEndTimeProm,
-				previousStreetNamesProm,
-				entriesProm,
-			]);
+			const [startAndEndTime, unpaidBreaks, previousStreetNames, entries] =
+				await Promise.all([
+					startAndEndTimeProm,
+					unpaidBreaksProm,
+					previousStreetNamesProm,
+					entriesProm,
+				]);
+
+			const startTime = startAndEndTime.find((entry) => entry.type === "start");
+			const endTime = startAndEndTime.find((entry) => entry.type === "end");
+
+			const totalWorkTime = () => {
+				let unpaidBreaksTime = "00:00";
+				if (unpaidBreaks.length > 0) {
+					for (const breakEntry of unpaidBreaks) {
+						if (!breakEntry.startTime || !breakEntry.endTime) continue;
+						const entryTime = timeDifference(
+							breakEntry.startTime?.toLocaleTimeString("de-DE"),
+							breakEntry.endTime?.toLocaleTimeString("de-DE"),
+						);
+						unpaidBreaksTime = timeAddition(unpaidBreaksTime, entryTime);
+					}
+				}
+
+				if (!startTime?.startTime || !endTime?.endTime) return "Error";
+
+				const dayTime = timeDifference(
+					startTime.startTime
+						?.toLocaleTimeString("de-DE")
+						.split(":")
+						.slice(0, 2)
+						.join(":"),
+					endTime.endTime
+						?.toLocaleTimeString("de-DE")
+						.split(":")
+						.slice(0, 2)
+						.join(":"),
+				);
+
+				return timeSubtraction(dayTime, unpaidBreaksTime);
+			};
+
+			// console.log("totalWorkTime", totalWorkTime());
 
 			// console.log("entries", entries);
 			// console.log("startAndEndTime", startAndEndTime);
@@ -165,8 +222,9 @@ export const logbookRouter = createTRPCRouter({
 			return {
 				day: new Date(year!, month! - 1, day),
 				streetNames: previousStreetNames,
-				startTime: startAndEndTime.find((entry) => entry.type === "start"),
-				endTime: startAndEndTime.find((entry) => entry.type === "end"),
+				totalWorkTime: totalWorkTime(),
+				startTime,
+				endTime,
 				entries: entries.map((entry) => {
 					return {
 						date: entry.date,
@@ -179,6 +237,7 @@ export const logbookRouter = createTRPCRouter({
 						startTime: entry.startTime,
 						endTime: entry.endTime,
 						note: entry.note,
+						unpaidBreak: entry.unpaidBreak,
 					};
 				}),
 			};
@@ -234,6 +293,7 @@ export const logbookRouter = createTRPCRouter({
 				endTime: entry.endTime,
 				note: entry.note,
 				date: entry.date,
+				unpaidBreak: entry.unpaidBreak,
 			};
 		}),
 
