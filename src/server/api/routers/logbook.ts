@@ -36,8 +36,40 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 
-			const startTime = input.startTime ? new Date(input.startTime) : null;
-			const endTime = input.endTime ? new Date(input.endTime) : null;
+			const date = input.date.toLocaleDateString("de-DE");
+
+			const [day, month, year] = date.split(".").map(Number);
+
+			const startDate = new Date(year!, month! - 1, day, 0, 0, 0);
+			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
+
+			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
+				where: (logbookFeed, { eq, between, and, or }) =>
+					and(
+						between(logbookFeed.date, startDate, endDate),
+						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+					),
+				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
+			});
+
+			const [startAndEndTime] = await Promise.all([startAndEndTimeProm]);
+
+			const startTime = startAndEndTime.find((entry) => entry.type === "start");
+			const endTime = startAndEndTime.find((entry) => entry.type === "end");
+
+			if (input.type === "start" && startTime) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
+				});
+			}
+
+			if (input.type === "end" && endTime) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
+				});
+			}
 
 			await ctx.db
 				.insert(logbookFeed)
@@ -46,8 +78,8 @@ export const logbookRouter = createTRPCRouter({
 					type: input.type,
 					streetName: input.streetName,
 					kmState: input.kmState,
-					startTime,
-					endTime,
+					startTime: input.startTime,
+					endTime: input.endTime,
 					date: input.date,
 					note: input.note,
 					unpaidBreak: input.unpaidBreak,
@@ -89,6 +121,42 @@ export const logbookRouter = createTRPCRouter({
 					message: "No Entry found with that ID.",
 				});
 			}
+
+			const date = input.date.toLocaleDateString("de-DE");
+
+			const [day, month, year] = date.split(".").map(Number);
+
+			const startDate = new Date(year!, month! - 1, day, 0, 0, 0);
+			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
+
+			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
+				where: (logbookFeed, { eq, between, and, or }) =>
+					and(
+						between(logbookFeed.date, startDate, endDate),
+						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+					),
+				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
+			});
+
+			const [startAndEndTime] = await Promise.all([startAndEndTimeProm]);
+
+			const startTime = startAndEndTime.find((entry) => entry.type === "start");
+			const endTime = startAndEndTime.find((entry) => entry.type === "end");
+
+			if (input.type === "start" && startTime?.id !== entry.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
+				});
+			}
+
+			if (input.type === "end" && endTime?.id !== entry.id) {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
+				});
+			}
+
 			await ctx.db
 				.update(logbookFeed)
 				.set({

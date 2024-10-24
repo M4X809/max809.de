@@ -213,7 +213,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
         }
 
         if (createError || updateError) {
-            toast.error("Fehler beim Erstellen des Eintrags.", {
+            toast.error(`Fehler beim ${createError ? "Erstellen" : "Bearbeiten"}`, {
                 id: "creating-error",
                 cancel: <DismissButton id="creating-error" />,
                 description: (
