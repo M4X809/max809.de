@@ -400,3 +400,48 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
         </form >
     )
 }
+
+
+export const ResetErrorCount = () => {
+    const setErrorCount = useQueryState('errorCount', feedSearchParamsParser.errorCount)
+    useEffect(() => {
+        return () => {
+            setErrorCount[1](0)
+        }
+    }, [setErrorCount])
+    return null
+}
+
+export const DeleteEntryButton = ({ id, dateString }: { id: string | undefined | null, dateString: string | undefined | null }) => {
+    const { mutate: deleteEntry, isPending: isDeleting, isSuccess: isDeleted, error: deleteError, reset: resetDeleteMutation } = api.logbook.deleteEntry.useMutation()
+    const router = useRouter()
+
+
+    useEffect(() => {
+        if (isDeleted) {
+            router.push(`/dashboard/logbook/feed?day=${dateString}`)
+            router.refresh()
+        }
+    }, [isDeleted, router, dateString])
+
+
+    if (!id || !dateString) return null
+
+    return (
+        <ActionIcon
+            size={'lg'}
+            radius={"md"}
+
+            variant='gradient'
+            gradient={{ from: "red", to: "orange" }}
+            c={"white"}
+            onClick={() => {
+                deleteEntry({ id: id })
+            }}
+            loading={isDeleting}
+            disabled={isDeleting}
+        >
+            <FontAwesomeIcon icon={faTrashCan} fontSize={22} color='white' />
+        </ActionIcon>
+    )
+}

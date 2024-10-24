@@ -228,4 +228,5 @@ export const logbookFeed = createTable("logbook_feed", {
 	}).default(sql`CURRENT_DATE`),
 	note: text("note"),
 	unpaidBreak: boolean("unpaid_break"),
+	deleted: boolean("deleted").default(false),
 });

@@ -3,9 +3,10 @@ import { twMerge } from "tailwind-merge";
 import { onPageAllowed, timeDifference } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
-import { DayPagination, EntryButtons, CreateEntry } from "./ClientFeedComponents";
+import { DayPagination, EntryButtons, CreateEntry, ResetErrorCount } from "./ClientFeedComponents";
 import { feedSearchParamsCache } from "./feedSearchParams";
 import { redirect } from "next/navigation";
+import ErrorBox from "~/app/_components/ErrorBox";
 
 
 export type FeedEntry = {
@@ -35,14 +36,28 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
     await onPageAllowed("viewLogbookFeed")
     let data: FeedData = undefined
 
-    const { day } = feedSearchParamsCache.parse(searchParams)
+    const { day, errorCount } = feedSearchParamsCache.parse(searchParams)
 
     try {
         data = await api.logbook.getEntries({ day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day })
     } catch (err) {
-        console.log("err", err)
-        // redirect("/dashboard/logbook/feed")
-        return <div>Error</div>
+        if (errorCount >= 3) return (
+            <>
+                <ErrorBox
+                    value={
+                        <Text fz={15} fw={500}>
+                            Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.
+                            <br />
+                            Wenn es weiterhin nicht klappt, melde dich bei mir.
+                        </Text>
+                    }
+                    visible
+                />
+                <ResetErrorCount />
+            </>
+
+        )
+        redirect(`/dashboard/logbook/feed?errorCount=${errorCount + 1}`)
     }
 
     const startTime = data?.startTime

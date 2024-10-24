@@ -44,10 +44,11 @@ export const logbookRouter = createTRPCRouter({
 			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
 
 			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and, or }) =>
+				where: (logbookFeed, { eq, between, and, or, not }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
 						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+						not(eq(logbookFeed.deleted, true)),
 					),
 				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
 			});
@@ -130,10 +131,11 @@ export const logbookRouter = createTRPCRouter({
 			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
 
 			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and, or }) =>
+				where: (logbookFeed, { eq, between, and, or, not }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
 						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+						not(eq(logbookFeed.deleted, true)),
 					),
 				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
 			});
@@ -143,14 +145,14 @@ export const logbookRouter = createTRPCRouter({
 			const startTime = startAndEndTime.find((entry) => entry.type === "start");
 			const endTime = startAndEndTime.find((entry) => entry.type === "end");
 
-			if (input.type === "start" && startTime?.id !== entry.id) {
+			if (input.type === "start" && startTime?.id !== entry.id && startTime) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
 				});
 			}
 
-			if (input.type === "end" && endTime?.id !== entry.id) {
+			if (input.type === "end" && endTime?.id !== entry.id && endTime) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
@@ -203,28 +205,31 @@ export const logbookRouter = createTRPCRouter({
 			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
 
 			const entriesProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and, or }) =>
+				where: (logbookFeed, { eq, between, and, or, not }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
 						or(eq(logbookFeed.type, "entry"), eq(logbookFeed.type, "pause")),
+						not(eq(logbookFeed.deleted, true)),
 					),
 				orderBy: (logbookFeed, { asc }) => asc(logbookFeed.startTime),
 			});
 
 			const unpaidBreaksProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and }) =>
+				where: (logbookFeed, { eq, between, and, not }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
 						and(eq(logbookFeed.type, "pause"), eq(logbookFeed.unpaidBreak, true)),
+						not(eq(logbookFeed.deleted, true)),
 					),
 				orderBy: (logbookFeed, { asc }) => asc(logbookFeed.startTime),
 			});
 
 			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and, or }) =>
+				where: (logbookFeed, { eq, between, and, or, not }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
 						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+						not(eq(logbookFeed.deleted, true)),
 					),
 				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
 			});
@@ -233,6 +238,7 @@ export const logbookRouter = createTRPCRouter({
 				.findMany({
 					columns: { streetName: true },
 					orderBy: (logbookFeed, { desc }) => desc(logbookFeed.streetName),
+					where: (logbookFeed, { not, eq }) => not(eq(logbookFeed.deleted, true)),
 				})
 				.then((result) => result.map((entry) => entry.streetName))
 				.then((result) =>
@@ -282,12 +288,6 @@ export const logbookRouter = createTRPCRouter({
 
 				return timeSubtraction(dayTime, unpaidBreaksTime);
 			};
-
-			// console.log("totalWorkTime", totalWorkTime());
-
-			// console.log("entries", entries);
-			// console.log("startAndEndTime", startAndEndTime);
-
 			return {
 				day: new Date(year!, month! - 1, day),
 				streetNames: previousStreetNames,
@@ -325,13 +325,15 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 			const entryProm = ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq }) => eq(logbookFeed.id, input.id),
+				where: (logbookFeed, { eq, and, not }) =>
+					and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
 			});
 
 			const previousStreetNamesProm = ctx.db.query.logbookFeed
 				.findMany({
 					columns: { streetName: true },
 					orderBy: (logbookFeed, { desc }) => desc(logbookFeed.streetName),
+					where: (logbookFeed, { not, eq }) => not(eq(logbookFeed.deleted, true)),
 				})
 				.then((result) => result.map((entry) => entry.streetName))
 				.then((result) =>
@@ -347,7 +349,7 @@ export const logbookRouter = createTRPCRouter({
 			if (!entry) {
 				return new TRPCError({
 					code: "NOT_FOUND",
-					message: "No Entry found with that ID.",
+					message: "Es wurde kein eintrag mit dieser ID gefunden.",
 				});
 			}
 			return {
@@ -380,18 +382,27 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 			const entry = await ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq }) => eq(logbookFeed.id, input.id),
+				where: (logbookFeed, { eq, and, not }) =>
+					and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
 			});
 			if (!entry) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message: "No Entry found with that ID.",
+					message:
+						"Es wurde kein eintrag mit dieser ID gefunden. (Es könnte bereits gelöscht sein.)",
 				});
 			}
+
 			await ctx.db
-				.delete(logbookFeed)
+				.update(logbookFeed)
+				.set({ deleted: true })
 				.where(eq(logbookFeed.id, input.id))
 				.execute();
+
+			// await ctx.db
+			// 	.delete(logbookFeed)
+			// 	.where(eq(logbookFeed.id, input.id))
+			// 	.execute();
 			return {
 				success: true,
 			};
