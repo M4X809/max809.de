@@ -67,9 +67,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                 <Card
                     className={twMerge(cardClassName)}
                 >
-                    <CreateEntry
-                        streetNames={streetNames}
-                    />
+                    <CreateEntry streetNames={streetNames} />
                 </Card>
                 <Card
                     className={twMerge(cardClassName)}
@@ -96,10 +94,11 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                 </Title>
                                 <EntryButtons id={startTime.id} />
                             </Group>
-                            <Group className="justify-between md:justify-start" gap={0}>
+                            <Group className="justify-between md:justify-start gap-0 md:gap-2" >
                                 <Text fz={15}  >
                                     Uhrzeit: {startTime.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                 </Text>
+                                {" "}
                                 <Text fz={15} >
                                     Kilometerstand: {Number.parseInt(startTime.kmState, 10).toLocaleString("de-DE", {
                                     })} km
@@ -123,14 +122,12 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                             input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default"
                                         }}
                                         className="w-full " />
-
                                 </Stack>
                             }
 
                             {entries.length > 0 && <Divider my={10} />}
                         </Stack>}
                         {entries.length > 0 && entries.map((entry, index) => {
-                            // console.log("entry", entry)
 
                             const prevEntry = entries[index - 1] ?? startTime; // Get the previous entry
                             const currentKmState = Number.parseInt(entry.kmState, 10);
@@ -146,7 +143,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                             </Title>
                                             <EntryButtons id={entry.id} />
                                         </Group>
-                                        <Group className="justify-between md:justify-start">
+                                        <Group className="justify-between md:justify-start gap-0 md:gap-2">
                                             <Text fz={15} >
                                                 Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
@@ -154,7 +151,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                 Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
-                                        <Group className="justify-between md:justify-start" gap={0}>
+                                        <Group className="justify-between md:justify-start gap-0 md:gap-2">
                                             <Text fz={15} >
                                                 Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {
                                                 })} km
@@ -170,8 +167,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                     Notiz:
                                                 </Text>
                                                 <Textarea
-
-
                                                     readOnly
                                                     fz={15}
                                                     autosize
@@ -182,7 +177,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                         input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default"
                                                     }}
                                                     className="w-full " />
-
                                             </Stack>
                                         }
                                     </Stack>
@@ -200,7 +194,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                             </Title>
                                             <EntryButtons id={entry.id} />
                                         </Group>
-                                        <Group className="justify-between md:justify-start">
+                                        <Group className="justify-between md:justify-start gap-0 md:gap-2">
                                             <Text fz={15}  >
                                                 Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
@@ -208,7 +202,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                 Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
-                                        <Group className="justify-between md:justify-start" gap={0}>
+                                        <Group className="justify-between md:justify-start gap-0 md:gap-2" gap={0}>
                                             <Text fz={15} >
                                                 Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {
                                                 })} km
@@ -224,8 +218,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                     Notiz:
                                                 </Text>
                                                 <Textarea
-
-
                                                     readOnly
                                                     fz={15}
                                                     autosize
@@ -236,7 +228,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                         input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default"
                                                     }}
                                                     className="w-full " />
-
                                             </Stack>
                                         }
                                     </Stack>
@@ -251,16 +242,15 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                             <React.Fragment>
                                 {entries.length > 0 && <Divider my={10} />}
                                 <Stack gap={1}>
-                                    <Group className="justify-between " wrap="nowrap" gap={0}>
+                                    <Group className="justify-between" wrap="nowrap" gap={0}>
                                         <Title order={4} fz={{ base: 15, md: 18 }}>
                                             Arbeitsende
                                         </Title>
                                         <EntryButtons id={endTime.id} />
                                     </Group>
                                     <Group
-                                        className="justify-between md:justify-start"
+                                        className="justify-between md:justify-start gap-0 md:gap-2"
                                     >
-
                                         <Text fz={15}>
                                             Uhrzeit: {endTime.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                         </Text>
@@ -269,7 +259,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                         </Text>}
                                     </Group>
                                     <Group
-                                        className="justify-between md:justify-start"
+                                        className="justify-between md:justify-start gap-0 md:gap-2"
                                         gap={0}
                                     >
                                         <Text fz={15}>
@@ -286,8 +276,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                 Notiz:
                                             </Text>
                                             <Textarea
-
-
                                                 readOnly
                                                 fz={15}
                                                 autosize
@@ -298,7 +286,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                     input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default"
                                                 }}
                                                 className="w-full " />
-
                                         </Stack>
                                     }
                                 </Stack>
