@@ -331,22 +331,25 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                     />}
                 </Group>
                 {
-                    form.values.type === "pause" && <Switch
-                        classNames={{
-                            body: "align-middle flex",
-                        }}
-                        mt={15}
-                        className={twMerge("w-[50%] md:w-full")}
-                        label="Unbezahlte Pause"
-                        description="Diese Pause wird nicht in der Summe berücksichtigt."
-                        checked={form.values.unpaidBreak}
-                        onChange={(e) => {
-                            form.setValues({
-                                unpaidBreak: e.target.checked,
-                            })
-                        }}
+                    form.values.type === "pause" &&
 
-                    />
+                    <Group className=''>
+                        <Switch
+                            classNames={{
+                                body: "align-middle flex",
+                            }}
+                            mt={15}
+                            className={twMerge(" w-full")}
+                            label="Unbezahlte Pause"
+                            description="Diese Pause wird nicht in der Summe berücksichtigt."
+                            checked={form.values.unpaidBreak}
+                            onChange={(e) => {
+                                form.setValues({
+                                    unpaidBreak: e.target.checked,
+                                })
+                            }}
+                        />
+                    </Group>
                 }
 
                 <Textarea
