@@ -78,24 +78,25 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                     radius={"md"}
                 >
                     <Stack gap={4}>
-                        <Group justify="space-between" align="start" >
-                            <Title order={3} mb={15}>
+                        <Group justify="space-between" align="start" wrap="nowrap" gap={0} >
+                            <Title order={3} mb={15} fz={{ base: 22, md: 30 }}>
                                 {data?.day.toLocaleString("de-DE", {
                                     weekday: "long",
                                 })}
                                 {", "}
+                                <br className="block md:hidden" />
                                 {data?.day.toLocaleDateString()}
                             </Title>
                             <DayPagination />
                         </Group>
                         {startTime && <Stack gap={1}>
-                            <Group className="justify-between ">
-                                <Title order={4}>
+                            <Group className="justify-between " wrap="nowrap" gap={0}>
+                                <Title order={3} fz={{ base: 15, md: 18 }}>
                                     Arbeitsbeginn
                                 </Title>
                                 <EntryButtons id={startTime.id} />
                             </Group>
-                            <Group className="justify-between md:justify-start">
+                            <Group className="justify-between md:justify-start" gap={0}>
                                 <Text fz={15}  >
                                     Uhrzeit: {startTime.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                 </Text>
@@ -139,8 +140,8 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                             if (entry.type === "pause") return (
                                 <React.Fragment key={entry.id}>
                                     <Stack key={entry.id} gap={1}>
-                                        <Group className="justify-between ">
-                                            <Title order={4}>
+                                        <Group className="justify-between " wrap="nowrap" gap={0}>
+                                            <Title order={4} fz={{ base: 15, md: 18 }}>
                                                 Pause {entry.unpaidBreak ? "(Unbezahlt)" : ""}
                                             </Title>
                                             <EntryButtons id={entry.id} />
@@ -153,7 +154,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                 Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
-                                        <Group className="justify-between md:justify-start">
+                                        <Group className="justify-between md:justify-start" gap={0}>
                                             <Text fz={15} >
                                                 Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {
                                                 })} km
@@ -193,8 +194,8 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                             if (entry.type === "entry") return (
                                 <React.Fragment key={entry.id}>
                                     <Stack key={entry.id} gap={1}>
-                                        <Group className="justify-between ">
-                                            <Title order={4}>
+                                        <Group className="justify-between " wrap="nowrap" gap={0}>
+                                            <Title order={4} fz={{ base: 15, md: 18 }}>
                                                 Straße: {entry.streetName || "Keine Straße angegeben"}
                                             </Title>
                                             <EntryButtons id={entry.id} />
@@ -207,7 +208,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                                 Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
                                             </Text>
                                         </Group>
-                                        <Group className="justify-between md:justify-start">
+                                        <Group className="justify-between md:justify-start" gap={0}>
                                             <Text fz={15} >
                                                 Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {
                                                 })} km
@@ -250,8 +251,8 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                             <React.Fragment>
                                 {entries.length > 0 && <Divider my={10} />}
                                 <Stack gap={1}>
-                                    <Group className="justify-between ">
-                                        <Title order={4}>
+                                    <Group className="justify-between " wrap="nowrap" gap={0}>
+                                        <Title order={4} fz={{ base: 15, md: 18 }}>
                                             Arbeitsende
                                         </Title>
                                         <EntryButtons id={endTime.id} />
@@ -269,6 +270,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                     </Group>
                                     <Group
                                         className="justify-between md:justify-start"
+                                        gap={0}
                                     >
                                         <Text fz={15}>
                                             Kilometerstand: {Number.parseInt(endTime.kmState, 10).toLocaleString("de-DE", {

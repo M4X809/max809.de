@@ -199,11 +199,10 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                 return
             }
 
-            const type = form.values.type
             const date = form.values.date
             form.reset()
             form.setValues({
-                type: type === "pause" ? "entry" : type,
+                type: "entry",
                 date: date,
             })
             setDay(date.toLocaleDateString("de-DE"))
