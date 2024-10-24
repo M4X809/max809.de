@@ -29,7 +29,7 @@ function Shell({ children,
     withLoginButton = true,
     withDashboardButton = true,
     withHomeButton = false,
-    withSettingsButton = true,
+    withSettingsButton = false,
     forceHideHeader = false,
     ...props }: Omit<AppShellProps, "padding" | "navbar"> & {
         session?: SessionType,
@@ -48,7 +48,7 @@ function Shell({ children,
          */
         withHomeButton?: boolean,
         /**
-         * @default true
+         * @default false
          */
         withSettingsButton?: boolean,
         /**
