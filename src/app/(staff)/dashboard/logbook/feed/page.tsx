@@ -1,12 +1,13 @@
 import { Card, Container, Divider, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
-import { onPageAllowed, timeDifference } from "~/lib/sUtils";
+import { onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
 import { DayPagination, EntryButtons, CreateEntry, ResetErrorCount } from "./ClientFeedComponents";
-import { feedSearchParamsCache } from "./feedSearchParams";
+import { feedSearchParamsParser } from "./feedSearchParams";
 import { redirect } from "next/navigation";
 import ErrorBox from "~/app/_components/ErrorBox";
+import { createSearchParamsCache } from "nuqs/parsers";
 
 
 export type FeedEntry = {
@@ -36,6 +37,7 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
     await onPageAllowed("viewLogbookFeed")
     let data: FeedData = undefined
 
+    const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
     const { day, errorCount } = feedSearchParamsCache.parse(searchParams)
 
     try {
