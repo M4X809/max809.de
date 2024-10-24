@@ -180,5 +180,11 @@
 		],
 		"vscord.status.buttons.button1.enabled": true,
 		"supermaven.logFilePath": "D:/dev/playground/max809/.vscode/sm-log.txt",
+	},
+	"extensions": {
+		"recommendations": [
+			"1password.op-vscode",
+			"jannchie.codetime"
+		]
 	}
 }

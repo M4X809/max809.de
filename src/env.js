@@ -38,6 +38,11 @@ export const env = createEnv({
 		EMAIL_SERVER_PASSWORD: z.string(),
 		EMAIL_FROM: z.string(),
 
+		GOOGLE_CLIENT_ID: z.string(),
+		GOOGLE_CLIENT_SECRET: z.string(),
+
+
+
 		NPM_FONT_AWESOME: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 
@@ -84,6 +89,8 @@ export const env = createEnv({
 		EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
 		EMAIL_FROM: process.env.EMAIL_FROM,
 
+		GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
 		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,

@@ -8,13 +8,14 @@ import type { Metadata } from 'next'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/pro-duotone-svg-icons";
 // import { env } from "~/env";
-import { getDomain, getUtUrl } from "~/lib/sUtils";
+import { getDomain, getUtUrl, hasPermission } from "~/lib/sUtils";
 import ShowcaseGrid, { type ShowcaseLayout } from "~/components/showcase-grid"
 import 'react-photo-view/dist/react-photo-view.css';
 import { env } from "~/env";
 import { Img } from "./note-mark/_notemark-components/Img";
 import Link from "next/link";
 import { db } from "~/server/db";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -177,6 +178,17 @@ export default async function Home() {
 
     ]
   }
+
+  const navToLogbook = async () => {
+    const perm = await hasPermission(["redirectToLogbook", "viewLogbookFeed"], true, true)
+    // console.log(perm)
+    if (perm) {
+      redirect("/dashboard/logbook/feed")
+    }
+  }
+
+  await navToLogbook()
+
 
 
   return (
