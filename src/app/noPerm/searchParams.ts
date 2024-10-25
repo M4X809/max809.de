@@ -1,12 +1,8 @@
-import {
-	createSearchParamsCache,
-	parseAsInteger,
-	parseAsIsoDateTime,
-	parseAsString,
-} from "nuqs/server";
-// Note: import from 'nuqs/server' to avoid the "use client" directive
+import { createSearchParamsCache, parseAsString } from "nuqs/server";
 
 export const searchParamsCache = createSearchParamsCache({
-	// List your search param keys and associated parsers here:
-	t: parseAsString.withDefault(""),
+	t: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
+	callbackUrl: parseAsString
+		.withDefault("")
+		.withOptions({ clearOnDefault: true }),
 });

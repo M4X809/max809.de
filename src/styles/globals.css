@@ -112,3 +112,8 @@ p > p {
 		opacity: 0.5;
 	}
 }
+
+.mantine-DatePicker-monthCell > button,
+.mantine-DateInput-monthCell > button {
+	@apply data-[today=true]:text-white data-[today=true]:outline data-[today=true]:outline-[rgba(255,255,255,0.2)];
+}

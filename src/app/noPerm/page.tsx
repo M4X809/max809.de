@@ -15,8 +15,8 @@ export default async function MissingPermission({
   searchParams: Record<string, string | string[] | undefined>
 }) {
   const session = await getServerAuthSession()
-  if (!session?.user.id) return redirect("/api/auth/signin")
-  const { t: time } = searchParamsCache.parse(searchParams)
+  const { t: time, callbackUrl } = searchParamsCache.parse(searchParams)
+  if (!session?.user.id) return redirect(`/api/auth/signin?callbackUrl=${callbackUrl}`)
   if (!time) return redirect("/")
   return (
     <HydrateClient>

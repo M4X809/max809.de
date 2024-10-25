@@ -68,7 +68,9 @@ RUN npm run build
 # Check the build output
 RUN ls -la .next
 
-# Stage 3: Run the application with node/npm
+# Stage 3: set up the locale
+
+# Stage 4: Run the application with node/npm
 FROM node:22-slim AS runner
 
 # Set the working directory inside the container
@@ -110,6 +112,9 @@ COPY --from=deps /root/.cache/puppeteer /root/.cache/puppeteer
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+
+
+
 # ARG DATABASE_URL
 
 # ARG NEXTAUTH_SECRET
@@ -125,6 +130,11 @@ COPY --from=builder /app/.next/static ./.next/static
 # ARG UPLOADTHING_TOKEN
 # ARG PAT_1
 
+
+ENV TZ="CET"
+ENV LANG="de_DE.UTF-8"
+ENV LANGUAGE="de_DE:de"
+ENV LC_ALL="de_DE.UTF-8"
 
 
 # Expose the port Next.js runs on

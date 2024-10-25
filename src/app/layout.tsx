@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import '@mantine/core/styles.css';
 import '@mantine/dropzone/styles.css';
 import '@mantine/code-highlight/styles.css';
+import '@mantine/dates/styles.css';
 
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/max809.webp" }],
 };
 
+new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full", });
 
 
 export default async function RootLayout({
@@ -35,7 +37,7 @@ export default async function RootLayout({
   const session = await getServerAuthSession()
 
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="de-DE" className={`${GeistSans.variable}`}>
       <head>
       </head>
       <body
@@ -54,6 +56,7 @@ export default async function RootLayout({
                 <QrCodeStoreProvider>
                   <ManagementStoreProvider>
                     <ModalsProvider>
+
 
                       <Toaster
                         closeButton
