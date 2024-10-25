@@ -35,9 +35,7 @@ export const logbookRouter = createTRPCRouter({
 					message: "You are not authorized to perform this action.",
 				});
 			}
-
 			const date = input.date.toLocaleDateString("de-DE");
-
 			const [day, month, year] = date.split(".").map(Number);
 
 			const startDate = new Date(year!, month! - 1, day, 0, 0, 0);
@@ -182,8 +180,6 @@ export const logbookRouter = createTRPCRouter({
 	getEntries: protectedProcedure
 		.input(
 			z.object({
-				// dd.mm.yyyy or d.m.yyyy (d = day, m = month, yyyy = year)
-				// day: z.string().regex(/^\d{2}\.\d{1 , 2}\.\d{4}$/),
 				day: z.string().regex(/^\d{1,2}[./]\d{1,2}[./]\d{4}$/),
 			}),
 		)
@@ -196,9 +192,6 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			input.day = input.day.replaceAll("/", ".");
-
-			console.log("input", input);
-
 			const [day, month, year] = input.day.split(".").map(Number);
 
 			const startDate = new Date(year!, month! - 1, day, 0, 0, 0);
@@ -399,10 +392,6 @@ export const logbookRouter = createTRPCRouter({
 				.where(eq(logbookFeed.id, input.id))
 				.execute();
 
-			// await ctx.db
-			// 	.delete(logbookFeed)
-			// 	.where(eq(logbookFeed.id, input.id))
-			// 	.execute();
 			return {
 				success: true,
 			};

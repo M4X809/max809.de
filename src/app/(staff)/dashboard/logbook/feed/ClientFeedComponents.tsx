@@ -23,17 +23,11 @@ export const DayPagination = () => {
     const [day, setDay] = useQueryState('day', feedSearchParamsParser.day)
     const [datePickerOpen, setDatePickerOpen] = useState(false)
     const [day2, month, year] = day.split(".").map(Number);
-    // console.log("day", day)
-    // console.log("day2", day2)
-    // console.log("month", month)
-    // console.log("year", year)
 
     useEffect(() => {
         if (!day) return
         if (day.includes("Invalid")) setDay(new Date().toLocaleDateString("de-DE"))
     }, [day, setDay])
-
-
 
     const [datePickerState, setDatePickerState] = useState<Date | undefined | null>(new Date(year!, month! - 1, day2))
     const callbackInput = useDebouncedCallback((date: Date | undefined | null) => {
@@ -139,17 +133,13 @@ export const EntryButtons = ({ id }: { id: string }) => {
     )
 }
 
-
-
 export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNames: string[], initialValues?: FeedEntry | undefined | null, entryId?: string | undefined | null }) => {
     const router = useRouter()
     const { mutate: createEntry, isPending: isCreating, isSuccess: isCreated, error: createError } = api.logbook.createEntry.useMutation()
     const { mutate: updateEntry, isPending: isUpdating, isSuccess: isUpdated, error: updateError } = api.logbook.updateEntry.useMutation()
 
     const [day, setDay] = useQueryState('day', feedSearchParamsParser.day)
-
     const [day2, month, year] = day.split(".").map(Number);
-
 
     const form = useForm({
         mode: 'controlled',
@@ -165,7 +155,6 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
         },
         validateInputOnChange: true,
         validateInputOnBlur: true,
-
         validate: {
             streetName: (value) => {
                 const isEntry = form.values.type === "entry"
@@ -175,8 +164,7 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                 return value.length > 0 ? false : 'Der Name darf nicht leer sein.'
             },
             kmState: (value) => {
-                const { error, data, success } = z.string().regex(/^[0-9]+$/im).safeParse(value)
-
+                const { error } = z.string().regex(/^[0-9]+$/im).safeParse(value)
                 if (error) return "Der Kilometerstand muss eine Zahl sein und darf nicht leer sein."
                 return false
             },
@@ -189,13 +177,10 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
 
             if (isUpdated) {
                 console.log("isUpdated", isUpdated)
-                // router.push("/dashboard/logbook/feed")
                 router.push(`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`)
-
                 setTimeout(() => {
                     router.refresh()
                 }, 100)
-
                 return
             }
 
@@ -209,7 +194,6 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             setTimeout(() => {
                 router.refresh()
             }, 100)
-
         }
 
         if (createError || updateError) {
@@ -224,17 +208,6 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
             })
         }
     }, [isCreated, form.reset, router, createError, form.setValues, updateError, isUpdating, isUpdated])
-
-
-    // useEffect(() => {
-    //     return () => {
-    //         router.refresh()
-    //     }
-
-
-    // }, [router])
-
-
 
     return (
         <form onSubmit={form.onSubmit((values) => {
@@ -332,7 +305,6 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                 </Group>
                 {
                     form.values.type === "pause" &&
-
                     <Group className=''>
                         <Switch
                             classNames={{
@@ -351,13 +323,11 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
                         />
                     </Group>
                 }
-
                 <Textarea
                     className='md:col-span-2'
                     autosize
                     minRows={2}
                     maxRows={4}
-                    // resize="vertical"
                     pt={10}
                     label="Notiz"
                     {...form.getInputProps('note')}
@@ -401,7 +371,6 @@ export const CreateEntry = ({ streetNames, initialValues, entryId }: { streetNam
     )
 }
 
-
 export const ResetErrorCount = () => {
     const setErrorCount = useQueryState('errorCount', feedSearchParamsParser.errorCount)
     useEffect(() => {
@@ -416,14 +385,12 @@ export const DeleteEntryButton = ({ id, dateString }: { id: string | undefined |
     const { mutate: deleteEntry, isPending: isDeleting, isSuccess: isDeleted, error: deleteError, reset: resetDeleteMutation } = api.logbook.deleteEntry.useMutation()
     const router = useRouter()
 
-
     useEffect(() => {
         if (isDeleted) {
             router.push(`/dashboard/logbook/feed?day=${dateString}`)
             router.refresh()
         }
     }, [isDeleted, router, dateString])
-
 
     if (!id || !dateString) return null
 

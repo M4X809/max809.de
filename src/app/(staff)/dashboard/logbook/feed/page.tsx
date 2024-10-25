@@ -75,8 +75,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
         return kmDifference.toLocaleString("de-DE")
     }
 
-
-
     const cardClassName = "bg-[rgba(255,255,255,0.1)] backdrop-blur-lg rounded-lg"
     return (
         <Container size={"lg"}>
@@ -127,8 +125,6 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                         Notiz:
                                     </Text>
                                     <Textarea
-
-
                                         readOnly
                                         fz={15}
                                         autosize
@@ -141,11 +137,9 @@ export default async function LogbookFeed({ searchParams }: { searchParams: Reco
                                         className="w-full " />
                                 </Stack>
                             }
-
                             {entries.length > 0 && <Divider my={10} />}
                         </Stack>}
                         {entries.length > 0 && entries.map((entry, index) => {
-
                             const prevEntry = entries[index - 1] ?? startTime; // Get the previous entry
                             const currentKmState = Number.parseInt(entry.kmState, 10);
                             const prevKmState = prevEntry ? Number.parseInt(prevEntry.kmState, 10) : null;
