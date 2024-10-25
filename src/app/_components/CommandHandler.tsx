@@ -89,11 +89,11 @@ const defaultCommands: CommandGroups[] = [
             },
             {
                 icon: faFileContract,
-                key: "logbook",
-                label: "Logbook",
+                key: "logbook-feed",
+                label: "Logbook Feed",
                 keywords: ["logbook", "staff"],
                 onSelect: ({ close, router }) => {
-                    router.push("/dashboard/logbook")
+                    router.push("/dashboard/logbook/feed")
                     close()
                 },
                 permission: ["viewLogbookFeed"],
