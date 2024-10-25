@@ -9,7 +9,6 @@ import { Center, Stack, Title } from '@mantine/core'
 import Link from 'next/link'
 import { twMerge } from 'tailwind-merge'
 import { searchParamsCache } from './searchParams'
-import { signIn } from 'next-auth/react'
 export default async function MissingPermission({
   searchParams
 }: {
@@ -18,7 +17,6 @@ export default async function MissingPermission({
   const session = await getServerAuthSession()
   const { t: time, callbackUrl } = searchParamsCache.parse(searchParams)
   if (!session?.user.id) return redirect(`/api/auth/signin?callbackUrl=${callbackUrl}`)
-  // if (!session?.user.id) return signIn()
   if (!time) return redirect("/")
   return (
     <HydrateClient>
