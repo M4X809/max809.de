@@ -48,13 +48,13 @@ const DashNav = ({ session }: { session: Session | null | undefined }) => {
                         icon: faHome,
                         to: "/dashboard/logbook",
                         label: "Dashboard",
-                        // permission: "viewWhitelist",
+                        permission: "viewLogbook"
                     },
                     {
                         icon: faFeed,
                         to: "/dashboard/logbook/feed",
                         label: "Feed",
-                        // permission: "viewWhitelist",
+                        permission: "viewLogbookFeed",
                     }
                 ],
             }
