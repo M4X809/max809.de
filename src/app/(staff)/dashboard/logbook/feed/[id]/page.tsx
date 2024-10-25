@@ -11,10 +11,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft } from '@fortawesome/pro-duotone-svg-icons'
 import { onPageAllowed } from '~/lib/sUtils'
 
-export default async function EditEntry({ params }: { params: { id: string } }) {
+export default async function EditEntry({ params }: { params: Promise<{ id: string }> }) {
     await onPageAllowed("viewLogbookFeed")
+    const { id } = await params
 
-    const data = await api.logbook.getEntryById({ id: params.id })
+    const data = await api.logbook.getEntryById({ id })
 
     if (data instanceof TRPCError) {
         return <ErrorBox

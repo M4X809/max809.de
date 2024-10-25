@@ -19,7 +19,7 @@ export interface CubeStoreProviderProps {
 export const CubeStoreProvider = ({
     children,
 }: CubeStoreProviderProps) => {
-    const storeRef = useRef<CubeStoreApi>()
+    const storeRef = useRef<CubeStoreApi>(null)
     if (!storeRef.current) {
         storeRef.current = createCubeStore()
     }

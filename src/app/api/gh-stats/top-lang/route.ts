@@ -186,32 +186,12 @@ const cachedTopLangs = unstable_cache(
 );
 
 export async function GET(req: NextRequest) {
-	// const headersList = headers();
-	// const cacheControl = headersList.get("Cache-Control");
-	// console.log(chalk.red("cacheControl route", cacheControl));
+	const params = req.nextUrl.searchParams;
 
-	// if (cacheControl?.includes("no-cache")) {
-	// 	headersList.set("Cache-Control", null);
-	// }
+	const usernameWhitelist = ["m4x809", "skycreat7"];
 
-	const __params = req.nextUrl.searchParams;
-	const _params = req.nextUrl.searchParams.entries();
-	// const params = Array.from(_params).reduce<Record<string, string>>(
-	// 	(acc, [key, value]) => {
-	// 		acc[key] = value;
-	// 		return acc;
-	// 	},
-	// 	{},
-	// );
-	// console.log("params", params);
-	// prettier-ignore
-	const usernameWhitelist = [
-        "m4x809", 
-        "skycreat7",
-    ];
-
-	const username = __params.get("username") ?? "m4x809";
-	const theme = __params.get("theme");
+	const username = params.get("username") ?? "m4x809";
+	const theme = params.get("theme");
 	if (!username)
 		return new Response(
 			renderError(
@@ -245,28 +225,26 @@ export async function GET(req: NextRequest) {
 			},
 		);
 
-	const custom_title = __params.get("custom_title");
-	const hide_title = __params.get("hide_title");
-	const hide_border = __params.get("hide_border");
-	const card_width = __params.get("card_width");
-	const hide = __params.get("hide");
-	const title_color = __params.get("title_color");
-	const text_color = __params.get("text_color");
-	const bg_color = __params.get("bg_color");
+	const custom_title = params.get("custom_title");
+	const hide_title = params.get("hide_title");
+	const hide_border = params.get("hide_border");
+	const card_width = params.get("card_width");
+	const hide = params.get("hide");
+	const title_color = params.get("title_color");
+	const text_color = params.get("text_color");
+	const bg_color = params.get("bg_color");
 
-	const layout = __params.get("layout");
-	const langs_count = __params.get("langs_count");
-	const border_radius = __params.get("border_radius");
-	const border_color = __params.get("border_color");
-	const locale = __params.get("locale");
-	const disable_animations = __params.get("disable_animations");
-	const hide_progress = __params.get("hide_progress");
+	const layout = params.get("layout");
+	const langs_count = params.get("langs_count");
+	const border_radius = params.get("border_radius");
+	const border_color = params.get("border_color");
+	const locale = params.get("locale");
+	const disable_animations = params.get("disable_animations");
+	const hide_progress = params.get("hide_progress");
 
 	if (!username) return new Response("Missing username", { status: 400 });
 	try {
 		const topLangs = await cachedTopLangs(username);
-		// console.log("topLangs", topLangs);
-
 		return new Response(
 			renderTopLanguages(topLangs as unknown as TopLangData, {
 				custom_title: custom_title ?? undefined,
@@ -294,8 +272,6 @@ export async function GET(req: NextRequest) {
 				},
 			},
 		);
-
-		// return new Response(JSON.stringify(topLangs), { status: 200 });
 	} catch (error) {
 		console.error(error);
 		if (error instanceof Error) {

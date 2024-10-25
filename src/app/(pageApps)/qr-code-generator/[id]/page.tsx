@@ -10,15 +10,16 @@ import { api } from "~/trpc/server"
 
 
 interface Props {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export async function generateMetadata(
     { params }: Props,
 ): Promise<Metadata> {
-    const code = await api.codes.getQrCodeWithID(params.id)
+    const { id } = await params
+    const code = await api.codes.getQrCodeWithID(id)
     if (code instanceof TRPCError) {
         return {
             metadataBase: new URL('https://max809.de'),
@@ -43,7 +44,7 @@ export async function generateMetadata(
             }
         }
     }
-    await api.codes.uploadQrCodeImage({ id: params.id })
+    await api.codes.uploadQrCodeImage({ id })
     return {
         metadataBase: new URL('https://max809.de'),
 
@@ -70,11 +71,14 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
-    if (!params.id) {
+    const { id } = await params
+
+
+    if (!id) {
         redirect("/qr-code-generator")
     }
-    await api.codes.uploadQrCodeImage({ id: params.id })
-    const code = await api.codes.getQrCodeWithID(params.id)
+    await api.codes.uploadQrCodeImage({ id })
+    const code = await api.codes.getQrCodeWithID(id)
 
     if (!code) {
         redirect("/qr-code-generator")

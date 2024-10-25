@@ -4,6 +4,7 @@ import {
 	Autocomplete,
 	Button,
 	Input,
+	Pill,
 	Select,
 	Tooltip,
 	TooltipFloating,
@@ -15,6 +16,14 @@ import "dayjs/locale/de";
 export const theme: MantineThemeOverride = {
 	focusRing: "never",
 	components: {
+		Pill: Pill.extend({
+			defaultProps: {
+				variant: "default",
+				className:
+					"bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white",
+			},
+		}),
+
 		Button: Button.extend({
 			classNames: {
 				root:

@@ -30,12 +30,13 @@ export const metadata: Metadata = {
 }
 
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+export default async function UserPage({ params }: { params: Promise<{ id: string }> }) {
     await onPageAllowed("viewUserPage")
+    const { id } = await params
     const session = await getServerAuthSession()
     const className = "bg-[rgba(255,255,255,0.1)] backdrop-blur-lg rounded-lg"
 
-    const user = await api.management.getUser(params.id)
+    const user = await api.management.getUser(id)
 
     if (!user) {
         redirect("/dashboard/user-management")
@@ -52,7 +53,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         {await hasPermission("deleteUser") &&
                             <Group className='flex md:col-span-1 col-span-2'>
                                 <Tooltip label="Reset Permissions" >
-                                    <DeleteUserButton id={params.id} session={session} />
+                                    <DeleteUserButton id={id} session={session} />
                                 </Tooltip>
 
                             </Group>
@@ -60,7 +61,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         {await hasPermission("resetPermissions") &&
                             <Group className='flex md:col-span-1 col-span-2'>
                                 <Tooltip label="Reset Permissions" >
-                                    <ResetPermissionsButton id={params.id} session={session} />
+                                    <ResetPermissionsButton id={id} session={session} />
                                 </Tooltip>
 
                             </Group>
@@ -68,7 +69,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                         {await hasPermission("logoutAllDevices") &&
                             <Group className='flex md:col-span-1 col-span-2'>
                                 <Tooltip label="Log Out All Devices" >
-                                    <LogoutAllDevicesButton id={params.id} session={session} />
+                                    <LogoutAllDevicesButton id={id} session={session} />
                                 </Tooltip>
 
                             </Group>

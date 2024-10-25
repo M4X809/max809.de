@@ -4,10 +4,10 @@ import { onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
 import { DayPagination, EntryButtons, CreateEntry, ResetErrorCount } from "./ClientFeedComponents";
-import { feedSearchParamsParser } from "./feedSearchParams";
+import { feedSearchParamsCache, feedSearchParamsParser } from "./feedSearchParams";
 import { redirect } from "next/navigation";
 import ErrorBox from "~/app/_components/ErrorBox";
-import { createSearchParamsCache } from "nuqs/parsers";
+import { createSearchParamsCache } from "nuqs/server";
 
 
 export type FeedEntry = {
@@ -33,16 +33,19 @@ export type FeedData = {
     day: Date
 } | undefined
 
-export default async function LogbookFeed({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+export default async function LogbookFeed({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
     await onPageAllowed("viewLogbookFeed")
     let data: FeedData = undefined
 
-    const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
-    const { day, errorCount } = feedSearchParamsCache.parse(searchParams)
+    // const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
+    const { day, errorCount } = feedSearchParamsCache.parse(await searchParams)
+
+    console.log("day", day)
 
     try {
         data = await api.logbook.getEntries({ day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day })
     } catch (err) {
+        console.log("err", err)
         if (errorCount >= 3) return (
             <>
                 <ErrorBox

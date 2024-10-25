@@ -89,6 +89,7 @@ const ImportButton = () => {
                     toggleDropzone()
                 }}
                 fullWidth maw={500}
+                variant="light"
             >
                 Import QR Code from Image
 
