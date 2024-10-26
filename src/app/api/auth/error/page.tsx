@@ -36,7 +36,7 @@ const signinErrors = {
 
 
 
-export const generateMetadata = ({ params }: { params: Record<string, string | string[] | undefined> }): Metadata => {
+export const generateMetadata = (): Metadata => {
 
     const { error } = searchParamsCache.all()
 
@@ -77,19 +77,15 @@ export const generateMetadata = ({ params }: { params: Record<string, string | s
 
 
 
-export default async function ErrorPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }
+export default async function ErrorPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }
 ) {
-    const { error } = searchParamsCache.parse(searchParams)
+    const { error } = searchParamsCache.parse(await searchParams)
     const session = await getServerAuthSession()
     if (session?.user.id) {
         return redirect("/")
     }
 
-
-
     let currentError = signinErrors[error as keyof typeof signinErrors]
-
-    console.log("currentError", currentError)
 
     if (!currentError) currentError = signinErrors.default
 

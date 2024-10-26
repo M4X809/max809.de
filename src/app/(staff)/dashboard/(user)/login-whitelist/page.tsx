@@ -34,9 +34,12 @@ export const metadata: Metadata = {
     }
 }
 
-export default async function LoginWhitelist({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+export default async function LoginWhitelist({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
     await onPageAllowed("viewWhitelist")
-    const { limit, page, search } = whitelistParamsCache.parse(searchParams)
+
+
+
+    const { limit, page, search } = whitelistParamsCache.parse(await searchParams)
     const whiteList = await api.whitelist.getWhitelist({ page, limit, search: search })
     const refreshActionWithPath = refreshAction.bind(null, "/dashboard/login-whitelist")
     const session = await getServerAuthSession()
@@ -65,7 +68,6 @@ export default async function LoginWhitelist({ searchParams }: { searchParams: R
                 <TableCaption>Login Whitelist.</TableCaption>
                 <TableHeader className="hover:bg-transparent">
                     <TableRow className="hover:bg-transparent text-white flex-nowrap">
-                        {/* <TableHead className="w-[250px]">Whitelist ID</TableHead> */}
                         <TableHead className="w-[250px]">User ID</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>OA2 Account ID</TableHead>

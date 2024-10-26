@@ -37,9 +37,9 @@ export const metadata: Metadata = {
 export default async function SignIn({
     searchParams
 }: {
-    searchParams: Record<string, string | string[] | undefined>
+    searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-    const { error, callbackUrl } = searchParamsCache.parse(searchParams)
+    const { error, callbackUrl } = searchParamsCache.parse(await searchParams)
     const session = await getServerAuthSession()
 
     if (session?.user.id && !error) {
