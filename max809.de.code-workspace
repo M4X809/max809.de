@@ -129,38 +129,7 @@
 				]
 			}
 		],
-		"psi-header.changes-tracking": {
-			"isActive": true,
-			// "include": ["*"],
-			"includeGlob": [
-				"**/*"
-			],
-			"enforceHeader": true,
-			"excludeGlob": [
-				"**/settings.json",
-				"*md",
-				".md",
-				"**/*.md",
-				"**/UserStorys.md",
-				"**/*.html",
-				"**/*.txt",
-				"**/*.http",
-				"**/*.sh",
-				"**/*.mdx",
-				"**/*.toml",
-				"**/*Dockerfile",
-				"**/*ps1",
-				"**/*.md",
-				"**/*.yml",
-				"**/*.yaml",
-			],
-			"exclude": [
-				"jsonc",
-				"json",
-				"md",
-				"index.html"
-			]
-		},
+		
 		"tailwindCSS.classAttributes": [
 			"class",
 			"className",
