@@ -5,7 +5,7 @@ import { Image as MantineImage, type ImageProps as MantineImageProps } from "@ma
 import { PhotoView } from "react-photo-view"
 import { twMerge } from "tailwind-merge"
 
-import React from "react"
+import type React from "react"
 
 export const Img = ({ imgType = "next", ...props }: ImageProps & MantineImageProps & { ratio?: number, imgType?: "next" | "mantine" }) => {
 
@@ -19,7 +19,7 @@ export const Img = ({ imgType = "next", ...props }: ImageProps & MantineImagePro
 
     return (
         <PhotoView src={props.src as string} width={500} height={500} >
-            <MantineImage onClick={(e) => e.preventDefault()} src={props.src} alt="Note Mark" h={props.height || "auto"} w={props.width || "auto"} className={twMerge("rounded-lg cursor-pointer", props.className)} />
+            <MantineImage onClick={(e: React.MouseEvent<HTMLImageElement, MouseEvent>) => e.preventDefault()} src={props.src} alt="Note Mark" h={props.height || "auto"} w={props.width || "auto"} className={twMerge("rounded-lg cursor-pointer", props.className)} />
         </PhotoView>
     )
 

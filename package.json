@@ -11,7 +11,7 @@
     "db:studio": "drizzle-kit studio --verbose  --host 0.0.0.0 --port 5555",
     "typecheck": "tsc --noEmit",
     "dev": "next dev --turbopack",
-    "lint": "next lint",
+    "lint": "next lint --no-cache",
     "start": "next start",
     "docker:build": "docker buildx build -t max809.de/latest --build-arg NPM_FONT_AWESOME=$NPM_FONT_AWESOME .",
     "lines": "cloc --exclude-dir=node_modules,.next,drizzle,components ."
@@ -89,13 +89,20 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@next/eslint-plugin-next": "^15.0.1",
     "@types/bun": "latest",
+    "@types/eslint": "^9.6.1",
     "@types/is-odd": "^3.0.4",
     "@types/node": "^20.17.1",
     "@types/nodemailer": "^6.4.16",
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0",
     "drizzle-kit": "^0.26.2",
+    "eslint": "^9.13.0",
+    "eslint-config-next": "^15.0.1",
+    "eslint-plugin-drizzle": "^0.2.3",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
@@ -107,6 +114,7 @@
   },
   "trustedDependencies": [
     "@biomejs/biome",
+    "core-js",
     "esbuild",
     "puppeteer",
     "sharp"

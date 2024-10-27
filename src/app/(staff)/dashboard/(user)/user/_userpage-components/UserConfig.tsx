@@ -110,7 +110,7 @@ const UserConfig = ({ user }: { user: User }) => {
                     rightSectionPointerEvents="visible"
                     className={twMerge("pointer-events-none")}
                     value={!waitingForInput ? `${openCommandKey.toString().toUpperCase()}` : "Press a key"}
-                    onKeyDown={(e) => {
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         e.preventDefault()
                         e.stopPropagation()
                         if (e.key === "Escape" && waitingForInput) {
