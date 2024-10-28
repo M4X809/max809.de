@@ -13,8 +13,6 @@
 		"donjayamanne.githistory",
 		"github.vscode-pull-request-github",
 		"wix.glean",
-		"hyunkyunmoon.gzipdecompressor",
-		"wix.vscode-import-cost",
 		"oderwat.indent-rainbow",
 		"ms-vscode.vscode-typescript-next",
 		"yzhang.markdown-all-in-one",
@@ -24,7 +22,6 @@
 		"nguyenngoclong.terminal-keeper",
 		"gruntfuggly.todo-tree",
 		"vscode-icons-team.vscode-icons",
-		"psioniq.psi-header",
 		"quicktype.quicktype",
 		"christian-kohler.npm-intellisense",
 		"eamodio.gitlens"
