@@ -15,7 +15,7 @@
 			"editor.defaultFormatter": "vscode.html-language-features"
 		},
 		"[typescriptreact]": {
-			"editor.defaultFormatter": "vscode.typescript-language-features"
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
 		},
 		"emmet.includeLanguages": {
 			"javascript": "javascriptreact"
@@ -115,19 +115,6 @@
 		"todo-tree.filtering.excludeGlobs": [
 			"**/node_modules/*/**",
 			"**/fontawesome/*/**"
-		],
-		"psi-header.templates": [
-			{
-				"language": "*",
-				"template": [
-					"File: <<filename>>",
-					"Project: <<projectname>>",
-					"File Created: <<filecreated('DD.MM.YYYY, HH:MM:SS')>>",
-					"",
-					"Last Modified: <<dateformat('DD.MM.YYYY, HH:MM:SS')>>",
-					"Modified By: <<author>>"
-				]
-			}
 		],
 		
 		"tailwindCSS.classAttributes": [
