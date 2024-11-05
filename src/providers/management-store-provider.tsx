@@ -19,7 +19,7 @@ export interface ManagementStoreProviderProps {
 export const ManagementStoreProvider = ({
     children,
 }: ManagementStoreProviderProps) => {
-    const storeRef = useRef<ManagementStoreApi>()
+    const storeRef = useRef<ManagementStoreApi>(null)
     if (!storeRef.current) {
         storeRef.current = createManagementStore()
     }

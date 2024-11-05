@@ -12,7 +12,11 @@ const config = {
 	},
 	eslint: {
 		ignoreDuringBuilds: true,
+		dirs: [
+			"./public"
+		]
 	},
+	
 
 	skipTrailingSlashRedirect: true,
 	devIndicators: {

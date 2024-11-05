@@ -19,7 +19,7 @@ export interface QrCodeStoreProviderProps {
 export const QrCodeStoreProvider = ({
     children,
 }: QrCodeStoreProviderProps) => {
-    const storeRef = useRef<QrCodeStoreApi>()
+    const storeRef = useRef<QrCodeStoreApi>(null)
     if (!storeRef.current) {
         storeRef.current = createQrCodeStore()
     }

@@ -12,16 +12,11 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import { Img } from "~/app/note-mark/_notemark-components/Img";
 import ExampleInput from "./_emoji-components/ExampleInput";
-import { NextResponse, userAgent } from "next/server";
+import { userAgent } from "next/server";
 import { headers } from "next/headers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/pro-duotone-svg-icons";
-import { emojis } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
-import { Router } from "next/router";
 import { twMerge } from "tailwind-merge";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { deleteEmoji } from "./actions";
 
 
@@ -47,7 +42,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
     const emoji = getRandomObjectEmoji();
-    const header = headers()
+    const header = await headers()
     const uAgent = userAgent({ headers: header });
     const isSafari = uAgent.ua.includes("Safari") && !uAgent.ua.includes("Chrome");
     // console.log("isSafari", isSafari);
@@ -126,6 +121,7 @@ export default async function EmojiFavicon() {
 
                             return (
                                 <Pill key={emoji.id} size="xl" radius={"sm"}
+                                    bg={"rgba(255,255,255,0.1)"}
 
                                     className={twMerge("bg-[rgba(255,255,255,0.1)] px-1 w-fit  text-white min-w-fit", admin && " ")}
                                     classNames={{
@@ -143,7 +139,7 @@ export default async function EmojiFavicon() {
                                         {admin && <Box>
 
                                             <form action={deleteEmojiWithId}>
-                                                <ActionIcon type="submit" unstyled className="px-1 mx-auto hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
+                                                <ActionIcon type="submit" unstyled className="px-1 mx-auto transition-colors duration-500 hover:text-[#ff0000] text-[#6d6c6cc2] opacity-100" >
                                                     <FontAwesomeIcon icon={faX} style={
                                                         // @ts-ignore
                                                         { "--fa-secondary-opacity": "1" }} />
@@ -155,12 +151,9 @@ export default async function EmojiFavicon() {
                             )
                         })}
                     </Container>
-                    {/* <Container size={"xl"} className="min-w-[500px] "> */}
                     <ExampleInput
                         url={getDomain()}
                     />
-
-                    {/* </Container> */}
                 </Container>
 
             </Shell>

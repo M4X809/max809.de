@@ -134,7 +134,7 @@ const QrCode = () => {
                         </Center>
                         {canvasRef?.current &&
                             <>
-                                <Button.Group className='w-[500] flex justify-center rounded-full'  >
+                                <Button.Group maw={500} className='self-center'  >
                                     <Button
                                         className='rounded-l-full'
                                         onClick={() => {
@@ -158,6 +158,7 @@ const QrCode = () => {
                                         Download as WEBP
                                     </Button>
                                 </Button.Group>
+                                {!!session?.user.id && importEnabled && <ImportButton />}
                                 {!!session?.user?.id && !!saveEnabled && <Button variant='gradient'
                                     onClick={() => {
                                         toggle()
@@ -167,7 +168,6 @@ const QrCode = () => {
                                     Save QR Code
                                 </Button>}
 
-                                {!!session?.user.id && importEnabled && <ImportButton />}
 
                                 <Modal
                                     centered

@@ -65,24 +65,16 @@ const blockedEmojis = ["🍆"];
 
 export async function GET(
 	req: NextRequest,
-	{ params }: { params: { emoji?: string } },
+	{ params }: { params: Promise<{ emoji?: string }> },
 ) {
 	try {
 		let serverRequest = false;
-		console.info(chalk.yellow("IP", req.ip, req.headers.get("x-forwarded-for")));
 
 		const _referer = req.headers.get("referer");
 		if (_referer?.includes(getDomain(env.NEXTAUTH_URL))) serverRequest = true;
 
-		// console.info(
-		// 	serverRequest
-		// 		? chalk.green("serverRequest", serverRequest)
-		// 		: chalk.red("serverRequest", serverRequest),
+		const { emoji: _emoji } = await params;
 
-		// 	chalk.yellow("\nreferer", _referer),
-		// );
-
-		const _emoji = params.emoji;
 		if (!_emoji) return new Response("Missing emoji", { status: 400 });
 
 		const { data: emoji, error } = z.string().emoji().safeParse(_emoji);

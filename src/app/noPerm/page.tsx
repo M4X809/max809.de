@@ -12,10 +12,10 @@ import { searchParamsCache } from './searchParams'
 export default async function MissingPermission({
   searchParams
 }: {
-  searchParams: Record<string, string | string[] | undefined>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const session = await getServerAuthSession()
-  const { t: time, callbackUrl } = searchParamsCache.parse(searchParams)
+  const { t: time, callbackUrl } = searchParamsCache.parse(await searchParams)
   if (!session?.user.id) return redirect(`/api/auth/signin?callbackUrl=${callbackUrl}`)
   if (!time) return redirect("/")
   return (
@@ -38,7 +38,6 @@ export default async function MissingPermission({
             </Link>
           </Stack>
         </Center>
-
       </Shell>
     </HydrateClient>
   )

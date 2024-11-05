@@ -99,7 +99,7 @@ export async function onPageAllowed(
 	 */
 	ignoreAdmin = false,
 ): Promise<void> {
-	const headersList = headers();
+	const headersList = await headers();
 
 	if (!permission || permission === "admin") {
 		const admin = await isAdmin();

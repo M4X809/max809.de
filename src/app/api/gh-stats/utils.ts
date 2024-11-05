@@ -1,12 +1,9 @@
-// @ts-check
-import axios, { type AxiosRequestConfig } from "axios";
 // @ts-ignore
 import toEmoji from "emoji-name-map";
 import wrap from "word-wrap";
 import { themes } from "./_themes";
 import { env } from "~/env";
 import type { Fetcher, GHResponse } from "./_types";
-import { unstable_cache } from "next/cache";
 
 const PATs = Object.keys(env).filter((key) => /PAT_\d*$/.exec(key)).length;
 const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;

@@ -85,6 +85,10 @@ p > p {
 	::-webkit-scrollbar-track {
 		@apply rounded-md bg-gradient-to-t from-[#06080f] to-[#122b69];
 	}
+	body,
+	html {
+		@apply overscroll-none;
+	}
 }
 @layer base {
 	* {

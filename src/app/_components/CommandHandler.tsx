@@ -268,7 +268,7 @@ const CommandHandler = ({ session, commands = defaultCommands, keys = "F1" }: { 
 
     return (
 
-        <CommandDialog open={opened} onOpenChange={toggle}>
+        <CommandDialog open={opened} onOpenChange={toggle} loop>
             <CommandInput
                 className='bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white px-3'
                 placeholder="Type a command or search..." />

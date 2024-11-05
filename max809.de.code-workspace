@@ -15,7 +15,7 @@
 			"editor.defaultFormatter": "vscode.html-language-features"
 		},
 		"[typescriptreact]": {
-			"editor.defaultFormatter": "vscode.typescript-language-features"
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
 		},
 		"emmet.includeLanguages": {
 			"javascript": "javascriptreact"
@@ -116,67 +116,13 @@
 			"**/node_modules/*/**",
 			"**/fontawesome/*/**"
 		],
-		"psi-header.templates": [
-			{
-				"language": "*",
-				"template": [
-					"File: <<filename>>",
-					"Project: <<projectname>>",
-					"File Created: <<filecreated('DD.MM.YYYY, HH:MM:SS')>>",
-					"",
-					"Last Modified: <<dateformat('DD.MM.YYYY, HH:MM:SS')>>",
-					"Modified By: <<author>>"
-				]
-			}
-		],
-		"psi-header.changes-tracking": {
-			"isActive": true,
-			// "include": ["*"],
-			"includeGlob": [
-				"**/*"
-			],
-			"enforceHeader": true,
-			"excludeGlob": [
-				"**/settings.json",
-				"*md",
-				".md",
-				"**/*.md",
-				"**/UserStorys.md",
-				"**/*.html",
-				"**/*.txt",
-				"**/*.http",
-				"**/*.sh",
-				"**/*.mdx",
-				"**/*.toml",
-				"**/*Dockerfile",
-				"**/*ps1",
-				"**/*.md",
-				"**/*.yml",
-				"**/*.yaml",
-			],
-			"exclude": [
-				"jsonc",
-				"json",
-				"md",
-				"index.html"
-			]
-		},
+		
 		"tailwindCSS.classAttributes": [
 			"class",
 			"className",
 			"ngClass",
 			"class:list",
 			".*Cn*"
-		],
-		"tailwindCSS.experimental.classRegex": [
-			[
-				"{([\\s\\S]*)}",
-				"\\b\\w*ClassName\\b\\s*:\\s*['\"]([^'\"]*)['\"]"
-			],
-			[
-				"{([\\s\\S]*)}",
-				"\\b\\w*Cn\\b\\s*:\\s*['\"]([^'\"]*)['\"]"
-			],
 		],
 		"vscord.status.buttons.button1.enabled": true,
 		"supermaven.logFilePath": "D:/dev/playground/max809/.vscode/sm-log.txt",
