@@ -47,6 +47,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "countries-and-timezones": "^3.7.2",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.35.3",
     "emoji-name-map": "^1.2.9",

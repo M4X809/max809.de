@@ -85,8 +85,6 @@ export default async function LogbookFeed({
 		redirect(`/dashboard/logbook/feed?errorCount=${errorCount + 1}`);
 	}
 
-	console.log(data);
-
 	const startTime = data?.startTime;
 	const endTime = data?.endTime;
 	const entries = data?.entries;
