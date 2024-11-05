@@ -1,4 +1,5 @@
 import {
+	Box,
 	Card,
 	Container,
 	Divider,
@@ -9,7 +10,7 @@ import {
 	Title,
 } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
-import { onPageAllowed } from "~/lib/sUtils";
+import { onPageAllowed, timeDifference } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
 import {
@@ -239,26 +240,36 @@ export default async function LogbookFeed({
 											<Stack key={entry.id} gap={1}>
 												<Group className="justify-between" wrap="nowrap" gap={0}>
 													<Title order={4} fz={{ base: 15, md: 18 }}>
-														{entry.streetName || "Keine Tätigkeit angegeben"}
+														{entry.streetName || "Keine Straße angegeben"}
 													</Title>
 													<EntryButtons id={entry.id} />
 												</Group>
 												<Group className="justify-between gap-0 md:justify-start md:gap-2">
-													<Text fz={15}>
-														Von:{" "}
-														{entry.startTime
-															?.toLocaleTimeString()
-															.split(":")
-															.slice(0, 2)
-															.join(":")}
-													</Text>
-													<Text fz={15}>
-														Bis:{" "}
-														{entry.endTime
-															?.toLocaleTimeString()
-															.split(":")
-															.slice(0, 2)
-															.join(":")}
+													<Group gap={2}>
+														<Text fz={15}>
+															Von:{" "}
+															{entry.startTime
+																?.toLocaleTimeString()
+																.split(":")
+																.slice(0, 2)
+																.join(":")}
+														</Text>
+														<Text fz={15}>
+															Bis:{" "}
+															{entry.endTime
+																?.toLocaleTimeString()
+																.split(":")
+																.slice(0, 2)
+																.join(":")}
+														</Text>
+													</Group>
+													<Text fw={500}>
+														Gesamt:{" "}
+														{timeDifference(
+															entry.startTime?.toLocaleTimeString() ?? "",
+															entry.endTime?.toLocaleTimeString() ?? "",
+														)}{" "}
+														h
 													</Text>
 												</Group>
 												<Group
@@ -271,7 +282,7 @@ export default async function LogbookFeed({
 														km
 													</Text>
 													{kmDifference !== null && (
-														<Text fz={15}>
+														<Text fz={15} fw={500}>
 															Differenz : {kmDifference.toLocaleString("de-DE", {})} km
 														</Text>
 													)}
@@ -320,7 +331,9 @@ export default async function LogbookFeed({
 												.join(":")}
 										</Text>
 										{!!startTime?.startTime && !!endTime?.endTime && (
-											<Text fz={15}>Arbeitszeit: {data?.totalWorkTime}</Text>
+											<Text fz={15} fw={500}>
+												Arbeitszeit: {data?.totalWorkTime}
+											</Text>
 										)}
 									</Group>
 									<Group
@@ -331,7 +344,9 @@ export default async function LogbookFeed({
 											Kilometerstand:{" "}
 											{Number.parseInt(endTime.kmState, 10).toLocaleString("de-DE", {})} km
 										</Text>
-										<Text fz={15}>Tages-Differenz: {endDifference()} km</Text>
+										<Text fz={15} fw={500}>
+											Tages-Differenz: {endDifference()} km
+										</Text>
 									</Group>
 									{!!endTime?.note && (
 										<Stack gap={3}>
