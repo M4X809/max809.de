@@ -19,12 +19,6 @@ import {
 	CreateEntry,
 	ResetErrorCount,
 } from "./ClientFeedComponents";
-import {
-	DayPagination,
-	EntryButtons,
-	CreateEntry,
-	ResetErrorCount,
-} from "./ClientFeedComponents";
 import { feedSearchParamsParser } from "./feedSearchParams";
 import { redirect } from "next/navigation";
 import ErrorBox from "~/app/_components/ErrorBox";
@@ -43,29 +37,7 @@ export type FeedEntry = {
 	note?: string | null;
 	unpaidBreak?: boolean | null;
 };
-	date: Date | null;
-	id: string;
-	createdById: string;
-	createdAt: Date;
-	type: "entry" | "start" | "end" | "pause";
-	streetName: string;
-	kmState: string;
-	startTime: Date | null;
-	endTime: Date | null;
-	note?: string | null;
-	unpaidBreak?: boolean | null;
-};
 
-export type FeedData =
-	| {
-			streetNames: string[];
-			totalWorkTime: string;
-			startTime: FeedEntry | undefined;
-			endTime: FeedEntry | undefined;
-			entries: FeedEntry[];
-			day: Date;
-	  }
-	| undefined;
 export type FeedData =
 	| {
 			streetNames: string[];
@@ -84,43 +56,10 @@ export default async function LogbookFeed({
 }) {
 	await onPageAllowed("viewLogbookFeed");
 	let data: FeedData = undefined;
-export default async function LogbookFeed({
-	searchParams,
-}: {
-	searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-	await onPageAllowed("viewLogbookFeed");
-	let data: FeedData = undefined;
 
 	const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
 	const { day, errorCount } = feedSearchParamsCache.parse(await searchParams);
-	const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
-	const { day, errorCount } = feedSearchParamsCache.parse(await searchParams);
 
-	try {
-		data = await api.logbook.getEntries({
-			day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day,
-		});
-	} catch (err) {
-		console.log("err", err);
-		if (errorCount >= 3)
-			return (
-				<>
-					<ErrorBox
-						value={
-							<Text fz={15} fw={500}>
-								Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.
-								<br />
-								Wenn es weiterhin nicht klappt, melde dich bei mir.
-							</Text>
-						}
-						visible
-					/>
-					<ResetErrorCount />
-				</>
-			);
-		redirect(`/dashboard/logbook/feed?errorCount=${errorCount + 1}`);
-	}
 	try {
 		data = await api.logbook.getEntries({
 			day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day,
@@ -150,18 +89,7 @@ export default async function LogbookFeed({
 	const endTime = data?.endTime;
 	const entries = data?.entries;
 	const streetNames = data?.streetNames;
-	const startTime = data?.startTime;
-	const endTime = data?.endTime;
-	const entries = data?.entries;
-	const streetNames = data?.streetNames;
 
-	const endDifference = () => {
-		if (!endTime || !startTime || !entries) return;
-		const startKmState = Number.parseInt(startTime.kmState, 10);
-		const endKmState = Number.parseInt(endTime.kmState, 10);
-		const kmDifference = endKmState - startKmState;
-		return kmDifference.toLocaleString("de-DE");
-	};
 	const endDifference = () => {
 		if (!endTime || !startTime || !entries) return;
 		const startKmState = Number.parseInt(startTime.kmState, 10);
@@ -312,7 +240,7 @@ export default async function LogbookFeed({
 											<Stack key={entry.id} gap={1}>
 												<Group className="justify-between" wrap="nowrap" gap={0}>
 													<Title order={4} fz={{ base: 15, md: 18 }}>
-														Straße: {entry.streetName || "Keine Straße angegeben"}
+														{entry.streetName || "Keine Straße angegeben"}
 													</Title>
 													<EntryButtons id={entry.id} />
 												</Group>
@@ -354,7 +282,7 @@ export default async function LogbookFeed({
 														km
 													</Text>
 													{kmDifference !== null && (
-														<Text fz={15}>
+														<Text fz={15} fw={500}>
 															Differenz : {kmDifference.toLocaleString("de-DE", {})} km
 														</Text>
 													)}
