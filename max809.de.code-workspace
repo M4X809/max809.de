@@ -124,16 +124,6 @@
 			"class:list",
 			".*Cn*"
 		],
-		"tailwindCSS.experimental.classRegex": [
-			[
-				"{([\\s\\S]*)}",
-				"\\b\\w*ClassName\\b\\s*:\\s*['\"]([^'\"]*)['\"]"
-			],
-			[
-				"{([\\s\\S]*)}",
-				"\\b\\w*Cn\\b\\s*:\\s*['\"]([^'\"]*)['\"]"
-			],
-		],
 		"vscord.status.buttons.button1.enabled": true,
 		"supermaven.logFilePath": "D:/dev/playground/max809/.vscode/sm-log.txt",
 	},
