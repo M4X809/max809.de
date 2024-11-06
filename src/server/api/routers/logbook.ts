@@ -10,7 +10,10 @@ import {
 import { TRPCError } from "@trpc/server";
 import { db } from "~/server/db";
 import { logbookFeed, loginWhitelist, sessions } from "~/server/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
+import { endOfMonth, format, startOfMonth } from "date-fns";
+import { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
+import { de } from "date-fns/locale";
 
 new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
@@ -395,5 +398,118 @@ export const logbookRouter = createTRPCRouter({
 			return {
 				success: true,
 			};
+		}),
+	getMonthlyData: protectedProcedure
+		.input(z.object({ date: z.string().regex(/^\d{1,2}[./]\d{1,2}[./]\d{4}$/) }))
+		.query(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewLogbookFeed"))) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			const [day, month, year] = input.date.split(".").map(Number);
+
+			const currentMonth = new Date(year!, month! - 1, day);
+			const monthStart = startOfMonth(currentMonth);
+			const monthEnd = endOfMonth(monthStart);
+
+			console.log("monthStart", monthStart);
+			console.log("monthEnd", monthEnd);
+
+			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
+				where: (logbookFeed, { eq, between, and, or, not }) =>
+					and(
+						between(logbookFeed.date, monthStart, monthEnd),
+						or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+						not(eq(logbookFeed.deleted, true)),
+					),
+				orderBy: (logbookFeed, { desc }) => desc(logbookFeed.type),
+			});
+
+			const unpaidBreaksProm = ctx.db.query.logbookFeed.findMany({
+				where: (logbookFeed, { eq, between, and, not }) =>
+					and(
+						between(logbookFeed.date, monthStart, monthEnd),
+						eq(logbookFeed.unpaidBreak, true),
+						not(eq(logbookFeed.deleted, true)),
+					),
+			});
+
+			const [startAndEndTime, unpaidBreaks] = await Promise.all([
+				startAndEndTimeProm,
+				unpaidBreaksProm,
+			]);
+
+			// console.log("entries", startAndEndTime);
+
+			// Group entries by date
+			const entriesByDate = startAndEndTime.reduce(
+				(acc, entry) => {
+					if (!entry.date) return acc;
+
+					const dateKey = format(entry.date, "dd.MM.yyyy", { locale: de });
+					if (!acc[dateKey]) {
+						acc[dateKey] = [];
+					}
+					acc[dateKey].push(entry);
+					return acc;
+				},
+				{} as Record<string, typeof startAndEndTime>,
+			);
+
+			// Process each day's entries into DayData format
+			const dayData: DayData = {};
+
+			for (const [dateKey, dayEntries] of Object.entries(entriesByDate)) {
+				const startEntry = dayEntries.find((e) => e.type === "start");
+				const endEntry = dayEntries.find((e) => e.type === "end");
+
+				if (!startEntry?.startTime || !endEntry?.endTime) continue;
+
+				const totalWorkTime = () => {
+					let unpaidBreaksTime = "00:00";
+					if (unpaidBreaks.length > 0) {
+						for (const breakEntry of unpaidBreaks) {
+							if (!breakEntry.startTime || !breakEntry.endTime) continue;
+							const entryTime = timeDifference(
+								breakEntry.startTime?.toLocaleTimeString("de-DE"),
+								breakEntry.endTime?.toLocaleTimeString("de-DE"),
+							);
+							unpaidBreaksTime = timeAddition(unpaidBreaksTime, entryTime);
+						}
+					}
+
+					if (!startEntry?.startTime || !endEntry?.endTime) return "Error";
+
+					const dayTime = timeDifference(
+						startEntry.startTime
+							?.toLocaleTimeString("de-DE")
+							.split(":")
+							.slice(0, 2)
+							.join(":"),
+						endEntry.endTime
+							?.toLocaleTimeString("de-DE")
+							.split(":")
+							.slice(0, 2)
+							.join(":"),
+					);
+
+					return timeSubtraction(dayTime, unpaidBreaksTime);
+				};
+
+				// For this example, setting difference and kmDifference to 0
+				// You might want to calculate these based on your business logic
+				dayData[dateKey] = {
+					startTime: startEntry.startTime,
+					endTime: endEntry.endTime,
+					totalWorkTime: totalWorkTime(),
+					kmDifference: Number(endEntry.kmState) - Number(startEntry.kmState),
+				};
+			}
+
+			console.log(dayData);
+			return dayData;
 		}),
 });

@@ -1,27 +1,33 @@
+import { Container } from "@mantine/core";
 import {
 	DayData,
 	FullScreenCalendarComponent,
-} from "~/components/full-screen-calendar";
+} from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { onPageAllowed } from "~/lib/sUtils";
+import { api } from "~/trpc/server";
+import { logbookSearchParamsParser } from "./logbookSearchParams";
+import { createSearchParamsCache } from "nuqs/server";
 
-export default async function LogbookDashboard() {
+export default async function LogbookDashboard({
+	searchParams,
+}: {
+	searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
 	await onPageAllowed("viewLogbook");
-	const exampleData: DayData = {
-		"05.11.2024": {
-			startTime: new Date(2024, 10, 5, 9, 0),
-			endTime: new Date(2024, 10, 5, 17, 30),
-			totalWorkTime: 8.5,
-			difference: 150,
-			kmDifference: 30,
-		},
-		"22.11.2024": {
-			startTime: new Date(2024, 10, 6, 8, 30),
-			endTime: new Date(2024, 10, 6, 16, 0),
-			totalWorkTime: 7.5,
-			difference: 120,
-			kmDifference: 25,
-		},
-	};
+	const logbookSearchParamsCache = createSearchParamsCache(
+		logbookSearchParamsParser,
+	);
+	const { day } = logbookSearchParamsCache.parse(await searchParams);
+	const [day2, month, year] = day.split(".").map(Number);
 
-	return <FullScreenCalendarComponent dayData={exampleData} />;
+	const data = await api.logbook.getMonthlyData({ date: day });
+
+	return (
+		<Container size="xl">
+			<FullScreenCalendarComponent
+				dayData={data}
+				currentMonth={new Date(year!, month! - 1, day2)}
+			/>
+		</Container>
+	);
 }
