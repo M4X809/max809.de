@@ -3,7 +3,7 @@ import {
 	DayData,
 	FullScreenCalendarComponent,
 } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
-import { onPageAllowed } from "~/lib/sUtils";
+import { getDomain, onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import { logbookSearchParamsParser } from "./logbookSearchParams";
 import { createSearchParamsCache } from "nuqs/server";
@@ -27,6 +27,7 @@ export default async function LogbookDashboard({
 			<FullScreenCalendarComponent
 				dayData={data}
 				currentMonth={new Date(year!, month! - 1, day2)}
+				baseUrl={getDomain()}
 			/>
 		</Container>
 	);

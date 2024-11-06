@@ -12,11 +12,8 @@ const config = {
 	},
 	eslint: {
 		ignoreDuringBuilds: true,
-		dirs: [
-			"./public"
-		]
+		dirs: ["./public"],
 	},
-	
 
 	skipTrailingSlashRedirect: true,
 	devIndicators: {
@@ -34,7 +31,7 @@ const config = {
 				protocol: "https",
 				hostname: "max809.de",
 				pathname: "/api/gh-stats/*",
-			}
+			},
 		],
 	},
 };

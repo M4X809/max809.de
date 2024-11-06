@@ -41,12 +41,12 @@ export const env = createEnv({
 		GOOGLE_CLIENT_ID: z.string(),
 		GOOGLE_CLIENT_SECRET: z.string(),
 
-
-
 		NPM_FONT_AWESOME: z.string(),
 		UPLOADTHING_TOKEN: z.string(),
 
 		PAT_1: z.string(),
+
+		EMPLOYEE_NAME: z.string().optional().default("No Name Env"),
 	},
 
 	/**
@@ -98,6 +98,7 @@ export const env = createEnv({
 		NPM_FONT_AWESOME: process.env.NPM_FONT_AWESOME,
 		UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
 		PAT_1: process.env.PAT_1,
+		EMPLOYEE_NAME: process.env.EMPLOYEE_NAME,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
