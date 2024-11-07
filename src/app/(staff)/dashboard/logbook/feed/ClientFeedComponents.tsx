@@ -23,10 +23,10 @@ import {
 	VisuallyHidden,
 } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { useQueryState } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import React, { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
-import { feedSearchParamsParser } from "./feedSearchParams";
+// import { feedSearchParamsParser } from "./feedSearchParams";
 import { DateInput, DatePicker, TimeInput } from "@mantine/dates";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
@@ -38,6 +38,15 @@ import Link from "next/link";
 import { z } from "zod";
 
 export const DayPagination = () => {
+	const feedSearchParamsParser = {
+		day: parseAsString
+			.withDefault(new Date().toLocaleDateString("de-DE"))
+			.withOptions({ clearOnDefault: true }),
+		errorCount: parseAsInteger
+			.withDefault(0)
+			.withOptions({ clearOnDefault: true }),
+	};
+
 	const router = useRouter();
 	const [day, setDay] = useQueryState("day", feedSearchParamsParser.day);
 	const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -182,6 +191,15 @@ export const CreateEntry = ({
 		isSuccess: isUpdated,
 		error: updateError,
 	} = api.logbook.updateEntry.useMutation();
+
+	const feedSearchParamsParser = {
+		day: parseAsString
+			.withDefault(new Date().toLocaleDateString("de-DE"))
+			.withOptions({ clearOnDefault: true }),
+		errorCount: parseAsInteger
+			.withDefault(0)
+			.withOptions({ clearOnDefault: true }),
+	};
 
 	const [day, setDay] = useQueryState("day", feedSearchParamsParser.day);
 	const [day2, month, year] = day.split(".").map(Number);
@@ -455,6 +473,15 @@ export const CreateEntry = ({
 };
 
 export const ResetErrorCount = () => {
+	const feedSearchParamsParser = {
+		day: parseAsString
+			.withDefault(new Date().toLocaleDateString("de-DE"))
+			.withOptions({ clearOnDefault: true }),
+		errorCount: parseAsInteger
+			.withDefault(0)
+			.withOptions({ clearOnDefault: true }),
+	};
+
 	const setErrorCount = useQueryState(
 		"errorCount",
 		feedSearchParamsParser.errorCount,
