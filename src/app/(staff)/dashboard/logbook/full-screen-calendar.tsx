@@ -31,12 +31,19 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export type DayData = {
-	[key: string]: {
-		startTime: Date;
-		endTime: Date;
-		totalWorkTime: string;
-		kmDifference: number;
-	};
+	[key: string]:
+		| {
+				holiday: true;
+				type: "holiday";
+		  }
+		| {
+				holiday?: false;
+				startTime: Date;
+				endTime: Date;
+				totalWorkTime: string;
+				kmDifference: number;
+				type: "entry" | "start" | "end" | "pause";
+		  };
 };
 
 interface CalendarProps {
@@ -75,6 +82,7 @@ export function FullScreenCalendarComponent({
 
 	const [isLoading, setIsLoading] = React.useState(false);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		setDay(format(currentMonth, "dd.MM.yyyy"));
 		setTimeout(() => {
@@ -161,15 +169,23 @@ export function FullScreenCalendarComponent({
 									<time dateTime={format(day, "dd.MM.yyyy")} className="font-semibold">
 										{format(day, "dd.MM.yy", { locale: de })}
 									</time>
-									{dayInfo && (
+									{dayInfo?.type === "holiday" ? (
 										<div className="mt-1 flex-grow overflow-hidden text-xs">
-											<Text fz={14}>
-												{format(dayInfo.startTime, "HH:mm", { locale: de })}-
-												{format(dayInfo.endTime, "HH:mm", { locale: de })}
+											<Text fz={14} fw={500}>
+												Feiertag
 											</Text>
-											<Text fz={14}>Total: {dayInfo.totalWorkTime}</Text>
-											<Text fz={14}>Tageskilometer: {dayInfo.kmDifference}km</Text>
 										</div>
+									) : (
+										dayInfo && (
+											<div className="mt-1 flex-grow overflow-hidden text-xs">
+												<Text fz={14}>
+													{format(dayInfo.startTime, "HH:mm", { locale: de })}-
+													{format(dayInfo.endTime, "HH:mm", { locale: de })}
+												</Text>
+												<Text fz={14}>Total: {dayInfo.totalWorkTime}</Text>
+												<Text fz={14}>Tageskilometer: {dayInfo.kmDifference}km</Text>
+											</div>
+										)
 									)}
 								</div>
 							);

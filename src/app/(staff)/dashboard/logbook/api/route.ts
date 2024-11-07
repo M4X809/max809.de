@@ -1,9 +1,7 @@
 import { format } from "date-fns";
-import { NextRequest, NextResponse } from "next/server";
-import { createSearchParamsCache } from "nuqs/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { hasPermission } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
-import { logbookSearchParamsParser } from "../logbookSearchParams";
 
 export async function GET(
 	req: NextRequest,

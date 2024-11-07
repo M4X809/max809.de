@@ -211,7 +211,7 @@ export const logbookFeed = createTable("logbook_feed", {
 	type: varchar("type", { length: 255 })
 		.default("entry")
 		.notNull()
-		.$type<"entry" | "start" | "end" | "pause">(),
+		.$type<"entry" | "start" | "end" | "pause" | "holiday">(),
 	streetName: varchar("street_name", { length: 255 }).default("").notNull(),
 	kmState: varchar("km_state", { length: 255 }).default("").notNull(),
 	startTime: timestamp("start_time", {
