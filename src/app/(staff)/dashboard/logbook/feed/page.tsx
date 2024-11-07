@@ -19,10 +19,13 @@ import {
 	CreateEntry,
 	ResetErrorCount,
 } from "./ClientFeedComponents";
-import { feedSearchParamsParser } from "./feedSearchParams";
 import { redirect } from "next/navigation";
 import ErrorBox from "~/app/_components/ErrorBox";
-import { createSearchParamsCache } from "nuqs/server";
+import {
+	createSearchParamsCache,
+	parseAsInteger,
+	parseAsString,
+} from "nuqs/server";
 
 export type FeedEntry = {
 	date: Date | null;
@@ -59,6 +62,15 @@ export default async function LogbookFeed({
 }) {
 	await onPageAllowed("viewLogbookFeed");
 	let data: FeedData = undefined;
+
+	const feedSearchParamsParser = {
+		day: parseAsString
+			.withDefault(new Date().toLocaleDateString("de-DE"))
+			.withOptions({ clearOnDefault: true }),
+		errorCount: parseAsInteger
+			.withDefault(0)
+			.withOptions({ clearOnDefault: true }),
+	};
 
 	const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
 	const { day, errorCount } = feedSearchParamsCache.parse(await searchParams);
