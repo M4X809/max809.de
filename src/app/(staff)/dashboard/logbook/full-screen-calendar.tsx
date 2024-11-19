@@ -65,7 +65,7 @@ export function FullScreenCalendarComponent({
 	const os = useOs();
 	const matches = useMediaQuery("(min-width: 56.25em)");
 
-	console.log("matches", matches);
+	// console.log("matches", matches);
 
 	const isMobile = (os === "ios" || os === "android") && !matches;
 
@@ -111,17 +111,35 @@ export function FullScreenCalendarComponent({
 			/>
 			<Box>
 				{isMobile && (
-					<Link
-						className="h-50 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-[rgba(255,255,255,0.1)] px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-						href={`${baseUrl}/dashboard/logbook/api?day=${day}`}
-						download={`Arbeitszeiterfassung_${format(currentMonth, "MMMM_yyyy", { locale: de })}.pdf`}
-						target="_blank"
-					>
-						<Group>
-							<FontAwesomeIcon icon={faPrint} />
-							Download PDF {format(currentMonth, "MMMM yyyy", { locale: de })}
+					<Box className="flex flex-col gap-5">
+						<Link
+							className="h-50 inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-[rgba(255,255,255,0.1)] px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+							href={`${baseUrl}/dashboard/logbook/api?day=${day}`}
+							download={`Arbeitszeiterfassung_${format(currentMonth, "MMMM_yyyy", { locale: de })}.pdf`}
+							target="_blank"
+						>
+							<Group className="flex-nowrap">
+								<FontAwesomeIcon icon={faPrint} />
+								Download PDF {format(currentMonth, "MMMM yyyy", { locale: de })}
+							</Group>
+						</Link>
+						<Group className="flex-nowrap">
+							<Button
+								onClick={prevMonth}
+								className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
+							>
+								<ChevronLeft className="h-4 w-4" />
+								<span className="sr-only">Previous month</span>
+							</Button>
+							<Button
+								onClick={nextMonth}
+								className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
+							>
+								<ChevronRight className="h-4 w-4" />
+								<span className="sr-only">Next month</span>
+							</Button>
 						</Group>
-					</Link>
+					</Box>
 				)}
 				{!isMobile && (
 					<div className="flex flex-col rounded-lg bg-[rgba(255,255,255,0.1)] text-white backdrop-blur-lg">
