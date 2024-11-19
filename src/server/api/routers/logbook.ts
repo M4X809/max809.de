@@ -526,7 +526,7 @@ export const logbookRouter = createTRPCRouter({
 
 			// console.log("startAndEndTime", startAndEndTime);
 			// console.log("unpaidBreaks", unpaidBreaks);
-			console.log("holidays", holidays);
+			// console.log("holidays", holidays);
 			// Group entries by date
 			const entriesByDate = startAndEndTime.reduce(
 				(acc, entry) => {
@@ -742,6 +742,7 @@ export const logbookRouter = createTRPCRouter({
 				// Format work entries inline
 				const workEntries = dayEntries
 					.filter((e) => e.type === "entry")
+					.sort((a, b) => a.startTime!.getTime() - b.startTime!.getTime())
 					.map(
 						(e) =>
 							`${e.streetName}/${timeDifference(

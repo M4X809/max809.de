@@ -44,17 +44,3 @@ export interface Perm {
 	danger?: boolean;
 	blocked?: boolean;
 }
-
-declare module "jspdf-autotable" {
-	import { jsPDF } from "jspdf";
-	interface UserOptions {
-		head?: any[][];
-		body?: any[][];
-		startY?: number;
-		styles?: any;
-		columnStyles?: any;
-	}
-
-	function autoTable(doc: jsPDF, options: UserOptions): void;
-	export = autoTable;
-}
