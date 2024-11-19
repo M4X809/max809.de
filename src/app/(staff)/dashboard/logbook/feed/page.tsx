@@ -32,7 +32,7 @@ export type FeedEntry = {
 	id: string;
 	createdById: string;
 	createdAt: Date;
-	type: "entry" | "start" | "end" | "pause";
+	type: "entry" | "start" | "end" | "pause" | "holiday";
 	streetName: string;
 	kmState: string;
 	startTime: Date | null;
@@ -49,6 +49,7 @@ export type FeedData =
 			endTime: FeedEntry | undefined;
 			entries: FeedEntry[];
 			day: Date;
+			holiday: FeedEntry | undefined;
 	  }
 	| undefined;
 
@@ -74,11 +75,10 @@ export default async function LogbookFeed({
 
 	const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
 	const { day, errorCount } = feedSearchParamsCache.parse(await searchParams);
-
 	try {
-		data = await api.logbook.getEntries({
+		data = (await api.logbook.getEntries({
 			day: day.includes("Invalid") ? new Date().toLocaleDateString("de-DE") : day,
-		});
+		})) as FeedData;
 	} catch (err) {
 		console.log("err", err);
 		if (errorCount >= 3)
@@ -105,6 +105,8 @@ export default async function LogbookFeed({
 	const entries = data?.entries;
 	const streetNames = data?.streetNames;
 
+	const holiday = data?.holiday;
+
 	const endDifference = () => {
 		if (!endTime || !startTime || !entries) return;
 		const startKmState = Number.parseInt(startTime.kmState, 10);
@@ -118,7 +120,7 @@ export default async function LogbookFeed({
 		<Container size={"lg"}>
 			<Stack>
 				<Card className={twMerge(cardClassName)}>
-					<CreateEntry streetNames={streetNames} />
+					<CreateEntry streetNames={streetNames ?? []} />
 				</Card>
 				<Card className={twMerge(cardClassName)} p={"sm"} withBorder radius={"md"}>
 					<Stack gap={4}>
@@ -133,6 +135,17 @@ export default async function LogbookFeed({
 							</Title>
 							<DayPagination />
 						</Group>
+						{holiday && (
+							// <Text fz={15} fw={500}>
+							<Group className="justify-between" wrap="nowrap" gap={0}>
+								<Title order={3} fz={{ base: 15, md: 18 }}>
+									Feiertag
+								</Title>
+								<EntryButtons id={holiday.id} />
+							</Group>
+							// </Text>
+						)}
+
 						{startTime && (
 							<Stack gap={1}>
 								<Group className="justify-between" wrap="nowrap" gap={0}>
@@ -174,11 +187,11 @@ export default async function LogbookFeed({
 										/>
 									</Stack>
 								)}
-								{entries.length > 0 && <Divider my={10} />}
+								{(entries?.length ?? 0) > 0 && <Divider my={10} />}
 							</Stack>
 						)}
-						{entries.length > 0 &&
-							entries.map((entry, index) => {
+						{(entries?.length ?? 0) > 0 &&
+							entries?.map((entry, index) => {
 								const prevEntry = entries[index - 1] ?? startTime; // Get the previous entry
 								const currentKmState = Number.parseInt(entry.kmState, 10);
 								const prevKmState = prevEntry
@@ -246,7 +259,7 @@ export default async function LogbookFeed({
 													</Stack>
 												)}
 											</Stack>
-											{index < entries.length - 1 && <Divider my={10} />}
+											{index < (entries?.length ?? 0) - 1 && <Divider my={10} />}
 										</React.Fragment>
 									);
 								if (entry.type === "entry")
@@ -328,7 +341,7 @@ export default async function LogbookFeed({
 							})}
 						{endTime && (
 							<React.Fragment>
-								{entries.length > 0 && <Divider my={10} />}
+								{(entries?.length ?? 0) > 0 && <Divider my={10} />}
 								<Stack gap={1}>
 									<Group className="justify-between" wrap="nowrap" gap={0}>
 										<Title order={4} fz={{ base: 15, md: 18 }}>

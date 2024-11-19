@@ -208,7 +208,8 @@ export const CreateEntry = ({
 		mode: "controlled",
 		initialValues: {
 			type:
-				initialValues?.type ?? ("entry" as "start" | "end" | "pause" | "entry"),
+				initialValues?.type ??
+				("entry" as "start" | "end" | "pause" | "entry" | "holiday"),
 			streetName: initialValues?.streetName ?? "",
 			kmState: initialValues?.kmState ?? "",
 			startTime: initialValues?.startTime?.toLocaleTimeString() ?? "",
@@ -223,10 +224,15 @@ export const CreateEntry = ({
 			streetName: (value) => {
 				const isEntry = form.values.type === "entry";
 				if (!isEntry) return false;
+				const isHoliday = form.values.type === "holiday";
+				if (isHoliday) return false;
 
 				return value.length > 0 ? false : "Der Name darf nicht leer sein.";
 			},
 			kmState: (value) => {
+				const isHoliday = form.values.type === "holiday";
+				if (isHoliday) return false;
+
 				const { error } = z
 					.string()
 					.regex(/^[0-9]+$/im)
@@ -355,6 +361,7 @@ export const CreateEntry = ({
 						{ value: "start", label: "Arbeitsbeginn" },
 						{ value: "end", label: "Arbeitsende" },
 						{ value: "pause", label: "Pause" },
+						{ value: "holiday", label: "Feiertag" },
 					]}
 				/>
 				{form.values.type === "entry" && (
@@ -367,7 +374,7 @@ export const CreateEntry = ({
 						{...form.getInputProps("streetName")}
 					/>
 				)}
-				{
+				{form.values.type !== "holiday" && (
 					<TextInput
 						type="tel"
 						withAsterisk
@@ -375,9 +382,9 @@ export const CreateEntry = ({
 						label="Kilometerstand"
 						{...form.getInputProps("kmState")}
 					/>
-				}
+				)}
 				<Group wrap="nowrap" pt={10} className="gap-x-2 md:col-span-2 md:gap-x-5">
-					{form.values.type !== "end" && (
+					{form.values.type !== "end" && form.values.type !== "holiday" && (
 						<TimeInput
 							aria-label="Time"
 							type="time"
@@ -390,7 +397,7 @@ export const CreateEntry = ({
 							{...form.getInputProps("startTime")}
 						/>
 					)}
-					{form.values.type !== "start" && (
+					{form.values.type !== "start" && form.values.type !== "holiday" && (
 						<TimeInput
 							required
 							className={twMerge(

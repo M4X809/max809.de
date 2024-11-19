@@ -87,7 +87,7 @@ p > p {
 	}
 	body,
 	html {
-		@apply overscroll-none;
+		@apply overscroll-y-auto overscroll-x-none;
 	}
 }
 @layer base {
