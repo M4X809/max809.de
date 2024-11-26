@@ -114,8 +114,8 @@ export async function GET(
 		}
 
 		const svg = `
-		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet" class="noto-color-emoji-regular">
-			<text class="noto-color-emoji-regular" fill="#ffffff" font-size="75" font-family="Verdana" x="0" y="70">${emoji}</text>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" class="noto-color-emoji-regular">
+			<text class="noto-color-emoji-regular" fill="#ffffff" font-size="80" font-family="Verdana" x="50" y="50" text-anchor="middle" dominant-baseline="central">${emoji}</text>
 		</svg>
 		`;
 
