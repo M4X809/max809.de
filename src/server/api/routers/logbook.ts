@@ -13,8 +13,10 @@ import { endOfMonth, format, startOfMonth } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+// import "jspdf-autotable";
 import { env } from "~/env";
+import autoTable, { type RowInput } from "jspdf-autotable";
+import chalk from "chalk";
 
 new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
@@ -726,7 +728,7 @@ export const logbookRouter = createTRPCRouter({
 				const holidayEntry = dayEntries.find((e) => e.type === "holiday");
 				if (holidayEntry) {
 					const weekDayName = format(currentDate, "EEEE", { locale: de });
-					return [index + 1, `${weekDayName} - Feiertag`, ""];
+					return [`${index + 1}.`, `${weekDayName} - Feiertag`, "", ""];
 				}
 
 				const startEntry = dayEntries.find((e) => e.type === "start");
@@ -736,7 +738,7 @@ export const logbookRouter = createTRPCRouter({
 				const dayOfWeek = currentDate.getDay();
 				if (dayOfWeek === 0 || dayOfWeek === 6) {
 					const weekDayName = format(currentDate, "EEEE", { locale: de });
-					return [index + 1, weekDayName, ""];
+					return [`${index + 1}.`, weekDayName, "", ""];
 				}
 
 				// Format work entries inline
@@ -749,32 +751,78 @@ export const logbookRouter = createTRPCRouter({
 								e.startTime?.toLocaleTimeString("de-DE") ?? "",
 								e.endTime?.toLocaleTimeString("de-DE") ?? "",
 							)}`,
-					)
+					);
+
+				// Create work time string
+				const workTime =
+					startEntry && endEntry
+						? `${startEntry.startTime?.toLocaleTimeString("de-DE").slice(0, 5)}-${endEntry.endTime?.toLocaleTimeString("de-DE").slice(0, 5)}`
+						: startEntry
+							? `Arbeitsbeginn: ${startEntry.startTime?.toLocaleTimeString("de-DE").slice(0, 5)}`
+							: "";
+
+				// Format work entries with line breaks
+				const formattedEntries = workEntries
+					.map((entry, index) => {
+						// if (index > 0 && index % 3 === 0) {
+						// 	return `\n${" ".padStart("07:45-15:45".length, " ")}| ${entry}`;
+						// }
+						return entry;
+					})
 					.join(" | ");
 
-				// Modify the work time string creation
-				const workTimeString =
-					startEntry && endEntry
-						? `${startEntry.startTime?.toLocaleTimeString("de-DE").slice(0, 5)}-${endEntry.endTime
-								?.toLocaleTimeString("de-DE")
-								.slice(0, 5)} ${workEntries ? "|" : ""} ${workEntries}`
-						: startEntry
-							? `Arbeitsbeginn: ${startEntry.startTime?.toLocaleTimeString("de-DE").slice(0, 5)}${workEntries ? " | " : ""}${workEntries}`
-							: workEntries;
+				const workTimeString = (text: string) => {
+					const t = text.toString();
+					const w = 75;
+					if (t.length > w) {
+						console.log(chalk.yellow(index + 1));
+						const lines = new Map<number, string[]>();
+						let currentLine = 0;
+						const elements = t.split(" | ").filter(Boolean);
+
+						for (const element of elements) {
+							const currentLineElements = lines.get(currentLine) ?? [];
+							const potentialLine = [...currentLineElements, element].join(" | ");
+
+							if (potentialLine.length > w) {
+								currentLine++;
+								lines.set(currentLine, [element]);
+							} else {
+								lines.set(currentLine, [...currentLineElements, element]);
+							}
+						}
+
+						// Convert Map to array of joined lines
+						const result = Array.from(lines.values())
+							.map((line) => line.join(" | "))
+							.join("\n");
+						// console.log("result", chalk.green(result));
+						// console.log("lines", chalk.red(lines.size));
+						return result;
+					}
+					// console.log(chalk.red(t));
+
+					return text;
+				};
 
 				const kmDiff =
 					endEntry && startEntry
 						? Number(endEntry.kmState) - Number(startEntry.kmState)
 						: "";
 
-				return [`${index + 1}.`, workTimeString, kmDiff.toString()];
+				return [
+					`${index + 1}.`,
+					workTime,
+					workTimeString(formattedEntries),
+					kmDiff.toString(),
+				];
 			}).filter(Boolean); // Remove null entries for invalid dates
 
-			console.log("tableData", tableData);
+			// console.log("tableData", tableData);
 			// Add table
-			(doc as any).autoTable({
-				head: [["Tag", "Arbeitszeiten", "KM"]],
-				body: tableData,
+			autoTable(doc, {
+				head: [["Tag", "Arbeitszeit", "Tätigkeiten", "KM"]],
+				body: tableData as RowInput[],
 				startY: 20,
 				styles: {
 					fontSize: 10,
@@ -783,14 +831,27 @@ export const logbookRouter = createTRPCRouter({
 				},
 				columnStyles: {
 					0: {
+						// Tag column
 						cellWidth: 15,
 						halign: "center",
 					},
 					1: {
-						cellWidth: 140,
+						// Arbeitszeiten column
+						cellWidth: 30,
+						halign: "center",
+						valign: "middle",
 					},
 					2: {
-						cellWidth: 27,
+						// Tätigkeiten column
+						cellWidth: 125,
+						halign: "left",
+						font: "symbol",
+
+						// overflow: "linebreak",
+					},
+					3: {
+						// KM column
+						cellWidth: 12 - 0.2206666667,
 						halign: "center",
 					},
 				},
@@ -826,7 +887,7 @@ export const logbookRouter = createTRPCRouter({
 					if (!entry) continue;
 
 					// Calculate total KM
-					const kmValue = Number(entry[2]);
+					const kmValue = Number(entry[3]);
 					if (Number.isNaN(kmValue)) continue;
 					totalKm += kmValue;
 
@@ -891,6 +952,7 @@ export const logbookRouter = createTRPCRouter({
 			footerSection("Stunden/Feiertage:____________", margin + spacing);
 			footerSection("Datum + Unterschrift:___________", margin + spacing * 2);
 
+			console.log("doc", Object.keys(doc.getFontList()));
 			return doc.output("blob");
 		}),
 });
