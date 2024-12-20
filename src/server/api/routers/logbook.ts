@@ -8,7 +8,7 @@ import {
 } from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, or } from "drizzle-orm";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
@@ -23,7 +23,7 @@ export const logbookRouter = createTRPCRouter({
 		.input(
 			z.object({
 				type: z
-					.enum(["entry", "start", "end", "pause", "holiday"])
+					.enum(["entry", "start", "end", "pause", "holiday", "vacation"])
 					.default("entry"),
 				streetName: z.string().optional().default(""),
 				kmState: z.string().optional().default(""),
@@ -46,25 +46,26 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, and, not }) =>
 					and(
 						eq(logbookFeed.date, input.date),
-						eq(logbookFeed.type, "holiday"),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
 
-			if (existingHoliday && input.type !== "holiday") {
+			if (existingHoliday) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message:
-						"An diesem Tag ist ein Feiertag eingetragen. Keine weiteren Einträge möglich.",
+						"An diesem Tag ist bereits ein Feiertag oder Urlaub eingetragen. Keine weiteren Einträge möglich.",
 				});
 			}
 
-			if (input.type === "holiday") {
+			if (input.type === "holiday" || input.type === "vacation") {
 				const existingEntries = await ctx.db.query.logbookFeed.findFirst({
 					where: (logbookFeed, { eq, and, not }) =>
 						and(
 							eq(logbookFeed.date, input.date),
 							not(eq(logbookFeed.type, "holiday")),
+							not(eq(logbookFeed.type, "vacation")),
 							not(eq(logbookFeed.deleted, true)),
 						),
 				});
@@ -73,7 +74,7 @@ export const logbookRouter = createTRPCRouter({
 					throw new TRPCError({
 						code: "BAD_REQUEST",
 						message:
-							"Es existieren bereits Einträge für diesen Tag. Feiertag kann nicht hinzugefügt werden.",
+							"Es existieren bereits Einträge für diesen Tag. Feiertag oder Urlaub kann nicht hinzugefügt werden.",
 					});
 				}
 			}
@@ -137,7 +138,7 @@ export const logbookRouter = createTRPCRouter({
 		.input(
 			z.object({
 				id: z.string(),
-				type: z.enum(["entry", "start", "end", "pause", "holiday"]),
+				type: z.enum(["entry", "start", "end", "pause", "holiday", "vacation"]),
 				streetName: z.string().optional().default(""),
 				kmState: z.string().optional().default(""),
 				startTime: z.date().optional(),
@@ -165,18 +166,22 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			const getHoliday = await ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq, and, not }) =>
+				where: (logbookFeed, { eq, and, not, or }) =>
 					and(
 						eq(logbookFeed.date, input.date),
-						eq(logbookFeed.type, "holiday"),
+						eq(logbookFeed.type, input.type),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
 
-			if (input.type === "holiday" && entry.type !== "holiday" && getHoliday) {
+			if (
+				(input.type === "holiday" || input.type === "vacation") &&
+				getHoliday &&
+				getHoliday.id !== input.id
+			) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "An diesem Tag ist bereits ein Feiertag eingetragen.",
+					message: "An diesem Tag ist bereits ein Feiertag oder Urlaub eingetragen.",
 				});
 			}
 
@@ -257,10 +262,10 @@ export const logbookRouter = createTRPCRouter({
 			const endDate = new Date(year!, month! - 1, day, 23, 59, 59);
 
 			const holidayProm = ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq, between, and, not }) =>
+				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
-						eq(logbookFeed.type, "holiday"),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -510,10 +515,10 @@ export const logbookRouter = createTRPCRouter({
 			});
 
 			const holidaysProm = ctx.db.query.logbookFeed.findMany({
-				where: (logbookFeed, { eq, between, and, not }) =>
+				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, monthStart, monthEnd),
-						eq(logbookFeed.type, "holiday"),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -524,10 +529,6 @@ export const logbookRouter = createTRPCRouter({
 				holidaysProm,
 			]);
 
-			// console.log("startAndEndTime", startAndEndTime);
-			// console.log("unpaidBreaks", unpaidBreaks);
-			// console.log("holidays", holidays);
-			// Group entries by date
 			const entriesByDate = startAndEndTime.reduce(
 				(acc, entry) => {
 					if (!entry.date) return acc;
@@ -545,13 +546,13 @@ export const logbookRouter = createTRPCRouter({
 			// Process each day's entries into DayData format
 			const dayData: DayData = {};
 
-			// First, add holidays to dayData
+			// First, add holidays and vacations to dayData
 			for (const holiday of holidays) {
 				if (!holiday.date) continue;
 				const dateKey = format(holiday.date, "dd.MM.yyyy", { locale: de });
 				dayData[dateKey] = {
 					holiday: true,
-					type: "holiday",
+					type: holiday.type as "holiday" | "vacation",
 				};
 			}
 
@@ -722,11 +723,16 @@ export const logbookRouter = createTRPCRouter({
 				const dateKey = currentDate.toLocaleDateString("de-DE");
 				const dayEntries = entriesByDate[dateKey] ?? [];
 
-				// Check for holiday entry
-				const holidayEntry = dayEntries.find((e) => e.type === "holiday");
-				if (holidayEntry) {
-					const weekDayName = format(currentDate, "EEEE", { locale: de });
-					return [index + 1, `${weekDayName} - Feiertag`, ""];
+				// Check for holiday or vacation entry
+				const specialEntry = dayEntries.find(
+					(e) => e.type === "holiday" || e.type === "vacation",
+				);
+				if (specialEntry) {
+					return [
+						index + 1,
+						`${specialEntry.type === "holiday" ? "Feiertag" : "Urlaub"}`,
+						"---",
+					];
 				}
 
 				const startEntry = dayEntries.find((e) => e.type === "start");
