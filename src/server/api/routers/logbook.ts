@@ -733,6 +733,7 @@ export const logbookRouter = createTRPCRouter({
 					return [
 						index + 1,
 						`${specialEntry.type === "holiday" ? "Feiertag" : "Urlaub"}`,
+						"",
 						"---",
 					];
 				}
@@ -840,6 +841,7 @@ export const logbookRouter = createTRPCRouter({
 						// Tag column
 						cellWidth: 15,
 						halign: "center",
+						valign: "middle",
 					},
 					1: {
 						// Arbeitszeiten column
@@ -851,7 +853,6 @@ export const logbookRouter = createTRPCRouter({
 						// Tätigkeiten column
 						cellWidth: 125,
 						halign: "left",
-						font: "symbol",
 
 						// overflow: "linebreak",
 					},
@@ -859,6 +860,7 @@ export const logbookRouter = createTRPCRouter({
 						// KM column
 						cellWidth: 12 - 0.2206666667,
 						halign: "center",
+						valign: "middle",
 					},
 				},
 				headStyles: {
@@ -953,12 +955,11 @@ export const logbookRouter = createTRPCRouter({
 				doc.text(text, x, footerY);
 			};
 
-			const spacing = (pageWidth - 2 * margin) / 3;
-			footerSection("Stunden/Sonntage:____________", margin);
-			footerSection("Stunden/Feiertage:____________", margin + spacing);
-			footerSection("Datum + Unterschrift:___________", margin + spacing * 2);
+			// const spacing = (pageWidth - 2 * margin) / 3;
+			// footerSection("Stunden/Sonntage:____________", margin);
+			// footerSection("Stunden/Feiertage:____________", margin + spacing);
+			footerSection("Datum + Unterschrift:___________", margin);
 
-			console.log("doc", Object.keys(doc.getFontList()));
 			return doc.output("blob");
 		}),
 });
