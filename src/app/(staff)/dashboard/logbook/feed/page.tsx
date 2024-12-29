@@ -32,7 +32,7 @@ export type FeedEntry = {
 	id: string;
 	createdById: string;
 	createdAt: Date;
-	type: "entry" | "start" | "end" | "pause" | "holiday";
+	type: "entry" | "start" | "end" | "pause" | "holiday" | "vacation";
 	streetName: string;
 	kmState: string;
 	startTime: Date | null;
@@ -136,14 +136,12 @@ export default async function LogbookFeed({
 							<DayPagination />
 						</Group>
 						{holiday && (
-							// <Text fz={15} fw={500}>
 							<Group className="justify-between" wrap="nowrap" gap={0}>
 								<Title order={3} fz={{ base: 15, md: 18 }}>
-									Feiertag
+									{holiday.type === "holiday" ? "Feiertag" : "Urlaub"}
 								</Title>
 								<EntryButtons id={holiday.id} />
 							</Group>
-							// </Text>
 						)}
 
 						{startTime && (

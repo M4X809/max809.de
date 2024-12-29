@@ -179,18 +179,63 @@ export const CreateEntry = ({
 	entryId?: string | undefined | null;
 }) => {
 	const router = useRouter();
-	const {
-		mutate: createEntry,
-		isPending: isCreating,
-		isSuccess: isCreated,
-		error: createError,
-	} = api.logbook.createEntry.useMutation();
-	const {
-		mutate: updateEntry,
-		isPending: isUpdating,
-		isSuccess: isUpdated,
-		error: updateError,
-	} = api.logbook.updateEntry.useMutation();
+	const { mutate: createEntry, isPending: isCreating } =
+		api.logbook.createEntry.useMutation({
+			onSuccess: () => {
+				toast.success("Eintrag erfolgreich erstellt.", {
+					id: "create-entry",
+				});
+				form.reset();
+				router.push(
+					`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`,
+				);
+				const date = form.values.date;
+				form.reset();
+				form.setValues({
+					type: "entry",
+					date: date,
+				});
+				setDay(date.toLocaleDateString("de-DE"));
+				setTimeout(() => {
+					router.refresh();
+				}, 100);
+			},
+			onError: (error) => {
+				toast.error(error.message, {
+					id: "create-entry",
+				});
+			},
+			onMutate: () => {
+				toast.loading("Eintrag wird erstellt...", {
+					id: "create-entry",
+				});
+			},
+		});
+	const { mutate: updateEntry, isPending: isUpdating } =
+		api.logbook.updateEntry.useMutation({
+			onSuccess: () => {
+				toast.success("Eintrag erfolgreich erstellt.", {
+					id: "update-entry",
+				});
+				form.reset();
+				router.push(
+					`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`,
+				);
+				setTimeout(() => {
+					router.refresh();
+				}, 100);
+			},
+			onError: (error) => {
+				toast.error(error.message, {
+					id: "update-entry",
+				});
+			},
+			onMutate: () => {
+				toast.loading("Eintrag wird erstellt...", {
+					id: "update-entry",
+				});
+			},
+		});
 
 	const feedSearchParamsParser = {
 		day: parseAsString
@@ -209,7 +254,7 @@ export const CreateEntry = ({
 		initialValues: {
 			type:
 				initialValues?.type ??
-				("entry" as "start" | "end" | "pause" | "entry" | "holiday"),
+				("entry" as "start" | "end" | "pause" | "entry" | "holiday" | "vacation"),
 			streetName: initialValues?.streetName ?? "",
 			kmState: initialValues?.kmState ?? "",
 			startTime: initialValues?.startTime?.toLocaleTimeString() ?? "",
@@ -224,13 +269,15 @@ export const CreateEntry = ({
 			streetName: (value) => {
 				const isEntry = form.values.type === "entry";
 				if (!isEntry) return false;
-				const isHoliday = form.values.type === "holiday";
+				const isHoliday =
+					form.values.type === "holiday" || form.values.type === "vacation";
 				if (isHoliday) return false;
 
 				return value.length > 0 ? false : "Der Name darf nicht leer sein.";
 			},
 			kmState: (value) => {
-				const isHoliday = form.values.type === "holiday";
+				const isHoliday =
+					form.values.type === "holiday" || form.values.type === "vacation";
 				if (isHoliday) return false;
 
 				const { error } = z
@@ -253,49 +300,49 @@ export const CreateEntry = ({
 		}
 	}, [day]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		if (isCreated || isUpdated) {
-			if (isUpdated) {
-				console.log("isUpdated", isUpdated);
-				router.push(
-					`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`,
-				);
-				setTimeout(() => {
-					router.refresh();
-				}, 100);
-				return;
-			}
+	// // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// useEffect(() => {
+	// 	if (isCreated || isUpdated) {
+	// 		if (isUpdated) {
+	// 			console.log("isUpdated", isUpdated);
+	// 			router.push(
+	// 				`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`,
+	// 			);
+	// 			setTimeout(() => {
+	// 				router.refresh();
+	// 			}, 100);
+	// 			return;
+	// 		}
 
-			const date = form.values.date;
-			form.reset();
-			form.setValues({
-				type: "entry",
-				date: date,
-			});
-			setDay(date.toLocaleDateString("de-DE"));
-			setTimeout(() => {
-				router.refresh();
-			}, 100);
-		}
+	// 		const date = form.values.date;
+	// 		form.reset();
+	// 		form.setValues({
+	// 			type: "entry",
+	// 			date: date,
+	// 		});
+	// 		setDay(date.toLocaleDateString("de-DE"));
+	// 		setTimeout(() => {
+	// 			router.refresh();
+	// 		}, 100);
+	// 	}
 
-		if (createError || updateError) {
-			toast.error(`Fehler beim ${createError ? "Erstellen" : "Bearbeiten"}`, {
-				id: "creating-error",
-				cancel: <DismissButton id="creating-error" />,
-				description: <Box>{createError?.message ?? updateError?.message}</Box>,
-			});
-		}
-	}, [
-		isCreated,
-		form.reset,
-		router,
-		createError,
-		form.setValues,
-		updateError,
-		isUpdating,
-		isUpdated,
-	]);
+	// 	if (createError || updateError) {
+	// 		toast.error(`Fehler beim ${createError ? "Erstellen" : "Bearbeiten"}`, {
+	// 			id: "creating-error",
+	// 			cancel: <DismissButton id="creating-error" />,
+	// 			description: <Box>{createError?.message ?? updateError?.message}</Box>,
+	// 		});
+	// 	}
+	// }, [
+	// 	isCreated,
+	// 	form.reset,
+	// 	router,
+	// 	createError,
+	// 	form.setValues,
+	// 	updateError,
+	// 	isUpdating,
+	// 	isUpdated,
+	// ]);
 
 	return (
 		<form
@@ -362,6 +409,7 @@ export const CreateEntry = ({
 						{ value: "end", label: "Arbeitsende" },
 						{ value: "pause", label: "Pause" },
 						{ value: "holiday", label: "Feiertag" },
+						{ value: "vacation", label: "Urlaub" },
 					]}
 				/>
 				{form.values.type === "entry" && (
@@ -374,7 +422,7 @@ export const CreateEntry = ({
 						{...form.getInputProps("streetName")}
 					/>
 				)}
-				{form.values.type !== "holiday" && (
+				{form.values.type !== "holiday" && form.values.type !== "vacation" && (
 					<TextInput
 						type="tel"
 						withAsterisk
@@ -384,30 +432,34 @@ export const CreateEntry = ({
 					/>
 				)}
 				<Group wrap="nowrap" pt={10} className="gap-x-2 md:col-span-2 md:gap-x-5">
-					{form.values.type !== "end" && form.values.type !== "holiday" && (
-						<TimeInput
-							aria-label="Time"
-							type="time"
-							required
-							className={twMerge(
-								"w-[50%] md:w-full",
-								form.values.type === "start" && "col-span-2 w-full",
-							)}
-							label="Startzeitpunkt"
-							{...form.getInputProps("startTime")}
-						/>
-					)}
-					{form.values.type !== "start" && form.values.type !== "holiday" && (
-						<TimeInput
-							required
-							className={twMerge(
-								"w-[50%] md:w-full",
-								form.values.type === "end" && "col-span-2 w-full",
-							)}
-							label="Endzeitpunkt"
-							{...form.getInputProps("endTime")}
-						/>
-					)}
+					{form.values.type !== "end" &&
+						form.values.type !== "holiday" &&
+						form.values.type !== "vacation" && (
+							<TimeInput
+								aria-label="Time"
+								type="time"
+								required
+								className={twMerge(
+									"w-[50%] md:w-full",
+									form.values.type === "start" && "col-span-2 w-full",
+								)}
+								label="Startzeitpunkt"
+								{...form.getInputProps("startTime")}
+							/>
+						)}
+					{form.values.type !== "start" &&
+						form.values.type !== "holiday" &&
+						form.values.type !== "vacation" && (
+							<TimeInput
+								required
+								className={twMerge(
+									"w-[50%] md:w-full",
+									form.values.type === "end" && "col-span-2 w-full",
+								)}
+								label="Endzeitpunkt"
+								{...form.getInputProps("endTime")}
+							/>
+						)}
 				</Group>
 				{form.values.type === "pause" && (
 					<Group className="">
