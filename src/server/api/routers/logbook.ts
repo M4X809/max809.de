@@ -863,6 +863,17 @@ export const logbookRouter = createTRPCRouter({
 						valign: "middle",
 					},
 				},
+				// Add didParseCell hook to customize cell styles
+				didParseCell: (data) => {
+					if (data.section === "body" && data.column.index === 1) {
+						const cellContent = data.cell.text[0];
+						if (cellContent === "Urlaub") {
+							data.cell.styles.fillColor = [255, 255, 150]; // Light yellow
+						} else if (cellContent === "Feiertag") {
+							data.cell.styles.fillColor = [255, 200, 150]; // Light orange
+						}
+					}
+				},
 				headStyles: {
 					halign: "center",
 					fillColor: 255,
@@ -871,14 +882,15 @@ export const logbookRouter = createTRPCRouter({
 					lineWidth: 0.1,
 				},
 				bodyStyles: {
-					lineWidth: 0.1,
+					lineWidth: 0.2,
 				},
+
 				alternateRowStyles: {
-					fillColor: [245, 245, 245],
+					fillColor: [200, 200, 200],
 				},
 				theme: "grid",
 				tableLineColor: 0,
-				tableLineWidth: 0.1,
+				tableLineWidth: 0.2,
 			});
 
 			// After autoTable
@@ -932,7 +944,6 @@ export const logbookRouter = createTRPCRouter({
 			const y = tableHeight + 10;
 			const totalSection = (text: string, value: string, x: number) => {
 				const textWidth = doc.getTextWidth(text);
-				const valueWidth = 40;
 
 				doc.text(text, x, y);
 				doc.text(value, x + textWidth, y);
@@ -958,7 +969,7 @@ export const logbookRouter = createTRPCRouter({
 			// const spacing = (pageWidth - 2 * margin) / 3;
 			// footerSection("Stunden/Sonntage:____________", margin);
 			// footerSection("Stunden/Feiertage:____________", margin + spacing);
-			footerSection("Datum + Unterschrift:___________", margin);
+			footerSection("Datum + Unterschrift: __________________", margin);
 
 			return doc.output("blob");
 		}),
