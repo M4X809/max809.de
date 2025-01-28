@@ -494,8 +494,8 @@ export const logbookRouter = createTRPCRouter({
 			const monthStart = startOfMonth(currentMonth);
 			const monthEnd = endOfMonth(monthStart);
 
-			console.log("monthStart", monthStart);
-			console.log("monthEnd", monthEnd);
+			// console.log("monthStart", monthStart);
+			// console.log("monthEnd", monthEnd);
 
 			const startAndEndTimeProm = ctx.db.query.logbookFeed.findMany({
 				where: (logbookFeed, { eq, between, and, or, not }) =>
@@ -745,7 +745,7 @@ export const logbookRouter = createTRPCRouter({
 				const dayOfWeek = currentDate.getDay();
 				if (dayOfWeek === 0 || dayOfWeek === 6) {
 					const weekDayName = format(currentDate, "EEEE", { locale: de });
-					return [`${index + 1}.`, weekDayName, "", ""];
+					return [`${index + 1}.`, weekDayName, "", "---"];
 				}
 
 				// Format work entries inline
@@ -782,7 +782,7 @@ export const logbookRouter = createTRPCRouter({
 					const t = text.toString();
 					const w = 75;
 					if (t.length > w) {
-						console.log(chalk.yellow(index + 1));
+						// console.log(chalk.yellow(index + 1));
 						const lines = new Map<number, string[]>();
 						let currentLine = 0;
 						const elements = t.split(" | ").filter(Boolean);
@@ -865,12 +865,21 @@ export const logbookRouter = createTRPCRouter({
 				},
 				// Add didParseCell hook to customize cell styles
 				didParseCell: (data) => {
-					if (data.section === "body" && data.column.index === 1) {
-						const cellContent = data.cell.text[0];
-						if (cellContent === "Urlaub") {
-							data.cell.styles.fillColor = [255, 255, 150]; // Light yellow
-						} else if (cellContent === "Feiertag") {
-							data.cell.styles.fillColor = [255, 200, 150]; // Light orange
+					if (data.section === "body") {
+						const rowContent = data.row.cells[1]?.text[0];
+						if (rowContent === "Urlaub") {
+							if (data.row.index % 2 === 1) {
+								// Apply alternate row color only for non-special rows
+								data.cell.styles.fillColor = [245, 245, 130];
+							} else {
+								data.cell.styles.fillColor = [255, 255, 150]; // Light yellow
+							}
+						} else if (rowContent === "Feiertag") {
+							if (data.row.index % 2 === 1) {
+								data.cell.styles.fillColor = [255, 180, 125];
+							} else {
+								data.cell.styles.fillColor = [255, 200, 140]; // Light orange
+							}
 						}
 					}
 				},
