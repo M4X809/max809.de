@@ -41,14 +41,6 @@ export function PostHogClient() {
 		flushAt: 1,
 		flushInterval: 0,
 	});
-	console.log(
-		"🚀 ~ PostHogClient ~ env.NEXT_PUBLIC_POSTHOG_HOST:",
-		env.NEXT_PUBLIC_POSTHOG_HOST,
-	);
-	console.log(
-		"🚀 ~ PostHogClient ~ env.NEXT_PUBLIC_POSTHOG_KEY:",
-		env.NEXT_PUBLIC_POSTHOG_KEY,
-	);
 	return posthogClient;
 }
 
