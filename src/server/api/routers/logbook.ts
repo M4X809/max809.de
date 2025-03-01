@@ -234,6 +234,7 @@ export const logbookRouter = createTRPCRouter({
 					event: "logbook_entry_update_error",
 					properties: {
 						startTime,
+						entry,
 					},
 				});
 
@@ -252,6 +253,7 @@ export const logbookRouter = createTRPCRouter({
 					event: "logbook_entry_update_error",
 					properties: {
 						endTime,
+						entry,
 					},
 				});
 
