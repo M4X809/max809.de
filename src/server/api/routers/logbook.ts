@@ -16,7 +16,7 @@ import jsPDF from "jspdf";
 // import "jspdf-autotable";
 import { env } from "~/env";
 import autoTable, { type RowInput } from "jspdf-autotable";
-import chalk from "chalk";
+import { PostHogClient } from "~/server/auth";
 
 new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
@@ -102,7 +102,17 @@ export const logbookRouter = createTRPCRouter({
 			const startTime = startAndEndTime.find((entry) => entry.type === "start");
 			const endTime = startAndEndTime.find((entry) => entry.type === "end");
 
+			const posthog = PostHogClient();
+
 			if (input.type === "start" && startTime) {
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_create_error",
+					properties: {
+						startTime,
+					},
+				});
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
@@ -110,6 +120,14 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			if (input.type === "end" && endTime) {
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_create_error",
+					properties: {
+						endTime,
+					},
+				});
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
@@ -210,6 +228,16 @@ export const logbookRouter = createTRPCRouter({
 			const endTime = startAndEndTime.find((entry) => entry.type === "end");
 
 			if (input.type === "start" && startTime?.id !== entry.id && startTime) {
+				const posthog = PostHogClient();
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_update_error",
+					properties: {
+						startTime,
+					},
+				});
+
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
@@ -217,6 +245,17 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			if (input.type === "end" && endTime?.id !== entry.id && endTime) {
+				const posthog = PostHogClient();
+
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_update_error",
+					properties: {
+						endTime,
+					},
+				});
+
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",

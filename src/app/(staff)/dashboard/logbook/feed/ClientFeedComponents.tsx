@@ -32,10 +32,10 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
-import { DismissButton } from "~/components/ui/sonner";
 import type { FeedEntry } from "./page";
 import Link from "next/link";
 import { z } from "zod";
+import { usePostHog } from "posthog-js/react";
 
 export const DayPagination = () => {
 	const feedSearchParamsParser = {
@@ -179,6 +179,7 @@ export const CreateEntry = ({
 	entryId?: string | undefined | null;
 }) => {
 	const router = useRouter();
+	const posthog = usePostHog();
 	const { mutate: createEntry, isPending: isCreating } =
 		api.logbook.createEntry.useMutation({
 			onSuccess: () => {
@@ -201,6 +202,9 @@ export const CreateEntry = ({
 				}, 100);
 			},
 			onError: (error) => {
+				posthog.capture("logbook_entry_create_error", {
+					error: error.message,
+				});
 				toast.error(error.message, {
 					id: "create-entry",
 				});
@@ -226,6 +230,9 @@ export const CreateEntry = ({
 				}, 100);
 			},
 			onError: (error) => {
+				posthog.capture("logbook_entry_update_error", {
+					error: error.message,
+				});
 				toast.error(error.message, {
 					id: "update-entry",
 				});
