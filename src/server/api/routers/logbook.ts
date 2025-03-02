@@ -16,7 +16,7 @@ import jsPDF from "jspdf";
 // import "jspdf-autotable";
 import { env } from "~/env";
 import autoTable, { type RowInput } from "jspdf-autotable";
-import chalk from "chalk";
+import { PostHogClient } from "~/server/auth";
 
 new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
@@ -25,7 +25,7 @@ export const logbookRouter = createTRPCRouter({
 		.input(
 			z.object({
 				type: z
-					.enum(["entry", "start", "end", "pause", "holiday", "vacation"])
+					.enum(["entry", "start", "end", "pause", "holiday", "vacation", "sick"])
 					.default("entry"),
 				streetName: z.string().optional().default(""),
 				kmState: z.string().optional().default(""),
@@ -48,7 +48,11 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, and, not }) =>
 					and(
 						eq(logbookFeed.date, input.date),
-						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
+						or(
+							eq(logbookFeed.type, "holiday"),
+							eq(logbookFeed.type, "vacation"),
+							eq(logbookFeed.type, "sick"),
+						),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -57,17 +61,22 @@ export const logbookRouter = createTRPCRouter({
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message:
-						"An diesem Tag ist bereits ein Feiertag oder Urlaub eingetragen. Keine weiteren Einträge möglich.",
+						"An diesem Tag ist bereits ein Feiertag, Urlaub oder Krankheit eingetragen. Keine weiteren Einträge möglich.",
 				});
 			}
 
-			if (input.type === "holiday" || input.type === "vacation") {
+			if (
+				input.type === "holiday" ||
+				input.type === "vacation" ||
+				input.type === "sick"
+			) {
 				const existingEntries = await ctx.db.query.logbookFeed.findFirst({
 					where: (logbookFeed, { eq, and, not }) =>
 						and(
 							eq(logbookFeed.date, input.date),
 							not(eq(logbookFeed.type, "holiday")),
 							not(eq(logbookFeed.type, "vacation")),
+							not(eq(logbookFeed.type, "sick")),
 							not(eq(logbookFeed.deleted, true)),
 						),
 				});
@@ -76,7 +85,7 @@ export const logbookRouter = createTRPCRouter({
 					throw new TRPCError({
 						code: "BAD_REQUEST",
 						message:
-							"Es existieren bereits Einträge für diesen Tag. Feiertag oder Urlaub kann nicht hinzugefügt werden.",
+							"Es existieren bereits Einträge für diesen Tag. Feiertag, Urlaub oder Krankheit kann nicht hinzugefügt werden.",
 					});
 				}
 			}
@@ -102,7 +111,17 @@ export const logbookRouter = createTRPCRouter({
 			const startTime = startAndEndTime.find((entry) => entry.type === "start");
 			const endTime = startAndEndTime.find((entry) => entry.type === "end");
 
+			const posthog = PostHogClient();
+
 			if (input.type === "start" && startTime) {
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_create_error",
+					properties: {
+						startTime,
+					},
+				});
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
@@ -110,6 +129,14 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			if (input.type === "end" && endTime) {
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_create_error",
+					properties: {
+						endTime,
+					},
+				});
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
@@ -140,7 +167,15 @@ export const logbookRouter = createTRPCRouter({
 		.input(
 			z.object({
 				id: z.string(),
-				type: z.enum(["entry", "start", "end", "pause", "holiday", "vacation"]),
+				type: z.enum([
+					"entry",
+					"start",
+					"end",
+					"pause",
+					"holiday",
+					"vacation",
+					"sick",
+				]),
 				streetName: z.string().optional().default(""),
 				kmState: z.string().optional().default(""),
 				startTime: z.date().optional(),
@@ -177,13 +212,16 @@ export const logbookRouter = createTRPCRouter({
 			});
 
 			if (
-				(input.type === "holiday" || input.type === "vacation") &&
+				(input.type === "holiday" ||
+					input.type === "vacation" ||
+					input.type === "sick") &&
 				getHoliday &&
 				getHoliday.id !== input.id
 			) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message: "An diesem Tag ist bereits ein Feiertag oder Urlaub eingetragen.",
+					message:
+						"An diesem Tag ist bereits ein Feiertag, Urlaub oder Krankheit eingetragen.",
 				});
 			}
 
@@ -210,6 +248,17 @@ export const logbookRouter = createTRPCRouter({
 			const endTime = startAndEndTime.find((entry) => entry.type === "end");
 
 			if (input.type === "start" && startTime?.id !== entry.id && startTime) {
+				const posthog = PostHogClient();
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_update_error",
+					properties: {
+						startTime,
+						entry,
+					},
+				});
+
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Startzeitpunkt pro Tag haben.",
@@ -217,6 +266,18 @@ export const logbookRouter = createTRPCRouter({
 			}
 
 			if (input.type === "end" && endTime?.id !== entry.id && endTime) {
+				const posthog = PostHogClient();
+
+				posthog.capture({
+					distinctId: ctx.session.user.id,
+					event: "logbook_entry_update_error",
+					properties: {
+						endTime,
+						entry,
+					},
+				});
+
+				await posthog.shutdown();
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: "Du kannst maximal einen Endzeitpunkt pro Tag haben.",
@@ -267,7 +328,11 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
-						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
+						or(
+							eq(logbookFeed.type, "holiday"),
+							eq(logbookFeed.type, "vacation"),
+							eq(logbookFeed.type, "sick"),
+						),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -520,7 +585,11 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, monthStart, monthEnd),
-						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation")),
+						or(
+							eq(logbookFeed.type, "holiday"),
+							eq(logbookFeed.type, "vacation"),
+							eq(logbookFeed.type, "sick"),
+						),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -554,7 +623,7 @@ export const logbookRouter = createTRPCRouter({
 				const dateKey = format(holiday.date, "dd.MM.yyyy", { locale: de });
 				dayData[dateKey] = {
 					holiday: true,
-					type: holiday.type as "holiday" | "vacation",
+					type: holiday.type as "holiday" | "vacation" | "sick",
 				};
 			}
 
@@ -609,7 +678,7 @@ export const logbookRouter = createTRPCRouter({
 				};
 			}
 
-			console.log(dayData);
+			// console.log(dayData);
 			return dayData;
 		}),
 	generatePdf: protectedProcedure
@@ -727,12 +796,18 @@ export const logbookRouter = createTRPCRouter({
 
 				// Check for holiday or vacation entry
 				const specialEntry = dayEntries.find(
-					(e) => e.type === "holiday" || e.type === "vacation",
+					(e) => e.type === "holiday" || e.type === "vacation" || e.type === "sick",
 				);
 				if (specialEntry) {
 					return [
 						index + 1,
-						`${specialEntry.type === "holiday" ? "Feiertag" : "Urlaub"}`,
+						`${
+							specialEntry.type === "holiday"
+								? "Feiertag"
+								: specialEntry.type === "vacation"
+									? "Urlaub"
+									: "Krank"
+						}`,
 						"",
 						"---",
 					];
@@ -879,6 +954,12 @@ export const logbookRouter = createTRPCRouter({
 								data.cell.styles.fillColor = [255, 180, 125];
 							} else {
 								data.cell.styles.fillColor = [255, 200, 140]; // Light orange
+							}
+						} else if (rowContent === "Krank") {
+							if (data.row.index % 2 === 1) {
+								data.cell.styles.fillColor = [180, 220, 255];
+							} else {
+								data.cell.styles.fillColor = [200, 230, 255]; // Light blue
 							}
 						}
 					}

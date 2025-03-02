@@ -6,7 +6,7 @@ import {
 import { getDomain, onPageAllowed } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import { logbookSearchParamsParser } from "./logbookSearchParams";
-import { createSearchParamsCache } from "nuqs/server";
+import { createSearchParamsCache, parseAsString } from "nuqs/server";
 
 export default async function LogbookDashboard({
 	searchParams,
@@ -14,9 +14,11 @@ export default async function LogbookDashboard({
 	searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
 	await onPageAllowed("viewLogbook");
-	const logbookSearchParamsCache = createSearchParamsCache(
-		logbookSearchParamsParser,
-	);
+	const logbookSearchParamsCache = createSearchParamsCache({
+		day: parseAsString
+			.withDefault(new Date().toLocaleDateString("de-DE"))
+			.withOptions({ clearOnDefault: true }),
+	});
 	const { day } = logbookSearchParamsCache.parse(await searchParams);
 	const [day2, month, year] = day.split(".").map(Number);
 
