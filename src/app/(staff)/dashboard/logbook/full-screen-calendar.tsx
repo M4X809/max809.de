@@ -34,7 +34,7 @@ export type DayData = {
 	[key: string]:
 		| {
 				holiday: true;
-				type: "holiday" | "vacation";
+				type: "holiday" | "vacation" | "sick";
 		  }
 		| {
 				holiday?: false;
@@ -203,7 +203,11 @@ export function FullScreenCalendarComponent({
 										{dayInfo?.holiday ? (
 											<div className="mt-1 flex-grow overflow-hidden text-xs">
 												<Text fz={14} fw={500}>
-													{dayInfo.type === "holiday" ? "Feiertag" : "Urlaub"}
+													{dayInfo.type === "holiday"
+														? "Feiertag"
+														: dayInfo.type === "vacation"
+															? "Urlaub"
+															: "Krank"}
 												</Text>
 											</div>
 										) : (

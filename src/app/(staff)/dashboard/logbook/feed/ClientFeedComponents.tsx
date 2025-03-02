@@ -261,7 +261,14 @@ export const CreateEntry = ({
 		initialValues: {
 			type:
 				initialValues?.type ??
-				("entry" as "start" | "end" | "pause" | "entry" | "holiday" | "vacation"),
+				("entry" as
+					| "start"
+					| "end"
+					| "pause"
+					| "entry"
+					| "holiday"
+					| "vacation"
+					| "sick"),
 			streetName: initialValues?.streetName ?? "",
 			kmState: initialValues?.kmState ?? "",
 			startTime: initialValues?.startTime?.toLocaleTimeString() ?? "",
@@ -277,14 +284,18 @@ export const CreateEntry = ({
 				const isEntry = form.values.type === "entry";
 				if (!isEntry) return false;
 				const isHoliday =
-					form.values.type === "holiday" || form.values.type === "vacation";
+					form.values.type === "holiday" ||
+					form.values.type === "vacation" ||
+					form.values.type === "sick";
 				if (isHoliday) return false;
 
 				return value.length > 0 ? false : "Der Name darf nicht leer sein.";
 			},
 			kmState: (value) => {
 				const isHoliday =
-					form.values.type === "holiday" || form.values.type === "vacation";
+					form.values.type === "holiday" ||
+					form.values.type === "vacation" ||
+					form.values.type === "sick";
 				if (isHoliday) return false;
 
 				const { error } = z
@@ -417,6 +428,7 @@ export const CreateEntry = ({
 						{ value: "pause", label: "Pause" },
 						{ value: "holiday", label: "Feiertag" },
 						{ value: "vacation", label: "Urlaub" },
+						{ value: "sick", label: "Krank" },
 					]}
 				/>
 				{form.values.type === "entry" && (
@@ -429,19 +441,22 @@ export const CreateEntry = ({
 						{...form.getInputProps("streetName")}
 					/>
 				)}
-				{form.values.type !== "holiday" && form.values.type !== "vacation" && (
-					<TextInput
-						type="tel"
-						withAsterisk
-						pt={10}
-						label="Kilometerstand"
-						{...form.getInputProps("kmState")}
-					/>
-				)}
+				{form.values.type !== "holiday" &&
+					form.values.type !== "vacation" &&
+					form.values.type !== "sick" && (
+						<TextInput
+							type="tel"
+							withAsterisk
+							pt={10}
+							label="Kilometerstand"
+							{...form.getInputProps("kmState")}
+						/>
+					)}
 				<Group wrap="nowrap" pt={10} className="gap-x-2 md:col-span-2 md:gap-x-5">
 					{form.values.type !== "end" &&
 						form.values.type !== "holiday" &&
-						form.values.type !== "vacation" && (
+						form.values.type !== "vacation" &&
+						form.values.type !== "sick" && (
 							<TimeInput
 								aria-label="Time"
 								type="time"
@@ -456,7 +471,8 @@ export const CreateEntry = ({
 						)}
 					{form.values.type !== "start" &&
 						form.values.type !== "holiday" &&
-						form.values.type !== "vacation" && (
+						form.values.type !== "vacation" &&
+						form.values.type !== "sick" && (
 							<TimeInput
 								required
 								className={twMerge(

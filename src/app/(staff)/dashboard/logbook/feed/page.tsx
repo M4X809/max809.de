@@ -32,7 +32,7 @@ export type FeedEntry = {
 	id: string;
 	createdById: string;
 	createdAt: Date;
-	type: "entry" | "start" | "end" | "pause" | "holiday" | "vacation";
+	type: "entry" | "start" | "end" | "pause" | "holiday" | "vacation" | "sick";
 	streetName: string;
 	kmState: string;
 	startTime: Date | null;
@@ -138,7 +138,11 @@ export default async function LogbookFeed({
 						{holiday && (
 							<Group className="justify-between" wrap="nowrap" gap={0}>
 								<Title order={3} fz={{ base: 15, md: 18 }}>
-									{holiday.type === "holiday" ? "Feiertag" : "Urlaub"}
+									{holiday.type === "holiday"
+										? "Feiertag"
+										: holiday.type === "vacation"
+											? "Urlaub"
+											: "Krank"}
 								</Title>
 								<EntryButtons id={holiday.id} />
 							</Group>
