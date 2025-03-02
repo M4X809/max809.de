@@ -300,7 +300,7 @@ export const CreateEntry = ({
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		if (day) {
+		if (day && !entryId) {
 			form.setValues({
 				date: new Date(year!, month! - 1, day2),
 			});

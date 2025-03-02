@@ -19,7 +19,6 @@ if (typeof window !== "undefined") {
 
 		session_recording: {
 			maskAllInputs: false,
-
 			maskInputOptions: {
 				password: true,
 				color: false,

@@ -20,6 +20,7 @@ import CommandHandler from "./_components/CommandHandler";
 import { getServerAuthSession } from "~/server/auth";
 import { hasPermission } from "~/lib/sUtils";
 import { ManagementStoreProvider } from "~/providers/management-store-provider";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
 	metadataBase: new URL("https://max809.de"),
@@ -63,7 +64,7 @@ export default async function RootLayout({
 													keys={session?.user?.config?.global?.openCommandKey}
 												/>
 											)}
-											{children}
+											<NuqsAdapter>{children}</NuqsAdapter>
 										</ModalsProvider>
 									</ManagementStoreProvider>
 								</QrCodeStoreProvider>

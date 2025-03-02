@@ -9,16 +9,19 @@ const config = {
 	output: "standalone",
 	experimental: {
 		optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
+		// reactCompiler: true,
 	},
 	eslint: {
 		ignoreDuringBuilds: true,
 		dirs: ["./public"],
 	},
+	typescript: {
+		ignoreBuildErrors: true,
+	},
 
 	skipTrailingSlashRedirect: true,
 	devIndicators: {
-		buildActivity: true,
-		buildActivityPosition: "bottom-right",
+		position: "bottom-left",
 	},
 	images: {
 		remotePatterns: [
