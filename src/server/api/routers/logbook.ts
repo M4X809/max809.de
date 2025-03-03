@@ -5,11 +5,12 @@ import {
 	timeAddition,
 	timeDifference,
 	timeSubtraction,
+	toMinutes,
 } from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
 import { asc, eq, or } from "drizzle-orm";
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { endOfMonth, format, startOfMonth, subMonths } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
 import jsPDF from "jspdf";
@@ -1063,4 +1064,367 @@ export const logbookRouter = createTRPCRouter({
 
 			return doc.output("blob");
 		}),
+
+	getWorkHourStats: protectedProcedure.query(async ({ ctx }) => {
+		if (!(await hasPermission("viewLogbookFeed"))) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "You are not authorized to perform this action.",
+			});
+		}
+
+		const currentMonth = new Date();
+		const monthStart = subMonths(currentMonth, 2);
+		const monthEnd = endOfMonth(monthStart);
+
+		// Get all start and end entries for the month
+		const startAndEndEntries = await ctx.db.query.logbookFeed.findMany({
+			where: (logbookFeed, { eq, between, and, or, not }) =>
+				and(
+					between(logbookFeed.date, monthStart, monthEnd),
+					or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+					not(eq(logbookFeed.deleted, true)),
+				),
+		});
+
+		// Get all unpaid breaks for the month
+		const unpaidBreaks = await ctx.db.query.logbookFeed.findMany({
+			where: (logbookFeed, { eq, between, and, not }) =>
+				and(
+					between(logbookFeed.date, monthStart, monthEnd),
+					eq(logbookFeed.type, "pause"),
+					eq(logbookFeed.unpaidBreak, true),
+					not(eq(logbookFeed.deleted, true)),
+				),
+		});
+
+		// Get all holidays, vacations, and sick days
+		const holidays = await ctx.db.query.logbookFeed.findMany({
+			where: (logbookFeed, { eq, between, and, not, or }) =>
+				and(
+					between(logbookFeed.date, monthStart, monthEnd),
+					or(
+						eq(logbookFeed.type, "holiday"),
+						eq(logbookFeed.type, "vacation"),
+						eq(logbookFeed.type, "sick"),
+					),
+					not(eq(logbookFeed.deleted, true)),
+				),
+		});
+
+		// Group entries by date
+		const entriesByDate = new Map();
+
+		// Group start and end entries by date
+		for (const entry of startAndEndEntries) {
+			if (!entry.date) continue;
+
+			const dateKey = entry.date.toISOString().split("T")[0];
+			if (!entriesByDate.has(dateKey)) {
+				entriesByDate.set(dateKey, {
+					date: entry.date,
+					startEntry: null,
+					endEntry: null,
+					unpaidBreaks: [],
+					isHoliday: false,
+				});
+			}
+
+			const dateData = entriesByDate.get(dateKey);
+			if (entry.type === "start") {
+				dateData.startEntry = entry;
+			} else if (entry.type === "end") {
+				dateData.endEntry = entry;
+			}
+		}
+
+		// Add unpaid breaks to their respective dates
+		for (const breakEntry of unpaidBreaks) {
+			if (!breakEntry.date) continue;
+
+			const dateKey = breakEntry.date.toISOString().split("T")[0];
+			if (entriesByDate.has(dateKey)) {
+				entriesByDate.get(dateKey).unpaidBreaks.push(breakEntry);
+			}
+		}
+
+		// Mark holiday dates
+		for (const holiday of holidays) {
+			if (!holiday.date) continue;
+
+			const dateKey = holiday.date.toISOString().split("T")[0];
+			if (entriesByDate.has(dateKey)) {
+				entriesByDate.get(dateKey).isHoliday = true;
+			}
+		}
+
+		// Initialize work time totals and counts for each day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+		const dayTotals = [
+			{ totalMinutes: 0, count: 0 }, // Sunday
+			{ totalMinutes: 0, count: 0 }, // Monday
+			{ totalMinutes: 0, count: 0 }, // Tuesday
+			{ totalMinutes: 0, count: 0 }, // Wednesday
+			{ totalMinutes: 0, count: 0 }, // Thursday
+			{ totalMinutes: 0, count: 0 }, // Friday
+			{ totalMinutes: 0, count: 0 }, // Saturday
+		];
+
+		// Calculate work time for each date and add to the appropriate day total
+		for (const dateEntry of entriesByDate.entries()) {
+			const [_, dateData] = dateEntry;
+			// Skip holidays and dates without both start and end entries
+			if (
+				dateData.isHoliday ||
+				!dateData.startEntry?.startTime ||
+				!dateData.endEntry?.endTime
+			) {
+				continue;
+			}
+
+			// Calculate total work time for the day
+			let unpaidBreaksTime = "00:00";
+			for (const breakEntry of dateData.unpaidBreaks) {
+				if (!breakEntry.startTime || !breakEntry.endTime) continue;
+				const entryTime = timeDifference(
+					breakEntry.startTime.toLocaleTimeString("de-DE"),
+					breakEntry.endTime.toLocaleTimeString("de-DE"),
+				);
+				unpaidBreaksTime = timeAddition(unpaidBreaksTime, entryTime);
+			}
+
+			// We've already checked these exist above, but TypeScript needs reassurance
+			const startTime = dateData.startEntry?.startTime;
+			const endTime = dateData.endEntry?.endTime;
+
+			if (startTime && endTime) {
+				const dayTime = timeDifference(
+					startTime.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
+					endTime.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
+				);
+
+				const totalWorkTime = timeSubtraction(dayTime, unpaidBreaksTime);
+
+				// Convert work time to minutes
+				const workTimeMinutes = toMinutes(totalWorkTime) || 0;
+
+				// Add to the appropriate day total
+				const dayOfWeek = dateData.date?.getDay() ?? 0;
+				if (dayOfWeek >= 0 && dayOfWeek < dayTotals.length) {
+					dayTotals[dayOfWeek]!.totalMinutes += workTimeMinutes;
+					dayTotals[dayOfWeek]!.count += 1;
+				}
+			}
+		}
+
+		// Calculate averages for Monday to Friday (indices 1-5)
+		const averageWorkHours = [];
+		const dayNames = [
+			"Sonntag",
+			"Montag",
+			"Dienstag",
+			"Mittwoch",
+			"Donnerstag",
+			"Freitag",
+			"Samstag",
+		];
+
+		for (let i = 1; i <= 5; i++) {
+			const dayName = dayNames[i];
+
+			// We know dayTotals has exactly 7 elements (0-6), so this is always safe
+			const dayTotal = dayTotals[i];
+			const totalMinutes = dayTotal?.totalMinutes ?? 0;
+			const count = dayTotal?.count ?? 0;
+
+			if (count === 0) {
+				averageWorkHours.push({
+					day: dayName,
+					averageWorkHours: 0,
+					dayIndex: i,
+				});
+			} else {
+				const averageMinutes = Math.round(totalMinutes / count);
+				// Convert to decimal hours (e.g., 8.5 for 8 hours and 30 minutes)
+				const decimalHours = Number.parseFloat((averageMinutes / 60).toFixed(2));
+
+				averageWorkHours.push({
+					day: dayName,
+					averageWorkHours: decimalHours,
+					dayIndex: i,
+				});
+			}
+		}
+
+		return averageWorkHours;
+	}),
+
+	getDistanceStats: protectedProcedure.query(async ({ ctx }) => {
+		if (!(await hasPermission("viewLogbookFeed"))) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "You are not authorized to perform this action.",
+			});
+		}
+
+		const currentMonth = new Date();
+
+		// Get data from current month and previous month (2 months total)
+		const twoMonthsAgo = new Date(currentMonth);
+		twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 1);
+
+		const periodStart = startOfMonth(twoMonthsAgo);
+		const periodEnd = endOfMonth(currentMonth);
+
+		// Get all start and end entries for the period
+		const startAndEndEntries = await ctx.db.query.logbookFeed.findMany({
+			where: (logbookFeed, { eq, between, and, or, not }) =>
+				and(
+					between(logbookFeed.date, periodStart, periodEnd),
+					or(eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
+					not(eq(logbookFeed.deleted, true)),
+				),
+		});
+
+		// Get all holidays, vacations, and sick days
+		const holidays = await ctx.db.query.logbookFeed.findMany({
+			where: (logbookFeed, { eq, between, and, not, or }) =>
+				and(
+					between(logbookFeed.date, periodStart, periodEnd),
+					or(
+						eq(logbookFeed.type, "holiday"),
+						eq(logbookFeed.type, "vacation"),
+						eq(logbookFeed.type, "sick"),
+					),
+					not(eq(logbookFeed.deleted, true)),
+				),
+		});
+
+		// Group entries by date
+		const entriesByDate = new Map();
+
+		// Group start and end entries by date
+		for (const entry of startAndEndEntries) {
+			if (!entry.date) continue;
+
+			const dateKey = entry.date.toISOString().split("T")[0];
+			if (!entriesByDate.has(dateKey)) {
+				entriesByDate.set(dateKey, {
+					date: entry.date,
+					startEntry: null,
+					endEntry: null,
+					isHoliday: false,
+				});
+			}
+
+			const dateData = entriesByDate.get(dateKey);
+			if (entry.type === "start") {
+				dateData.startEntry = entry;
+			} else if (entry.type === "end") {
+				dateData.endEntry = entry;
+			}
+		}
+
+		// Mark holiday dates
+		for (const holiday of holidays) {
+			if (!holiday.date) continue;
+
+			const dateKey = holiday.date.toISOString().split("T")[0];
+			if (entriesByDate.has(dateKey)) {
+				entriesByDate.get(dateKey).isHoliday = true;
+			}
+		}
+
+		// Initialize distance totals and counts for each day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+		const dayTotals = [
+			{ totalDistance: 0, count: 0 }, // Sunday
+			{ totalDistance: 0, count: 0 }, // Monday
+			{ totalDistance: 0, count: 0 }, // Tuesday
+			{ totalDistance: 0, count: 0 }, // Wednesday
+			{ totalDistance: 0, count: 0 }, // Thursday
+			{ totalDistance: 0, count: 0 }, // Friday
+			{ totalDistance: 0, count: 0 }, // Saturday
+		];
+
+		// Calculate distance for each date and add to the appropriate day total
+		for (const dateEntry of entriesByDate.entries()) {
+			const [_, dateData] = dateEntry;
+			// Skip holidays and dates without both start and end entries
+			if (dateData.isHoliday || !dateData.startEntry || !dateData.endEntry) {
+				continue;
+			}
+
+			// Calculate kilometer difference for the day
+			const startKm = dateData.startEntry?.kmState
+				? Number(dateData.startEntry.kmState)
+				: 0;
+			const endKm = dateData.endEntry?.kmState
+				? Number(dateData.endEntry.kmState)
+				: 0;
+
+			// Only count valid km differences (end > start)
+			if (endKm > startKm) {
+				const kmDifference = endKm - startKm;
+
+				// Add to the appropriate day total
+				const dayOfWeek = dateData.date?.getDay() ?? 0;
+				if (dayOfWeek >= 0 && dayOfWeek < dayTotals.length) {
+					// Use optional chaining with nullish coalescing to handle possible undefined
+					const dayTotal = dayTotals[dayOfWeek];
+					if (dayTotal) {
+						dayTotal.totalDistance += kmDifference;
+						dayTotal.count += 1;
+					}
+				}
+			}
+		}
+
+		// Calculate averages for Monday to Friday (indices 1-5)
+		const averageDistances = [];
+		const dayNames = [
+			"Sonntag",
+			"Montag",
+			"Dienstag",
+			"Mittwoch",
+			"Donnerstag",
+			"Freitag",
+			"Samstag",
+		];
+
+		for (let i = 1; i <= 5; i++) {
+			const dayName = dayNames[i];
+
+			// We know dayTotals has exactly 7 elements (0-6), so this is always safe
+			const dayTotal = dayTotals[i];
+			if (!dayTotal) {
+				averageDistances.push({
+					day: dayName,
+					averageDistance: 0,
+					dayIndex: i,
+				});
+				continue;
+			}
+
+			const totalDistance = dayTotal.totalDistance;
+			const count = dayTotal.count;
+
+			if (count === 0) {
+				averageDistances.push({
+					day: dayName,
+					averageDistance: 0,
+					dayIndex: i,
+				});
+			} else {
+				// Round to 1 decimal place
+				const averageDistance = Number((totalDistance / count).toFixed(2));
+
+				averageDistances.push({
+					day: dayName,
+					averageDistance,
+					dayIndex: i,
+				});
+			}
+		}
+
+		return averageDistances;
+	}),
 });

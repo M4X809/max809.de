@@ -7,6 +7,7 @@ import { cache } from "react";
 import { createCaller, type AppRouter } from "~/server/api/root";
 import { createTRPCContext } from "~/server/api/trpc";
 import { createQueryClient } from "./query-client";
+import type { inferRouterOutputs } from "@trpc/server";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -29,3 +30,10 @@ export const { trpc: api, HydrateClient } = createHydrationHelpers<AppRouter>(
 	caller,
 	getQueryClient,
 );
+
+export type RouterOutput = inferRouterOutputs<AppRouter>;
+
+export type API<
+	T extends keyof RouterOutput,
+	K extends keyof RouterOutput[T],
+> = NonNullable<RouterOutput[T][K]>;

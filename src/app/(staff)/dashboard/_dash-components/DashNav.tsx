@@ -1,5 +1,6 @@
 "use client";
 import {
+	faChartLine,
 	faFeed,
 	faFileContract,
 	faHome,
@@ -63,6 +64,12 @@ const DashNav = ({ session }: { session: Session | null | undefined }) => {
 						icon: faFeed,
 						to: "/dashboard/logbook/feed",
 						label: "Tagesübersicht",
+						permission: "viewLogbookFeed",
+					},
+					{
+						icon: faChartLine,
+						to: "/dashboard/logbook/stats",
+						label: "Statistiken",
 						permission: "viewLogbookFeed",
 					},
 				],
