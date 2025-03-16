@@ -10,8 +10,6 @@ COPY package.json bun.lockb bunfig.toml next.config.js ./src/env.js package-lock
 
 
 ARG NPM_FONT_AWESOME
-# Log the NPM_FONT_AWESOME variable to the console
-RUN echo $NPM_FONT_AWESOME
 
 # Install dependencies with bun
 RUN bun install --no-save
@@ -32,27 +30,6 @@ COPY --from=deps /app/next.config.js ./next.config.js
 
 # Copy the rest of the application code
 COPY . .
-
-# Set build environment variables
-# ARG NEXT_PUBLIC_POSTHOG_KEY
-# ARG NEXT_PUBLIC_POSTHOG_HOST
-# ARG NEXTAUTH_URL
-# ARG NEXTAUTH_SECRET
-# ARG DISCORD_CLIENT_ID
-# ARG DISCORD_CLIENT_SECRET
-# ARG GITHUB_CLIENT_ID
-# ARG GITHUB_CLIENT_SECRET
-# ARG DATABASE_URL
-
-# RUN echo 'NEXT_PUBLIC_POSTHOG_KEY='$NEXT_PUBLIC_POSTHOG_KEY >> .env && \
-#     echo 'NEXT_PUBLIC_POSTHOG_HOST='$NEXT_PUBLIC_POSTHOG_HOST >> .env && \
-#     echo 'NEXTAUTH_URL='$NEXTAUTH_URL >> .env && \
-#     echo 'NEXTAUTH_SECRET='$NEXTAUTH_SECRET >> .env && \
-#     echo 'DISCORD_CLIENT_ID='$DISCORD_CLIENT_ID >> .env && \
-#     echo 'DISCORD_CLIENT_SECRET='$DISCORD_CLIENT_SECRET >> .env && \
-#     echo 'GITHUB_CLIENT_ID='$GITHUB_CLIENT_ID >> .env && \
-#     echo 'GITHUB_CLIENT_SECRET='$GITHUB_CLIENT_SECRET >> .env && \
-#     echo 'DATABASE_URL='$DATABASE_URL >> .env
 
 
 ENV NODE_ENV=production

@@ -9,7 +9,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
 import { asc, eq, or } from "drizzle-orm";
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
 import jsPDF from "jspdf";
@@ -371,7 +371,12 @@ export const logbookRouter = createTRPCRouter({
 				.findMany({
 					columns: { streetName: true },
 					orderBy: (logbookFeed, { desc }) => desc(logbookFeed.streetName),
-					where: (logbookFeed, { not, eq }) => not(eq(logbookFeed.deleted, true)),
+					where: (logbookFeed, { not, eq, and, gte }) =>
+						and(
+							eq(logbookFeed.type, "entry"),
+							not(eq(logbookFeed.deleted, true)),
+							gte(logbookFeed.date, subDays(new Date(), 30)),
+						),
 				})
 				.then((result) => result.map((entry) => entry.streetName))
 				.then((result) =>
