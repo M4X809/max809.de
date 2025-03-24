@@ -5,7 +5,7 @@ FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lockb bunfig.toml next.config.js ./src/env.js package-lock.json ./
+COPY package.json bun.lock bunfig.toml next.config.js ./src/env.js package-lock.json ./
 
 
 
@@ -24,7 +24,7 @@ WORKDIR /app
 # Copy the dependency layer from the bun stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
-COPY --from=deps /app/bun.lockb ./bun.lockb
+COPY --from=deps /app/bun.lock ./bun.lock
 COPY --from=deps /app/bunfig.toml ./bunfig.toml
 COPY --from=deps /app/next.config.js ./next.config.js
 
