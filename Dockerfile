@@ -5,7 +5,7 @@ FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lock bunfig.toml next.config.js ./src/env.js package-lock.json ./
+COPY package.json bun.lock bunfig.toml next.config.js ./src/env.js ./
 
 
 
