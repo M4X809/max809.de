@@ -100,6 +100,8 @@ export default async function LogbookFeed({
 		redirect(`/dashboard/logbook/feed?errorCount=${errorCount + 1}`);
 	}
 
+	const lastKmState = await api.logbook.getLastKmState();
+
 	const startTime = data?.startTime;
 	const endTime = data?.endTime;
 	const entries = data?.entries;
@@ -120,7 +122,10 @@ export default async function LogbookFeed({
 		<Container size={"lg"}>
 			<Stack>
 				<Card className={twMerge(cardClassName)}>
-					<CreateEntry streetNames={streetNames ?? []} />
+					<CreateEntry
+						streetNames={streetNames ?? []}
+						lastKmState={lastKmState?.toString()}
+					/>
 				</Card>
 				<Card className={twMerge(cardClassName)} p={"sm"} withBorder radius={"md"}>
 					<Stack gap={4}>

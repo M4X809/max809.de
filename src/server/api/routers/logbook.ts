@@ -548,6 +548,29 @@ export const logbookRouter = createTRPCRouter({
 				success: true,
 			};
 		}),
+	getLastKmState: protectedProcedure.query(async ({ ctx, input }) => {
+		if (!(await hasPermission("viewLogbookFeed"))) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "You are not authorized to perform this action.",
+			});
+		}
+
+		const lastKmState = await ctx.db.query.logbookFeed.findFirst({
+			where: (logbookFeed, { eq, or, and, not }) =>
+				and(
+					or(
+						eq(logbookFeed.type, "entry"),
+						eq(logbookFeed.type, "start"),
+						eq(logbookFeed.type, "end"),
+					),
+					not(eq(logbookFeed.deleted, true)),
+				),
+			orderBy: (logbookFeed, { desc }) => desc(logbookFeed.createdAt),
+		});
+
+		return lastKmState?.kmState;
+	}),
 	getMonthlyData: protectedProcedure
 		.input(z.object({ date: z.string().regex(/^\d{1,2}[./]\d{1,2}[./]\d{4}$/) }))
 		.query(async ({ ctx, input }) => {

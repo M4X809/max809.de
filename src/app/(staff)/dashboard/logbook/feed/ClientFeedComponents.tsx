@@ -4,6 +4,7 @@ import {
 	faChevronLeft,
 	faChevronRight,
 	faEdit,
+	faRuler,
 	faTrashCan,
 } from "@fortawesome/pro-duotone-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -173,10 +174,12 @@ export const CreateEntry = ({
 	streetNames,
 	initialValues,
 	entryId,
+	lastKmState,
 }: {
 	streetNames: string[];
 	initialValues?: FeedEntry | undefined | null;
 	entryId?: string | undefined | null;
+	lastKmState?: string | null;
 }) => {
 	const router = useRouter();
 	const posthog = usePostHog();
@@ -318,50 +321,6 @@ export const CreateEntry = ({
 		}
 	}, [day]);
 
-	// // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	// useEffect(() => {
-	// 	if (isCreated || isUpdated) {
-	// 		if (isUpdated) {
-	// 			console.log("isUpdated", isUpdated);
-	// 			router.push(
-	// 				`/dashboard/logbook/feed?day=${initialValues?.date?.toLocaleDateString("de-DE")}`,
-	// 			);
-	// 			setTimeout(() => {
-	// 				router.refresh();
-	// 			}, 100);
-	// 			return;
-	// 		}
-
-	// 		const date = form.values.date;
-	// 		form.reset();
-	// 		form.setValues({
-	// 			type: "entry",
-	// 			date: date,
-	// 		});
-	// 		setDay(date.toLocaleDateString("de-DE"));
-	// 		setTimeout(() => {
-	// 			router.refresh();
-	// 		}, 100);
-	// 	}
-
-	// 	if (createError || updateError) {
-	// 		toast.error(`Fehler beim ${createError ? "Erstellen" : "Bearbeiten"}`, {
-	// 			id: "creating-error",
-	// 			cancel: <DismissButton id="creating-error" />,
-	// 			description: <Box>{createError?.message ?? updateError?.message}</Box>,
-	// 		});
-	// 	}
-	// }, [
-	// 	isCreated,
-	// 	form.reset,
-	// 	router,
-	// 	createError,
-	// 	form.setValues,
-	// 	updateError,
-	// 	isUpdating,
-	// 	isUpdated,
-	// ]);
-
 	return (
 		<form
 			onSubmit={form.onSubmit((values) => {
@@ -445,6 +404,25 @@ export const CreateEntry = ({
 					form.values.type !== "vacation" &&
 					form.values.type !== "sick" && (
 						<TextInput
+							rightSection={
+								!entryId ? (
+									<ActionIcon
+										color="gray.2"
+										variant="light"
+										onClick={() => {
+											if (
+												form.getValues().kmState.toString() === lastKmState?.toString()
+											) {
+												return;
+											}
+											form.setFieldValue("kmState", lastKmState ?? "");
+											toast.success("Kilometerstand vom letzten Eintrag wurde eingefügt.");
+										}}
+									>
+										<FontAwesomeIcon icon={faRuler} />
+									</ActionIcon>
+								) : null
+							}
 							type="tel"
 							withAsterisk
 							pt={10}
