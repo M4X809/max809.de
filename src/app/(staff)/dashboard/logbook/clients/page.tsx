@@ -93,7 +93,7 @@ export default async function LogbookClients({
 				{monthData?.map((month) => (
 					<Card key={month?.month} className="rounded-lg bg-white/5 p-2">
 						<Title order={3}>{month?.month}</Title>
-						<Table>
+						<Table className="">
 							<TableThead>
 								<TableTr>
 									<TableTh>Datum</TableTh>
@@ -108,15 +108,20 @@ export default async function LogbookClients({
 									<TableTr key={entry.id} className="text-xs md:text-base">
 										{entry.date && <TableTd>{format(entry.date, "dd.MM.yy")}</TableTd>}
 										{entry.startTime && entry.endTime ? (
-											<TableTd className="text-center md:text-left">
-												Von: {format(entry.startTime, "HH:mm")}
-												<br />
-												Bis: {format(entry.endTime, "HH:mm")}
+											<TableTd className="text-center text-[10px]">
+												<Text className="text-nowrap text-xs">
+													Von: {format(entry.startTime, "HH:mm")}
+												</Text>
+												<Text className="text-nowrap text-xs">
+													Bis: {format(entry.endTime, "HH:mm")}
+												</Text>
 											</TableTd>
 										) : (
 											"N/A"
 										)}
-										<TableTd>{entry.workTime} h</TableTd>
+										<TableTd className="text-nowrap text-[10px]">
+											{entry.workTime} h
+										</TableTd>
 										<TableTd className="text-pretty">{entry.streetName}</TableTd>
 									</TableTr>
 								))}
