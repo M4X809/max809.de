@@ -1170,7 +1170,7 @@ export const logbookRouter = createTRPCRouter({
 					...entry,
 					workTime:
 						entry.endTime && entry.startTime
-							? (differenceInMinutes(entry.endTime, entry.startTime) / 60).toFixed(2)
+							? differenceInMinutes(entry.endTime, entry.startTime).toString()
 							: "0",
 				});
 			}

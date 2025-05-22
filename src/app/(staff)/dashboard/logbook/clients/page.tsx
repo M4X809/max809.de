@@ -123,7 +123,9 @@ export default async function LogbookClients({
 										) : (
 											"N/A"
 										)}
-										<TableTd className="text-nowrap text-xs">{entry.workTime} h</TableTd>
+										<TableTd className="text-nowrap text-xs">
+											{entry.workTime} min
+										</TableTd>
 										<TableTd className="text-pretty">{entry.streetName}</TableTd>
 									</TableTr>
 								))}
