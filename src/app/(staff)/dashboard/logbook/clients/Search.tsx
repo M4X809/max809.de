@@ -71,6 +71,9 @@ export function Search({
 			<Autocomplete
 				disabled={isLoading}
 				withAsterisk
+				comboboxProps={{
+					position: "bottom",
+				}}
 				pt={10}
 				label="Name oder Tätigkeit"
 				data={streetNames}

@@ -105,7 +105,7 @@ export default async function LogbookClients({
 							</TableThead>
 							<TableTbody>
 								{month?.entries?.map((entry) => (
-									<TableTr key={entry.id}>
+									<TableTr key={entry.id} className="text-xs md:text-base">
 										{entry.date && <TableTd>{format(entry.date, "dd.MM.yy")}</TableTd>}
 										{entry.startTime && entry.endTime ? (
 											<TableTd className="text-center md:text-left">
