@@ -65,6 +65,12 @@ const DashNav = ({ session }: { session: Session | null | undefined }) => {
 						label: "Tagesübersicht",
 						permission: "viewLogbookFeed",
 					},
+					{
+						icon: faUser,
+						to: "/dashboard/logbook/clients",
+						label: "Kunden Übersicht",
+						permission: "viewLogbookFeed",
+					},
 				],
 			},
 		];

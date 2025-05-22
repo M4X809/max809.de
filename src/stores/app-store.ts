@@ -15,6 +15,9 @@ export type AppStore = {
 	// SpeedCube Timer
 	hideHeader: boolean;
 	setHideHeader: (hideHeader: boolean) => void;
+
+	wasLoading: boolean;
+	setWasLoading: (wasLoading: boolean) => void;
 };
 
 export const createAppStore = () => {
@@ -32,5 +35,8 @@ export const createAppStore = () => {
 		// SpeedCube Timer
 		hideHeader: false,
 		setHideHeader: (hideHeader: boolean) => set(() => ({ hideHeader })),
+
+		wasLoading: false,
+		setWasLoading: (wasLoading) => set(() => ({ wasLoading })),
 	}));
 };

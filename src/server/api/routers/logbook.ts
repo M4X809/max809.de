@@ -8,8 +8,18 @@ import {
 } from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
-import { asc, eq, or } from "drizzle-orm";
-import { endOfMonth, format, startOfMonth, subDays, subMonths } from "date-fns";
+import { and, asc, desc, eq, not, or } from "drizzle-orm";
+import {
+	differenceInHours,
+	differenceInMinutes,
+	endOfMonth,
+	endOfYear,
+	format,
+	startOfMonth,
+	startOfYear,
+	subDays,
+	subMonths,
+} from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
 import jsPDF from "jspdf";
@@ -27,7 +37,11 @@ export const logbookRouter = createTRPCRouter({
 				type: z
 					.enum(["entry", "start", "end", "pause", "holiday", "vacation", "sick"])
 					.default("entry"),
-				streetName: z.string().optional().default(""),
+				streetName: z
+					.string()
+					.optional()
+					.default("")
+					.transform((val) => val.trim()),
 				kmState: z.string().optional().default(""),
 				startTime: z.date().optional(),
 				endTime: z.date().optional(),
@@ -1090,5 +1104,77 @@ export const logbookRouter = createTRPCRouter({
 			footerSection("Datum + Unterschrift: __________________", margin);
 
 			return doc.output("blob");
+		}),
+	getClients: protectedProcedure.query(async ({ ctx }) => {
+		if (!(await hasPermission("viewLogbookFeed"))) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "You are not authorized to perform this action.",
+			});
+		}
+
+		const clients = await ctx.db
+			.selectDistinct({
+				streetName: logbookFeed.streetName,
+			})
+			.from(logbookFeed)
+			.where(
+				and(eq(logbookFeed.type, "entry"), not(eq(logbookFeed.deleted, true))),
+			);
+
+		return clients
+			.map((client) => client.streetName.trim())
+			.filter((value, index, self) => self.indexOf(value) === index)
+			.sort((a, b) => a.localeCompare(b));
+	}),
+	getClientData: protectedProcedure
+		.input(z.string().optional())
+		.query(async ({ ctx, input }) => {
+			if (!(await hasPermission("viewLogbookFeed"))) {
+				throw new TRPCError({
+					code: "UNAUTHORIZED",
+					message: "You are not authorized to perform this action.",
+				});
+			}
+
+			if (!input) {
+				return new Map<string, EntryWithWorkTime[]>();
+			}
+
+			const startYear = startOfYear(new Date());
+			const endYear = endOfYear(new Date());
+			const data = await ctx.db.query.logbookFeed.findMany({
+				where: (logbook, { eq, like, and, not, between }) =>
+					and(
+						like(logbook.streetName, `%${input}%`),
+						not(eq(logbook.deleted, true)),
+						eq(logbook.type, "entry"),
+						between(logbook.createdAt, startYear, endYear),
+					),
+				orderBy: asc(logbookFeed.startTime),
+			});
+
+			/**
+			 * key: month
+			 * value: Array of entries with workTime
+			 */
+			type EntryWithWorkTime = (typeof data)[number] & { workTime: string };
+			const clientData = new Map<string, EntryWithWorkTime[]>();
+
+			for (const entry of data) {
+				const month = format(entry.createdAt, "MM", { locale: de });
+				if (!clientData.has(month)) {
+					clientData.set(month, []);
+				}
+				clientData.get(month)?.push({
+					...entry,
+					workTime:
+						entry.endTime && entry.startTime
+							? (differenceInMinutes(entry.endTime, entry.startTime) / 60).toFixed(2)
+							: "0",
+				});
+			}
+
+			return clientData;
 		}),
 });

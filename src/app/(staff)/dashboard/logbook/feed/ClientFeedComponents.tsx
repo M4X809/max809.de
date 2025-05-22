@@ -393,7 +393,6 @@ export const CreateEntry = ({
 				{form.values.type === "entry" && (
 					<Autocomplete
 						withAsterisk
-						className={twMerge("transit")}
 						pt={10}
 						label="Name oder Tätigkeit"
 						data={streetNames}

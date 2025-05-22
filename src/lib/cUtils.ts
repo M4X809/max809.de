@@ -1,8 +1,13 @@
 "use client";
 
+import { useMounted, useDidUpdate } from "@mantine/hooks";
 import clsx, { type ClassValue } from "clsx";
 import type { SessionType } from "next-auth";
+import { useRouter } from "next/navigation";
+import { useTransition, useMemo } from "react";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
+import { useAppStore } from "~/providers/app-store-provider";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -63,4 +68,82 @@ export function usePermission(session: SessionType) {
 		if (session.user.permissions?.includes(permission)) return true;
 		return false;
 	};
+}
+
+export function useRefreshState({
+	withToast = true,
+	removeToastOnUnmounted = false,
+}: {
+	/**
+	 * If true, a toast will be shown while the page is refreshing.
+	 * Defaults to true.
+	 */
+	withToast?: boolean;
+
+	/**
+	 * If true, the toast will be hidden when the component is unmounted even if wasLoading is false.
+	 * Defaults to false.
+	 */
+	removeToastOnUnmounted?: boolean;
+} = {}) {
+	const router = useRouter();
+	const [isPending, startTransition] = useTransition();
+	const wasLoading = useAppStore((state) => state.wasLoading);
+	const setWasLoading = useAppStore((state) => state.setWasLoading);
+
+	const isMounted = useMounted();
+
+	const handleRefresh = useMemo(() => {
+		return (
+			/**
+			 * The id of the toast to be closed when the page is refreshed.
+			 */
+			toastId?: string,
+		) => {
+			if (toastId) toast.dismiss(toastId);
+
+			setWasLoading(true);
+
+			if (removeToastOnUnmounted) {
+				toast.loading("Die Seite wird neu geladen...", {
+					id: "reload-toast",
+					description: undefined,
+				});
+			}
+
+			startTransition(() => {
+				if (!isMounted) return;
+				console.log("refresh");
+				router.refresh();
+			});
+		};
+	}, [removeToastOnUnmounted, setWasLoading, router, isMounted]);
+
+	useDidUpdate(() => {
+		if (isPending && wasLoading && withToast) {
+			toast.loading("Die Seite wird neu geladen...", {
+				id: "reload-toast",
+				description: undefined,
+			});
+		} else if (
+			!isPending &&
+			(wasLoading || (!isMounted && removeToastOnUnmounted))
+		) {
+			if (withToast) toast.dismiss("reload-toast");
+			setWasLoading(false);
+		}
+		return () => {
+			if (withToast) toast.dismiss("reload-toast");
+			setWasLoading(false);
+		};
+	}, [
+		isPending,
+		wasLoading,
+		withToast,
+		isMounted,
+		removeToastOnUnmounted,
+		setWasLoading,
+	]);
+
+	return { isPending, wasLoading, handleRefresh };
 }
