@@ -5,12 +5,12 @@ import {
 	timeAddition,
 	timeDifference,
 	timeSubtraction,
+	toMinutes,
 } from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
-import { and, asc, desc, eq, not, or } from "drizzle-orm";
+import { and, asc, eq, not, or } from "drizzle-orm";
 import {
-	differenceInHours,
 	differenceInMinutes,
 	endOfMonth,
 	endOfYear,
@@ -18,7 +18,6 @@ import {
 	startOfMonth,
 	startOfYear,
 	subDays,
-	subMonths,
 } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
@@ -826,6 +825,49 @@ export const logbookRouter = createTRPCRouter({
 				{} as Record<string, typeof entries>,
 			);
 
+			// Calculate available width for Tätigkeiten column
+			// A4 page width: 210mm = 595.28 points, margins: 15 on each side = 30 total
+			const tablePageWidth = doc.internal.pageSize.width;
+			const tableMargin = 15;
+			const availableWidth = tablePageWidth - 2 * tableMargin;
+			const fixedColumnWidths = 15 + 30 + 25 + (12 - 0.2206666667); // Tag + Arbeitszeit + Stunden + KM
+			const tätigkeitenWidth = availableWidth - fixedColumnWidths;
+
+			// Verify total width matches exactly
+			const totalWidth = 15 + 30 + 25 + tätigkeitenWidth + (12 - 0.2206666667);
+
+			// Helper function to convert time string (HH:MM) to decimal hours rounded to 1 decimal
+			const timeToDecimalHours = (timeStr: string): string => {
+				const minutes = toMinutes(timeStr);
+				if (minutes === null) return "";
+				const hours = minutes / 60;
+				return hours.toFixed(1);
+			};
+
+			// Helper function to calculate total work time for a day
+			const calculateDayWorkTime = (dayEntries: typeof entries): string => {
+				const startEntry = dayEntries.find((e) => e.type === "start");
+				const endEntry = dayEntries.find((e) => e.type === "end");
+
+				if (!startEntry?.startTime || !endEntry?.endTime) return "";
+
+				// Calculate day time from first start to last end (ignoring breaks)
+				const dayTime = timeDifference(
+					startEntry.startTime
+						?.toLocaleTimeString("de-DE")
+						.split(":")
+						.slice(0, 2)
+						.join(":"),
+					endEntry.endTime
+						?.toLocaleTimeString("de-DE")
+						.split(":")
+						.slice(0, 2)
+						.join(":"),
+				);
+
+				return timeToDecimalHours(dayTime);
+			};
+
 			// Prepare table data
 			const tableData = Array.from({ length: 31 }, (_, index) => {
 				const currentDate = new Date(year!, month! - 1, index + 1);
@@ -852,6 +894,7 @@ export const logbookRouter = createTRPCRouter({
 						}`,
 						"",
 						"---",
+						"",
 					];
 				}
 
@@ -862,8 +905,11 @@ export const logbookRouter = createTRPCRouter({
 				const dayOfWeek = currentDate.getDay();
 				if (dayOfWeek === 0 || dayOfWeek === 6) {
 					const weekDayName = format(currentDate, "EEEE", { locale: de });
-					return [`${index + 1}.`, weekDayName, "", "---"];
+					return [`${index + 1}.`, weekDayName, "", "---", ""];
 				}
+
+				// Calculate total workhours for the day
+				const totalWorkHours = calculateDayWorkTime(dayEntries);
 
 				// Format work entries inline
 				const workEntries = dayEntries
@@ -897,7 +943,10 @@ export const logbookRouter = createTRPCRouter({
 
 				const workTimeString = (text: string) => {
 					const t = text.toString();
-					const w = 75;
+					// Calculate approximate character width based on column width
+					// Original: 75 chars for 125 points = 0.6 chars per point
+					// For dynamic width: tätigkeitenWidth * 0.6
+					const w = Math.floor(tätigkeitenWidth * 0.6);
 					if (t.length > w) {
 						// console.log(chalk.yellow(index + 1));
 						const lines = new Map<number, string[]>();
@@ -937,6 +986,7 @@ export const logbookRouter = createTRPCRouter({
 				return [
 					`${index + 1}.`,
 					workTime,
+					totalWorkHours,
 					workTimeString(formattedEntries),
 					kmDiff.toString(),
 				];
@@ -945,9 +995,11 @@ export const logbookRouter = createTRPCRouter({
 			// console.log("tableData", tableData);
 			// Add table
 			autoTable(doc, {
-				head: [["Tag", "Arbeitszeit", "Tätigkeiten", "KM"]],
+				head: [["Tag", "Arbeitszeit", "Stunden", "Tätigkeiten", "KM"]],
 				body: tableData as RowInput[],
 				startY: 20,
+				margin: { left: tableMargin, right: tableMargin },
+				tableWidth: totalWidth,
 				styles: {
 					fontSize: 10,
 					cellPadding: 1,
@@ -967,13 +1019,18 @@ export const logbookRouter = createTRPCRouter({
 						valign: "middle",
 					},
 					2: {
-						// Tätigkeiten column
-						cellWidth: 125,
-						halign: "left",
-
-						// overflow: "linebreak",
+						// Stunden column
+						cellWidth: 25,
+						halign: "center",
+						valign: "middle",
 					},
 					3: {
+						// Tätigkeiten column - expand to fill available space
+						cellWidth: tätigkeitenWidth,
+						halign: "left",
+						overflow: "linebreak",
+					},
+					4: {
 						// KM column
 						cellWidth: 12 - 0.2206666667,
 						halign: "center",
@@ -984,6 +1041,35 @@ export const logbookRouter = createTRPCRouter({
 				didParseCell: (data) => {
 					if (data.section === "body") {
 						const rowContent = data.row.cells[1]?.text[0];
+						const tätigkeitenContent = data.row.cells[3]?.text[0];
+
+						// Check if this is a weekend row (has weekday name in Arbeitszeit column and "---" in Tätigkeiten)
+						const isWeekend =
+							tätigkeitenContent === "---" &&
+							rowContent &&
+							(rowContent === "Sonntag" ||
+								rowContent === "Samstag" ||
+								rowContent === "Sonnabend" ||
+								rowContent.toLowerCase().includes("sonntag") ||
+								rowContent.toLowerCase().includes("samstag"));
+
+						// Apply weekend styling with light gray background (no alternating colors)
+						if (isWeekend) {
+							data.cell.styles.fillColor = [222, 222, 222]; // Light gray background
+							data.cell.styles.textColor = [120, 120, 120]; // Gray text for reduced visibility
+						}
+
+						// Check if workhours (column 2) is greater than 8 and make it bold
+						if (data.column.index === 2) {
+							const workHoursValue = data.cell.text[0];
+							if (workHoursValue && typeof workHoursValue === "string") {
+								const hours = Number.parseFloat(workHoursValue);
+								if (!Number.isNaN(hours) && hours > 8) {
+									data.cell.styles.fontStyle = "bold";
+								}
+							}
+						}
+
 						if (rowContent === "Urlaub") {
 							if (data.row.index % 2 === 1) {
 								// Apply alternate row color only for non-special rows
@@ -1038,8 +1124,8 @@ export const logbookRouter = createTRPCRouter({
 				for (const entry of entries) {
 					if (!entry) continue;
 
-					// Calculate total KM
-					const kmValue = Number(entry[3]);
+					// Calculate total KM (now at index 4)
+					const kmValue = Number(entry[4]);
 					if (Number.isNaN(kmValue)) continue;
 					totalKm += kmValue;
 
