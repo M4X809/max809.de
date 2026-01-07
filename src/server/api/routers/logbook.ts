@@ -18,6 +18,7 @@ import {
 	startOfMonth,
 	startOfYear,
 	subDays,
+	subYears,
 } from "date-fns";
 import type { DayData } from "~/app/(staff)/dashboard/logbook/full-screen-calendar";
 import { de } from "date-fns/locale";
@@ -1227,15 +1228,15 @@ export const logbookRouter = createTRPCRouter({
 				return new Map<string, EntryWithWorkTime[]>();
 			}
 
-			const startYear = startOfYear(new Date());
-			const endYear = endOfYear(new Date());
+			const startDate = subDays(new Date(), 365);
+			const endDate = new Date();
 			const data = await ctx.db.query.logbookFeed.findMany({
 				where: (logbook, { eq, like, and, not, between }) =>
 					and(
 						like(logbook.streetName, `%${input}%`),
 						not(eq(logbook.deleted, true)),
 						eq(logbook.type, "entry"),
-						between(logbook.createdAt, startYear, endYear),
+						between(logbook.createdAt, startDate, endDate),
 					),
 				orderBy: asc(logbookFeed.startTime),
 			});
