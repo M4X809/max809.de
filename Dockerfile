@@ -5,7 +5,7 @@ FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy package manifests
-COPY package.json bun.lock bunfig.toml next.config.js ./src/env.js ./
+COPY package.json bun.lock bunfig.toml next.config.ts ./src/env.ts ./
 
 
 
@@ -26,7 +26,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/bun.lock ./bun.lock
 COPY --from=deps /app/bunfig.toml ./bunfig.toml
-COPY --from=deps /app/next.config.js ./next.config.js
+COPY --from=deps /app/next.config.ts ./next.config.ts
 
 # Copy the rest of the application code
 COPY . .
@@ -82,8 +82,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/src/env.js ./src/env.js
-COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/src/env.js ./src/env.ts
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 COPY --from=deps /root/.cache/puppeteer /root/.cache/puppeteer
 COPY --from=builder /app/.next/standalone ./

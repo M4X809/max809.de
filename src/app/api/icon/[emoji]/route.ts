@@ -12,10 +12,7 @@ import puppeteer from "puppeteer";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
-const convertPng = async (
-	svg: string,
-	userAgent?: string | null,
-): Promise<Uint8Array> => {
+const convertPng = async (svg: string, userAgent?: string | null): Promise<Uint8Array> => {
 	const browser = await puppeteer.launch({
 		browser: "chrome",
 		args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -63,10 +60,7 @@ const convertPng = async (
 
 const blockedEmojis = ["🍆"];
 
-export async function GET(
-	req: NextRequest,
-	{ params }: { params: Promise<{ emoji?: string }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ emoji?: string }> }) {
 	try {
 		let serverRequest = false;
 
@@ -82,8 +76,7 @@ export async function GET(
 			return Response.json({ error: error.issues[0]?.message });
 		}
 
-		if (blockedEmojis.includes(emoji))
-			return Response.json({ error: "Blocked emoji" }, { status: 403 });
+		if (blockedEmojis.includes(emoji)) return Response.json({ error: "Blocked emoji" }, { status: 403 });
 
 		const emojiHash = emoji.codePointAt(0)?.toString(16);
 		if (!emojiHash) return new Response("Invalid emoji", { status: 400 });
@@ -119,17 +112,14 @@ export async function GET(
 		</svg>
 		`;
 
-		const forceSvg =
-			req.nextUrl.search.includes("svg") ||
-			(true && !req.nextUrl.search.includes("png")); // ?svg tacked on the end forces SVG, handy for css cursors
-		const forcePng =
-			req.nextUrl.search.includes("png") && !req.nextUrl.search.includes("svg"); // ?png tacked on the end forces PNG, handy for css cursors
+		const forceSvg = req.nextUrl.search.includes("svg") || (true && !req.nextUrl.search.includes("png")); // ?svg tacked on the end forces SVG, handy for css cursors
+		const forcePng = req.nextUrl.search.includes("png") && !req.nextUrl.search.includes("svg"); // ?png tacked on the end forces PNG, handy for css cursors
 		const userAgent = req.headers.get("user-agent");
 
 		if (userAgent?.includes("Safari") && !userAgent.includes("Chrome")) {
 			const png = await convertPng(svg, userAgent);
 			// console.log("Safari");
-			return new Response(png, {
+			return new Response(Buffer.from(png), {
 				status: 200,
 				headers: { "Content-Type": "image/png", Cache: "max-age=60" },
 			});
@@ -137,17 +127,14 @@ export async function GET(
 
 		if (forcePng && forceSvg) {
 			// console.log("Both png and svg are forced.");
-			return Response.json(
-				{ error: "Both png and svg are forced." },
-				{ status: 400 },
-			);
+			return Response.json({ error: "Both png and svg are forced." }, { status: 400 });
 		}
 
 		if (forcePng) {
 			const png = await convertPng(svg, userAgent);
 
 			// console.log("Forcing PNG");
-			return new Response(png, {
+			return new Response(Buffer.from(png), {
 				status: 200,
 				headers: { "Content-Type": "image/png", Cache: "max-age=60" },
 			});

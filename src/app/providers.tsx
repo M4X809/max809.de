@@ -6,8 +6,7 @@ import { env } from "~/env";
 if (typeof window !== "undefined") {
 	posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
 		api_host: "/ingest",
-		person_profiles:
-			env.NEXT_PUBLIC_NODE_ENV === "production" ? "always" : "identified_only", // or 'always' to create profiles for anonymous users as well
+		person_profiles: env.NEXT_PUBLIC_NODE_ENV === "production" ? "always" : "identified_only", // or 'always' to create profiles for anonymous users as well
 		autocapture: { url_ignorelist: ["http://localhost:3000/*"] },
 		capture_heatmaps: env.NEXT_PUBLIC_NODE_ENV === "production",
 		enable_heatmaps: env.NEXT_PUBLIC_NODE_ENV === "production",

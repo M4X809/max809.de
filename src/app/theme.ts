@@ -19,8 +19,7 @@ export const theme: MantineThemeOverride = {
 		Pill: Pill.extend({
 			defaultProps: {
 				variant: "default",
-				className:
-					"bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white",
+				className: "bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.12)] text-white",
 			},
 		}),
 
@@ -82,10 +81,8 @@ export const theme: MantineThemeOverride = {
 		}),
 		DatePicker: DatePicker.extend({
 			classNames: {
-				calendarHeader:
-					"bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
-				calendarHeaderControl:
-					"bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
+				calendarHeader: "bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
+				calendarHeaderControl: "bg-[rgba(0,0,0,0.05)] hover:bg-[rgba(0,0,0,0.1)] text-white",
 				day: "data-[selected=true]:bg-[rgba(255,255,255,0.1)] data-[selected=true]:text-white",
 			},
 			defaultProps: {
@@ -131,8 +128,7 @@ export const theme: MantineThemeOverride = {
 					input: "bg-[rgba(255,255,255,0.05)] text-white",
 					wrapper: "bg-transparent",
 					dropdown: "backdrop-blur-lg bg-[rgba(0,0,0,0.3)] text-white",
-					option:
-						"hover:bg-[rgba(255,255,255,0.1)] rounded-md aria-[selected=true]:bg-[rgba(255,255,255,0.09)]",
+					option: "hover:bg-[rgba(255,255,255,0.1)] rounded-md aria-[selected=true]:bg-[rgba(255,255,255,0.09)]",
 				},
 			},
 		}),
@@ -142,8 +138,7 @@ export const theme: MantineThemeOverride = {
 					input: "bg-[rgba(255,255,255,0.05)] text-white",
 					wrapper: "bg-transparent",
 					dropdown: "backdrop-blur-lg bg-[rgba(0,0,0,0.3)] text-white",
-					option:
-						"hover:bg-[rgba(255,255,255,0.1)] rounded-md aria-[selected=true]:bg-[rgba(255,255,255,0.09)]",
+					option: "hover:bg-[rgba(255,255,255,0.1)] rounded-md aria-[selected=true]:bg-[rgba(255,255,255,0.09)]",
 				},
 			},
 		}),

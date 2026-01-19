@@ -1,8 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "."
-		}
+			"path": ".",
+		},
 	],
 	"settings": {
 		"editor.formatOnSave": true,
@@ -12,29 +12,20 @@
 		"git.enableSmartCommit": true,
 		"explorer.compactFolders": false,
 		"[html]": {
-			"editor.defaultFormatter": "vscode.html-language-features"
+			"editor.defaultFormatter": "vscode.html-language-features",
 		},
 		"[typescriptreact]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode"
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
 		},
 		"emmet.includeLanguages": {
-			"javascript": "javascriptreact"
+			"javascript": "javascriptreact",
 		},
 		"emmet.syntaxProfiles": {
-			"javascript": "jsx"
+			"javascript": "jsx",
 		},
-		"errorLens.enabledDiagnosticLevels": [
-			"error",
-			"warning",
-			"info",
-			"hint"
-		],
-		"errorLens.excludePatterns": [
-			"[\"**node_modules**\"]"
-		],
-		"console-ninja.allowedHosts": [
-			"localhost"
-		],
+		"errorLens.enabledDiagnosticLevels": ["error", "warning", "info", "hint"],
+		"errorLens.excludePatterns": ["[\"**node_modules**\"]"],
+		"console-ninja.allowedHosts": ["localhost"],
 		"cSpell.words": [
 			"aakyb",
 			"autocapture",
@@ -94,43 +85,24 @@
 			"zbll",
 			"zustand",
 			"zzll",
-			"zzlsll"
+			"zzlsll",
 		],
-		"indentRainbow.ignoreErrorLanguages": [
-			"css",
-			"html",
-			"markdown"
-		],
-		"indentRainbow.ignoreLinePatterns": [
-			"/[ \t]* [*]/g",
-			"/[ \t]+[/]{2}/g"
-		],
+		"indentRainbow.ignoreErrorLanguages": ["css", "html", "markdown"],
+		"indentRainbow.ignoreLinePatterns": ["/[ \t]* [*]/g", "/[ \t]+[/]{2}/g"],
 		"indentRainbow.colors": [
 			"rgba(255,255,64,0.07)",
 			"rgba(127,255,127,0.07)",
 			"rgba(255,127,255,0.07)",
-			"rgba(79,236,236,0.07)"
+			"rgba(79,236,236,0.07)",
 		],
 		"workbench.iconTheme": "eq-material-theme-icons",
-		"todo-tree.filtering.excludeGlobs": [
-			"**/node_modules/*/**",
-			"**/fontawesome/*/**"
-		],
-		
-		"tailwindCSS.classAttributes": [
-			"class",
-			"className",
-			"ngClass",
-			"class:list",
-			".*Cn*"
-		],
+		"todo-tree.filtering.excludeGlobs": ["**/node_modules/*/**", "**/fontawesome/*/**"],
+
+		"tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", ".*Cn*"],
 		"vscord.status.buttons.button1.enabled": true,
 		"supermaven.logFilePath": "D:/dev/playground/max809/.vscode/sm-log.txt",
 	},
 	"extensions": {
-		"recommendations": [
-			"1password.op-vscode",
-			"jannchie.codetime"
-		]
-	}
+		"recommendations": ["1password.op-vscode", "jannchie.codetime"],
+	},
 }

@@ -12,11 +12,7 @@ const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;
  * Try to execute the fetcher function until it succeeds or the max number of retries is reached.
  */
 const retryer = async (
-	fetcher: (
-		variables: Record<string, string>,
-		token: string | undefined,
-		retries?: number,
-	) => Promise<Fetcher>,
+	fetcher: (variables: Record<string, string>, token: string | undefined, retries?: number) => Promise<Fetcher>,
 	variables: Record<string, string>,
 	retries = 0,
 ): Promise<Fetcher> => {
@@ -28,11 +24,7 @@ const retryer = async (
 	}
 	try {
 		// try to fetch with the first token since RETRIES is 0 index i'm adding +1
-		const { res: response, req } = await fetcher(
-			variables,
-			process.env[`PAT_${retries + 1}`],
-			retries,
-		);
+		const { res: response, req } = await fetcher(variables, process.env[`PAT_${retries + 1}`], retries);
 		// prettier-ignore
 		// const headers = Array.from(req.headers.entries()).reduce<{ [key: string]: string }>((acc, [key, value]) => {
 		// 	acc[key] = value;
@@ -71,9 +63,7 @@ const retryer = async (
 		// prettier-ignore
 		// also checking for bad credentials if any tokens gets invalidated
 		const isBadCredential = err.response.data && err.response.data.message === "Bad credentials";
-		const isAccountSuspended =
-			err.response.data &&
-			err.response.data.message === "Sorry. Your account was suspended.";
+		const isAccountSuspended = err.response.data && err.response.data.message === "Sorry. Your account was suspended.";
 
 		if (isBadCredential || isAccountSuspended) {
 			logger.log(`PAT_${retries + 1} Failed`);
@@ -88,10 +78,8 @@ const retryer = async (
 const TRY_AGAIN_LATER = "Please try again later";
 
 const SECONDARY_ERROR_MESSAGES = {
-	MAX_RETRY:
-		"You can deploy own instance or wait until public will be no longer limited",
-	NO_TOKENS:
-		"Please add an env variable called PAT_1 with your GitHub API token in vercel",
+	MAX_RETRY: "You can deploy own instance or wait until public will be no longer limited",
+	NO_TOKENS: "Please add an env variable called PAT_1 with your GitHub API token in vercel",
 	USER_NOT_FOUND: "Make sure the provided username is not an organization",
 	GRAPHQL_ERROR: TRY_AGAIN_LATER,
 	GITHUB_REST_API_ERROR: TRY_AGAIN_LATER,
@@ -109,27 +97,18 @@ class CustomError extends Error {
 	 * @param {string} message Error message.
 	 * @param {string} type Error type.
 	 */
-	constructor(
-		message: string | undefined,
-		type?: keyof typeof SECONDARY_ERROR_MESSAGES | undefined,
-	) {
+	constructor(message: string | undefined, type?: keyof typeof SECONDARY_ERROR_MESSAGES | undefined) {
 		super(message || "");
 		this.type = type;
-		this.secondaryMessage =
-			(!!SECONDARY_ERROR_MESSAGES && !!type && SECONDARY_ERROR_MESSAGES[type]) ||
-			type;
+		this.secondaryMessage = (!!SECONDARY_ERROR_MESSAGES && !!type && SECONDARY_ERROR_MESSAGES[type]) || type;
 	}
 
 	static MAX_RETRY = "MAX_RETRY" as keyof typeof SECONDARY_ERROR_MESSAGES;
 	static NO_TOKENS = "NO_TOKENS" as keyof typeof SECONDARY_ERROR_MESSAGES;
-	static USER_NOT_FOUND =
-		"USER_NOT_FOUND" as keyof typeof SECONDARY_ERROR_MESSAGES;
-	static GRAPHQL_ERROR =
-		"GRAPHQL_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
-	static GITHUB_REST_API_ERROR =
-		"GITHUB_REST_API_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
-	static WAKATIME_ERROR =
-		"WAKATIME_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
+	static USER_NOT_FOUND = "USER_NOT_FOUND" as keyof typeof SECONDARY_ERROR_MESSAGES;
+	static GRAPHQL_ERROR = "GRAPHQL_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
+	static GITHUB_REST_API_ERROR = "GITHUB_REST_API_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
+	static WAKATIME_ERROR = "WAKATIME_ERROR" as keyof typeof SECONDARY_ERROR_MESSAGES;
 }
 
 interface FlexLayoutProps {
@@ -143,12 +122,7 @@ interface FlexLayoutProps {
  * Auto layout utility, allows us to layout things vertically or horizontally with
  * proper gaping.
  */
-const flexLayout = ({
-	items,
-	gap,
-	direction,
-	sizes = [],
-}: FlexLayoutProps): string[] => {
+const flexLayout = ({ items, gap, direction, sizes = [] }: FlexLayoutProps): string[] => {
 	let lastSize = 0;
 	// filter() for filtering out empty strings
 	return items.filter(Boolean).map((item, i) => {
@@ -187,12 +161,7 @@ const createLanguageNode = (langName: string, langColor: string): string => {
  * @param {number} iconSize The size of the icon.
  * @returns {string} Icon with label SVG object.
  */
-const iconWithLabel = (
-	icon: string,
-	label: number | string,
-	testid: string,
-	iconSize: number,
-): string => {
+const iconWithLabel = (icon: string, label: number | string, testid: string, iconSize: number): string => {
 	if (typeof label === "number" && label <= 0) {
 		return "";
 	}
@@ -231,9 +200,7 @@ const kFormatter = (num: number): string | number => {
  * @returns {boolean} True if the given string is a valid hex color.
  */
 const isValidHexColor = (hexColor: string): boolean => {
-	return new RegExp(
-		/^([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{4})$/,
-	).test(hexColor);
+	return new RegExp(/^([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{4})$/).test(hexColor);
 };
 
 /**
@@ -293,9 +260,7 @@ const clampValue = (number: number, min: number, max: number): number => {
  * @returns {boolean} True if the given string is a valid gradient.
  */
 const isValidGradient = (colors: string[]): boolean => {
-	return (
-		colors.length > 2 && colors.slice(1).every((color) => isValidHexColor(color))
-	);
+	return colors.length > 2 && colors.slice(1).every((color) => isValidHexColor(color));
 };
 
 /**
@@ -305,10 +270,7 @@ const isValidGradient = (colors: string[]): boolean => {
  * @param {string | string[]} fallbackColor The fallback color.
  * @returns {string | string[]} The gradient or color.
  */
-const fallbackColor = (
-	color: string,
-	fallbackColor: string | string[],
-): string | string[] => {
+const fallbackColor = (color: string, fallbackColor: string | string[]): string | string[] => {
 	let gradient: string[] | null = null;
 
 	const colors = color ? color.split(",") : [];
@@ -316,9 +278,7 @@ const fallbackColor = (
 		gradient = colors;
 	}
 
-	return (
-		(gradient ? gradient : isValidHexColor(color) && `#${color}`) || fallbackColor
-	);
+	return (gradient ? gradient : isValidHexColor(color) && `#${color}`) || fallbackColor;
 };
 /**
  * Send GraphQL request to GitHub API.
@@ -329,10 +289,7 @@ const fallbackColor = (
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
-const request = async (
-	data: any,
-	headers: Record<string, string>,
-): Promise<Fetcher> => {
+const request = async (data: any, headers: Record<string, string>): Promise<Fetcher> => {
 	return fetch("https://api.github.com/graphql", {
 		method: "POST",
 		body: JSON.stringify(data),
@@ -404,35 +361,16 @@ const getCardColors = ({
 	const defaultTheme = themes[fallbackTheme];
 	// @ts-ignore
 	const selectedTheme = themes[theme] || defaultTheme;
-	const defaultBorderColor =
-		selectedTheme.border_color || defaultTheme.border_color;
+	const defaultBorderColor = selectedTheme.border_color || defaultTheme.border_color;
 
-	const titleColor = fallbackColor(
-		title_color || selectedTheme.title_color,
-		`#${defaultTheme.title_color}`,
-	);
+	const titleColor = fallbackColor(title_color || selectedTheme.title_color, `#${defaultTheme.title_color}`);
 
-	const ringColor = fallbackColor(
-		ring_color || selectedTheme.ring_color,
-		titleColor,
-	);
-	const iconColor = fallbackColor(
-		icon_color || selectedTheme.icon_color,
-		`#${defaultTheme.icon_color}`,
-	);
-	const textColor = fallbackColor(
-		text_color || selectedTheme.text_color,
-		`#${defaultTheme.text_color}`,
-	);
-	const bgColor = fallbackColor(
-		bg_color || selectedTheme.bg_color,
-		`#${defaultTheme.bg_color}`,
-	);
+	const ringColor = fallbackColor(ring_color || selectedTheme.ring_color, titleColor);
+	const iconColor = fallbackColor(icon_color || selectedTheme.icon_color, `#${defaultTheme.icon_color}`);
+	const textColor = fallbackColor(text_color || selectedTheme.text_color, `#${defaultTheme.text_color}`);
+	const bgColor = fallbackColor(bg_color || selectedTheme.bg_color, `#${defaultTheme.bg_color}`);
 
-	const borderColor = fallbackColor(
-		border_color || defaultBorderColor,
-		`#${defaultBorderColor}`,
-	);
+	const borderColor = fallbackColor(border_color || defaultBorderColor, `#${defaultBorderColor}`);
 
 	if (
 		typeof titleColor !== "string" ||
@@ -441,9 +379,7 @@ const getCardColors = ({
 		typeof iconColor !== "string" ||
 		typeof borderColor !== "string"
 	) {
-		throw new Error(
-			"Unexpected behavior, all colors except background should be string.",
-		);
+		throw new Error("Unexpected behavior, all colors except background should be string.");
 	}
 
 	return { titleColor, iconColor, textColor, bgColor, borderColor, ringColor };
@@ -471,10 +407,7 @@ const encodeHTML = (str: string): string => {
 	);
 };
 
-const UPSTREAM_API_ERRORS = [
-	TRY_AGAIN_LATER,
-	SECONDARY_ERROR_MESSAGES.MAX_RETRY,
-];
+const UPSTREAM_API_ERRORS = [TRY_AGAIN_LATER, SECONDARY_ERROR_MESSAGES.MAX_RETRY];
 
 /**
  * Renders error message on the card.
@@ -495,13 +428,7 @@ const renderError = (
 		theme?: string;
 	} = {},
 ): string => {
-	const {
-		title_color,
-		text_color,
-		bg_color,
-		border_color,
-		theme = "github_dark",
-	} = options;
+	const { title_color, text_color, bg_color, border_color, theme = "github_dark" } = options;
 
 	const { titleColor, textColor, bgColor, borderColor } = getCardColors({
 		title_color,
@@ -532,11 +459,7 @@ const renderError = (
     `;
 };
 
-const wrapTextMultiline = (
-	text: string | undefined,
-	width = 59,
-	maxLines = 3,
-): string[] => {
+const wrapTextMultiline = (text: string | undefined, width = 59, maxLines = 3): string[] => {
 	if (!text) return [] as string[];
 	const fullWidthComma = "，";
 	const encoded = encodeHTML(text);
@@ -564,8 +487,7 @@ const wrapTextMultiline = (
 
 const noop = (): void => {};
 // return console instance based on the environment
-const logger =
-	process.env.NODE_ENV === "test" ? { log: noop, error: noop } : console;
+const logger = process.env.NODE_ENV === "test" ? { log: noop, error: noop } : console;
 
 const ONE_MINUTE = 60;
 const FIVE_MINUTES = 300;
@@ -607,9 +529,7 @@ class MissingParamError extends Error {
 	 * @param {string=} secondaryMessage Optional secondary message to display.
 	 */
 	constructor(missedParams: string[], secondaryMessage?: string) {
-		const msg = `Missing params ${missedParams
-			.map((p) => `"${p}"`)
-			.join(", ")} make sure you pass the parameters in URL`;
+		const msg = `Missing params ${missedParams.map((p) => `"${p}"`).join(", ")} make sure you pass the parameters in URL`;
 		super(msg);
 		this.missedParams = missedParams;
 		this.secondaryMessage = secondaryMessage;
@@ -641,11 +561,7 @@ const measureText = (str: string, fontSize = 10): number | undefined => {
 
 	const avg = 0.5279276315789471;
 
-	const ret = str
-		?.split("")
-		?.map((c) =>
-			c.charCodeAt(0) < widths.length ? widths[c.charCodeAt(0)] : avg,
-		) as number[];
+	const ret = str?.split("")?.map((c) => (c.charCodeAt(0) < widths.length ? widths[c.charCodeAt(0)] : avg)) as number[];
 
 	if (ret.length > 1) {
 		const length = ret.reduce((acc, cur) => acc + cur) * fontSize;

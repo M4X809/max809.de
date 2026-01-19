@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { Center, Container, Stack, Title } from "@mantine/core";
 import { revalidateTag, revalidatePath } from "next/cache";
 import Link from "next/link";
@@ -10,10 +10,10 @@ import { getServerAuthSession } from "~/server/auth";
 import { HydrateClient } from "~/trpc/server";
 
 export default async function ClearGhCache() {
-	await onPageAllowed()
+	await onPageAllowed();
 	const session = await getServerAuthSession();
 
-	revalidateTag("gh-stats");
+	revalidateTag("gh-stats", "gh-stats");
 	console.log("revalidateTag");
 
 	// return NextResponse.redirect(new URL("/", getDomain(env.NEXTAUTH_URL)));
@@ -22,19 +22,22 @@ export default async function ClearGhCache() {
 		<HydrateClient>
 			<Shell withLoginButton={false} session={session} title="Clear Cache" redirect={"/"}>
 				<Container fluid className="h-[calc(100dvh-100px)]">
-					<Center className=" h-full">
+					<Center className="h-full">
 						<Stack gap={0}>
-							<Title>
-								Cache Cleared
-							</Title>
-							<Link prefetch href={"/"} className="rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20 text-nowrap mt-5 flex justify-center" >
+							<Title>Cache Cleared</Title>
+							<Link
+								prefetch
+								href={"/"}
+								className="mt-5 flex justify-center text-nowrap rounded-full bg-white/10 px-8 py-2 font-semibold no-underline transition hover:bg-white/20"
+							>
 								Return to Homepage
 							</Link>
 						</Stack>
 					</Center>
 				</Container>
 			</Shell>
-		</HydrateClient>)
+		</HydrateClient>
+	);
 }
 
 // export default async function ClearCache() {

@@ -9,9 +9,7 @@ import {
 } from "@fortawesome/pro-duotone-svg-icons";
 import { Box, Container, type MantineSize } from "@mantine/core";
 import type { Session } from "next-auth";
-import NavSidebar, {
-	type NavMenuItemProps,
-} from "~/app/_components/NavSidebar";
+import NavSidebar, { type NavMenuItemProps } from "~/app/_components/NavSidebar";
 
 const DashNav = ({ session }: { session: Session | null | undefined }) => {
 	const elements = (): NavMenuItemProps[] => {

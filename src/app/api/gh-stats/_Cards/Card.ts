@@ -49,10 +49,7 @@ class Card {
 		this.hideTitle = false;
 		this.border_radius = border_radius;
 		this.colors = colors;
-		this.title =
-			customTitle === undefined
-				? encodeHTML(defaultTitle)
-				: encodeHTML(customTitle);
+		this.title = customTitle === undefined ? encodeHTML(defaultTitle) : encodeHTML(customTitle);
 		this.css = "";
 		this.paddingX = 25;
 		this.paddingY = 35;
@@ -198,11 +195,7 @@ class Card {
 					${this.css}
 
 					${process.env.NODE_ENV === "test" ? "" : this.getAnimations()}
-					${
-						this.animations === false
-							? "* { animation-duration: 0s !important; animation-delay: 0s !important; }"
-							: ""
-					}
+					${this.animations === false ? "* { animation-duration: 0s !important; animation-delay: 0s !important; }" : ""}
 				</style>
 
 				${this.renderGradient()}
@@ -215,11 +208,7 @@ class Card {
 					height="99%"
 					stroke="${this.colors.borderColor}"
 					width="${this.width - 1}"
-					fill="${
-						typeof this.colors.bgColor === "object"
-							? "url(#gradient)"
-							: this.colors.bgColor
-					}"
+					fill="${typeof this.colors.bgColor === "object" ? "url(#gradient)" : this.colors.bgColor}"
 					stroke-opacity="${this.hideBorder ? 0 : 1}"
 				/>
 

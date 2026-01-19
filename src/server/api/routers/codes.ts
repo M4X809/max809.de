@@ -1,11 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 import { TRPCError } from "@trpc/server";
 import { qrCodes } from "~/server/db/schema";
@@ -17,8 +13,7 @@ import { dataURLtoFile } from "image-conversion";
 
 // import {} from "uploadthing/server";
 import type { UploadFileResult } from "uploadthing/types";
-import {File }from "node:buffer"
-
+import { File } from "node:buffer";
 
 const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
 	host: env.NEXT_PUBLIC_POSTHOG_HOST,
@@ -58,10 +53,7 @@ export const codesRouter = createTRPCRouter({
 				});
 			}
 
-			const enabled = await client.isFeatureEnabled(
-				"qr-code-generator-save",
-				ctx.session.user.id,
-			);
+			const enabled = await client.isFeatureEnabled("qr-code-generator-save", ctx.session.user.id);
 
 			if (!enabled) {
 				throw new TRPCError({
@@ -142,12 +134,7 @@ export const codesRouter = createTRPCRouter({
 						shareable: input.shareable,
 						imageKey: uploadData.data.key,
 					})
-					.where(
-						and(
-							eq(qrCodes.id, nameExists.id),
-							eq(qrCodes.createdById, nameExists.createdById),
-						),
-					);
+					.where(and(eq(qrCodes.id, nameExists.id), eq(qrCodes.createdById, nameExists.createdById)));
 			} else {
 				client.capture({
 					event: "qr-code-generator-save",
@@ -171,8 +158,7 @@ export const codesRouter = createTRPCRouter({
 					});
 					throw new TRPCError({
 						code: "FORBIDDEN",
-						message:
-							"You have reached the maximum number of saved QR codes. Please delete some before creating a new one.",
+						message: "You have reached the maximum number of saved QR codes. Please delete some before creating a new one.",
 					});
 				}
 
@@ -283,14 +269,7 @@ export const codesRouter = createTRPCRouter({
 			}
 
 			try {
-				await ctx.db
-					.delete(qrCodes)
-					.where(
-						and(
-							eq(qrCodes.id, input.id),
-							eq(qrCodes.createdById, ctx.session.user.id),
-						),
-					);
+				await ctx.db.delete(qrCodes).where(and(eq(qrCodes.id, input.id), eq(qrCodes.createdById, ctx.session.user.id)));
 			} catch (e) {
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
@@ -319,31 +298,29 @@ export const codesRouter = createTRPCRouter({
 			max: result?.limit,
 		};
 	}),
-	getQrCodeWithID: publicProcedure
-		.input(z.string())
-		.query(async ({ ctx, input }) => {
-			const code = await ctx.db.query.qrCodes.findFirst({
-				where: (qrCodes, { eq }) => eq(qrCodes.id, input),
+	getQrCodeWithID: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+		const code = await ctx.db.query.qrCodes.findFirst({
+			where: (qrCodes, { eq }) => eq(qrCodes.id, input),
+		});
+		if (!code) {
+			return new TRPCError({
+				code: "NOT_FOUND",
+				message: "No QR Code found with that ID.",
 			});
-			if (!code) {
-				return new TRPCError({
-					code: "NOT_FOUND",
-					message: "No QR Code found with that ID.",
-				});
-			}
-			if (!code.shareable) {
-				return new TRPCError({
-					code: "FORBIDDEN",
-					message: "This QR Code is not shareable.",
-				});
-			}
-
-			const createdBy = await ctx.db.query.users.findFirst({
-				where: (users, { eq }) => eq(users.id, code.createdById),
+		}
+		if (!code.shareable) {
+			return new TRPCError({
+				code: "FORBIDDEN",
+				message: "This QR Code is not shareable.",
 			});
+		}
 
-			return { ...code, createdBy: createdBy?.name };
-		}),
+		const createdBy = await ctx.db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, code.createdById),
+		});
+
+		return { ...code, createdBy: createdBy?.name };
+	}),
 
 	uploadQrCodeImage: publicProcedure
 		.input(
@@ -372,14 +349,13 @@ export const codesRouter = createTRPCRouter({
 			// 	}),
 			// );
 
-
 			const imageFile = new Blob([await dataURLtoFile(code.dataUrl, "image/png" as any)], { type: "image/png" });
-			const uploadData= await utapi.uploadFiles(
-						// @ts-ignore
-						new File([imageFile], `${code.name}-${code.id}.png`, {
-							type: "image/png",
-						}),
-					);
+			const uploadData = await utapi.uploadFiles(
+				// @ts-ignore
+				new File([imageFile], `${code.name}-${code.id}.png`, {
+					type: "image/png",
+				}),
+			);
 
 			if (uploadData.error || !uploadData.data) {
 				return new TRPCError({
@@ -395,9 +371,7 @@ export const codesRouter = createTRPCRouter({
 					imageKey: uploadData.data.key,
 					dataUrl: null,
 				})
-				.where(
-					and(eq(qrCodes.id, input.id), eq(qrCodes.createdById, code.createdById)),
-				);
+				.where(and(eq(qrCodes.id, input.id), eq(qrCodes.createdById, code.createdById)));
 
 			return {
 				success: true,

@@ -22,13 +22,6 @@
 				"useKeyWithClickEvents": "off"
 			}
 		},
-		"ignore": [
-			"node_modules/**/*",
-			"biome.json",
-			"build/**/*",
-			".next/**/*",
-			"drizzle/**/*",
-			"*dockerignore*"
-		]
+		"ignore": ["node_modules/**/*", "biome.json", "build/**/*", ".next/**/*", "drizzle/**/*", "*dockerignore*"]
 	}
 }

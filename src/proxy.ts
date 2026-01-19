@@ -1,13 +1,9 @@
-import {
-	type MiddlewareConfig,
-	NextResponse,
-	type NextRequest,
-} from "next/server";
+import { type MiddlewareConfig, NextResponse, type NextRequest } from "next/server";
 import { headers } from "next/headers";
 
 import chalk from "chalk";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
 	// const headersList = headers();
 	// const requestHeaders = new Headers(headersList);
 	const requestHeaders = new Headers(request.headers);
@@ -38,9 +34,7 @@ export function middleware(request: NextRequest) {
 
 	if (request.nextUrl.pathname.startsWith("/ingest")) {
 		const url = request.nextUrl.clone();
-		const hostname = url.pathname.startsWith("/ingest/static/")
-			? "eu-assets.i.posthog.com"
-			: "eu.i.posthog.com";
+		const hostname = url.pathname.startsWith("/ingest/static/") ? "eu-assets.i.posthog.com" : "eu.i.posthog.com";
 		requestHeaders.set("host", hostname);
 
 		url.protocol = "https";

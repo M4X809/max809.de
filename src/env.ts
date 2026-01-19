@@ -8,11 +8,8 @@ export const env = createEnv({
 	 */
 	server: {
 		DATABASE_URL: z.string().url(),
-		NODE_ENV: z
-			.enum(["development", "test", "production"])
-			.default("development"),
-		NEXTAUTH_SECRET:
-			process.env.NODE_ENV === "production" ? z.string() : z.string().optional(),
+		NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+		NEXTAUTH_SECRET: process.env.NODE_ENV === "production" ? z.string() : z.string().optional(),
 		// NEXTAUTH_URL: z.preprocess(
 		// 	// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 		// 	// Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -56,9 +53,7 @@ export const env = createEnv({
 	 */
 	client: {
 		// NEXT_PUBLIC_CLIENTVAR: z.string(),
-		NEXT_PUBLIC_NODE_ENV: z
-			.enum(["development", "test", "production"])
-			.default("development"),
+		NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
 		NEXT_PUBLIC_POSTHOG_KEY: z.string(),
 		NEXT_PUBLIC_POSTHOG_HOST: z.string(),

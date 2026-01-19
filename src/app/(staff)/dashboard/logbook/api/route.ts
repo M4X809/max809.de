@@ -3,10 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { hasPermission } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 
-export async function GET(
-	req: NextRequest,
-	{ params }: { params: Promise<{ day?: string }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ day?: string }> }) {
 	if (!(await hasPermission("viewLogbook"))) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}

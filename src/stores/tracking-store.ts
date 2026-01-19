@@ -11,8 +11,7 @@ export const trackingStore = create<TrackingStore>()(
 	persist(
 		(set) => ({
 			trackingBanner: true,
-			setTrackingBanner: (trackingBanner: boolean) =>
-				set(() => ({ trackingBanner })),
+			setTrackingBanner: (trackingBanner: boolean) => set(() => ({ trackingBanner })),
 		}),
 		{
 			name: "tracking-store",

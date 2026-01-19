@@ -3,20 +3,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import {
-	checkConf,
-	hasPermission,
-	isAdmin,
-	setNestedValue,
-} from "~/lib/sUtils";
+import { checkConf, hasPermission, isAdmin, setNestedValue } from "~/lib/sUtils";
 import { qrCodes, sessions, users } from "~/server/db/schema";
 
-import {
-	allPerms,
-	blockedPerms,
-	dangerPerms,
-	disabledPerms,
-} from "~/permissions";
+import { allPerms, blockedPerms, dangerPerms, disabledPerms } from "~/permissions";
 
 import { revalidatePath } from "next/cache";
 import { utapi } from "~/server/uploadthing";
@@ -93,9 +83,7 @@ export const managementRouter = createTRPCRouter({
 						}
 					}
 				}
-				const invalidPerms: string[] = permsArray.filter((perm) =>
-					flattenedPerms.includes(perm),
-				);
+				const invalidPerms: string[] = permsArray.filter((perm) => flattenedPerms.includes(perm));
 				// Print.Info("Invalid Permissions:", invalidPerms)({});
 				return invalidPerms;
 			}
@@ -103,13 +91,9 @@ export const managementRouter = createTRPCRouter({
 			const validPerms = isPermissionValid(allPerms, inputPerms.data);
 			console.log("validPerms", validPerms);
 
-			const validWithoutDanger = validPerms.filter(
-				(perm) => !dangerPerms.includes(perm),
-			);
+			const validWithoutDanger = validPerms.filter((perm) => !dangerPerms.includes(perm));
 
-			const hasAllPermissions = validWithoutDanger.every((perm) =>
-				validateArray2.data.includes(perm),
-			);
+			const hasAllPermissions = validWithoutDanger.every((perm) => validateArray2.data.includes(perm));
 
 			if (!hasAllPermissions && !ctx.session.user.admin) {
 				throw new TRPCError({
@@ -143,9 +127,7 @@ export const managementRouter = createTRPCRouter({
 				});
 			}
 
-			const currentDangerousPerms = user.permissions.filter((perm) =>
-				dangerPerms.includes(perm),
-			);
+			const currentDangerousPerms = user.permissions.filter((perm) => dangerPerms.includes(perm));
 
 			const validWithDanger = validPerms
 				.filter((perm) => dangerPerms.includes(perm))
@@ -402,17 +384,13 @@ export const managementRouter = createTRPCRouter({
 					.where(eq(users.id, ctx.session.user.id))
 					.execute();
 
-				const prom2 = ctx.db
-					.delete(sessions)
-					.where(eq(sessions.userId, ctx.session.user.id))
-					.execute();
+				const prom2 = ctx.db.delete(sessions).where(eq(sessions.userId, ctx.session.user.id)).execute();
 
 				await Promise.all([prom1, prom2]);
 
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message:
-						"You cannot Change the Admin Role of max809! Removing your Admin Status...",
+					message: "You cannot Change the Admin Role of max809! Removing your Admin Status...",
 				});
 			}
 
@@ -468,48 +446,46 @@ export const managementRouter = createTRPCRouter({
 
 	// QR CODE MANAGEMENT
 
-	getQrCodeData: protectedProcedure
-		.input(z.object({ id: z.string() }))
-		.query(async ({ ctx, input }) => {
-			if (!(await hasPermission("viewQrStats"))) {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "You are not authorized to perform this action.",
-				});
-			}
-			const user = await ctx.db.query.users.findFirst({
-				where: (users, { eq }) => eq(users.id, input.id),
-				columns: { id: true, limit: true },
+	getQrCodeData: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+		if (!(await hasPermission("viewQrStats"))) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You are not authorized to perform this action.",
 			});
+		}
+		const user = await ctx.db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, input.id),
+			columns: { id: true, limit: true },
+		});
 
-			const viewQrPreview = await hasPermission("viewQrPreview");
+		const viewQrPreview = await hasPermission("viewQrPreview");
 
-			const codes = await ctx.db.query.qrCodes.findMany({
-				where: (qrCodes, { eq }) => eq(qrCodes.createdById, input.id),
-				orderBy: (qrCodes, { desc }) => desc(qrCodes.createdAt),
-				columns: {
-					id: true,
-					name: true,
-					createdAt: true,
-					qrCode: viewQrPreview,
-					shareable: true,
-				},
-			});
+		const codes = await ctx.db.query.qrCodes.findMany({
+			where: (qrCodes, { eq }) => eq(qrCodes.createdById, input.id),
+			orderBy: (qrCodes, { desc }) => desc(qrCodes.createdAt),
+			columns: {
+				id: true,
+				name: true,
+				createdAt: true,
+				qrCode: viewQrPreview,
+				shareable: true,
+			},
+		});
 
-			type codeType = {
-				id: string;
-				name: string | null;
-				createdAt: Date;
-				qrCode?: string | null;
-				shareable: boolean | null;
-			}[];
+		type codeType = {
+			id: string;
+			name: string | null;
+			createdAt: Date;
+			qrCode?: string | null;
+			shareable: boolean | null;
+		}[];
 
-			return {
-				id: user?.id,
-				limit: user?.limit,
-				codes: codes as codeType,
-			};
-		}),
+		return {
+			id: user?.id,
+			limit: user?.limit,
+			codes: codes as codeType,
+		};
+	}),
 
 	getPreviewQr: protectedProcedure
 		.input(
@@ -619,8 +595,7 @@ export const managementRouter = createTRPCRouter({
 			}
 
 			const code = await ctx.db.query.qrCodes.findFirst({
-				where: (qrCodes, { eq, and }) =>
-					and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)),
+				where: (qrCodes, { eq, and }) => and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)),
 			});
 
 			if (!code) {
@@ -643,11 +618,7 @@ export const managementRouter = createTRPCRouter({
 			}
 
 			try {
-				await ctx.db
-					.delete(qrCodes)
-					.where(
-						and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)),
-					);
+				await ctx.db.delete(qrCodes).where(and(eq(qrCodes.id, input.qrId), eq(qrCodes.createdById, input.userId)));
 			} catch (e) {
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",

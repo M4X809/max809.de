@@ -19,13 +19,7 @@ import { PostHog } from "posthog-node";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import {
-	accounts,
-	loginWhitelist,
-	sessions,
-	users,
-	verificationTokens,
-} from "~/server/db/schema";
+import { accounts, loginWhitelist, sessions, users, verificationTokens } from "~/server/db/schema";
 
 import { eq } from "drizzle-orm";
 import { checkConf, checkWhitelist, emailHtml } from "~/lib/sUtils";
@@ -123,15 +117,9 @@ export const authOptions: NextAuthOptions = {
 			account: Account | null;
 			profile?: Profile & { image_url?: string; banner_url?: string };
 		}) {
-			console.log(
-				chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)),
-			);
-			console.log(
-				chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)),
-			);
-			console.log(
-				chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)),
-			);
+			console.log(chalk.hex("#00eaff").bold("user", JSON.stringify(user, null, 2)));
+			console.log(chalk.hex("#ff8400").bold("account", JSON.stringify(account, null, 2)));
+			console.log(chalk.hex("#00ff00").bold("profile", JSON.stringify(profile, null, 2)));
 			// console.log(
 			// 	chalk.hex("#ffff00").bold("profile", JSON.stringify(email, null, 2)),
 			// );
@@ -173,10 +161,7 @@ export const authOptions: NextAuthOptions = {
 			};
 
 			try {
-				const { success: isUUID, data: uuid } = z
-					.string()
-					.uuid()
-					.safeParse(user.id);
+				const { success: isUUID, data: uuid } = z.string().uuid().safeParse(user.id);
 
 				if (isUUID) {
 					if (user.admin) {
@@ -268,8 +253,7 @@ export const authOptions: NextAuthOptions = {
 				if (!isUUID) {
 					console.log(chalk.red("Provider ID", user.id));
 					const whitelist = await db.query.loginWhitelist.findFirst({
-						where: (loginWhitelist, { eq }) =>
-							eq(loginWhitelist.oAuthProviderAccountId, user.id),
+						where: (loginWhitelist, { eq }) => eq(loginWhitelist.oAuthProviderAccountId, user.id),
 					});
 
 					if (!whitelist) {

@@ -1,12 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import {
-	hasPermission,
-	timeAddition,
-	timeDifference,
-	timeSubtraction,
-	toMinutes,
-} from "~/lib/sUtils";
+import { hasPermission, timeAddition, timeDifference, timeSubtraction, toMinutes } from "~/lib/sUtils";
 import { TRPCError } from "@trpc/server";
 import { logbookFeed } from "~/server/db/schema";
 import { and, asc, eq, not, or } from "drizzle-orm";
@@ -34,9 +28,7 @@ export const logbookRouter = createTRPCRouter({
 	createEntry: protectedProcedure
 		.input(
 			z.object({
-				type: z
-					.enum(["entry", "start", "end", "pause", "holiday", "vacation", "sick"])
-					.default("entry"),
+				type: z.enum(["entry", "start", "end", "pause", "holiday", "vacation", "sick"]).default("entry"),
 				streetName: z
 					.string()
 					.optional()
@@ -62,11 +54,7 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, and, not }) =>
 					and(
 						eq(logbookFeed.date, input.date),
-						or(
-							eq(logbookFeed.type, "holiday"),
-							eq(logbookFeed.type, "vacation"),
-							eq(logbookFeed.type, "sick"),
-						),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation"), eq(logbookFeed.type, "sick")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -79,11 +67,7 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 
-			if (
-				input.type === "holiday" ||
-				input.type === "vacation" ||
-				input.type === "sick"
-			) {
+			if (input.type === "holiday" || input.type === "vacation" || input.type === "sick") {
 				const existingEntries = await ctx.db.query.logbookFeed.findFirst({
 					where: (logbookFeed, { eq, and, not }) =>
 						and(
@@ -181,15 +165,7 @@ export const logbookRouter = createTRPCRouter({
 		.input(
 			z.object({
 				id: z.string(),
-				type: z.enum([
-					"entry",
-					"start",
-					"end",
-					"pause",
-					"holiday",
-					"vacation",
-					"sick",
-				]),
+				type: z.enum(["entry", "start", "end", "pause", "holiday", "vacation", "sick"]),
 				streetName: z.string().optional().default(""),
 				kmState: z.string().optional().default(""),
 				startTime: z.date().optional(),
@@ -218,24 +194,17 @@ export const logbookRouter = createTRPCRouter({
 
 			const getHoliday = await ctx.db.query.logbookFeed.findFirst({
 				where: (logbookFeed, { eq, and, not, or }) =>
-					and(
-						eq(logbookFeed.date, input.date),
-						eq(logbookFeed.type, input.type),
-						not(eq(logbookFeed.deleted, true)),
-					),
+					and(eq(logbookFeed.date, input.date), eq(logbookFeed.type, input.type), not(eq(logbookFeed.deleted, true))),
 			});
 
 			if (
-				(input.type === "holiday" ||
-					input.type === "vacation" ||
-					input.type === "sick") &&
+				(input.type === "holiday" || input.type === "vacation" || input.type === "sick") &&
 				getHoliday &&
 				getHoliday.id !== input.id
 			) {
 				throw new TRPCError({
 					code: "BAD_REQUEST",
-					message:
-						"An diesem Tag ist bereits ein Feiertag, Urlaub oder Krankheit eingetragen.",
+					message: "An diesem Tag ist bereits ein Feiertag, Urlaub oder Krankheit eingetragen.",
 				});
 			}
 
@@ -342,11 +311,7 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, startDate, endDate),
-						or(
-							eq(logbookFeed.type, "holiday"),
-							eq(logbookFeed.type, "vacation"),
-							eq(logbookFeed.type, "sick"),
-						),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation"), eq(logbookFeed.type, "sick")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -393,19 +358,11 @@ export const logbookRouter = createTRPCRouter({
 						),
 				})
 				.then((result) => result.map((entry) => entry.streetName))
-				.then((result) =>
-					result.filter((value, index, self) => self.indexOf(value) === index),
-				)
+				.then((result) => result.filter((value, index, self) => self.indexOf(value) === index))
 				.then((result) => result.filter(Boolean))
 				.then((result) => result.sort((a, b) => a.localeCompare(b)));
 
-			const [
-				startAndEndTime,
-				unpaidBreaks,
-				previousStreetNames,
-				entries,
-				holiday,
-			] = await Promise.all([
+			const [startAndEndTime, unpaidBreaks, previousStreetNames, entries, holiday] = await Promise.all([
 				startAndEndTimeProm,
 				unpaidBreaksProm,
 				previousStreetNamesProm,
@@ -432,16 +389,8 @@ export const logbookRouter = createTRPCRouter({
 				if (!startTime?.startTime || !endTime?.endTime) return "Error";
 
 				const dayTime = timeDifference(
-					startTime.startTime
-						?.toLocaleTimeString("de-DE")
-						.split(":")
-						.slice(0, 2)
-						.join(":"),
-					endTime.endTime
-						?.toLocaleTimeString("de-DE")
-						.split(":")
-						.slice(0, 2)
-						.join(":"),
+					startTime.startTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
+					endTime.endTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
 				);
 
 				return timeSubtraction(dayTime, unpaidBreaksTime);
@@ -484,8 +433,7 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 			const entryProm = ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq, and, not }) =>
-					and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
+				where: (logbookFeed, { eq, and, not }) => and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
 			});
 
 			const previousStreetNamesProm = ctx.db.query.logbookFeed
@@ -495,15 +443,10 @@ export const logbookRouter = createTRPCRouter({
 					where: (logbookFeed, { not, eq }) => not(eq(logbookFeed.deleted, true)),
 				})
 				.then((result) => result.map((entry) => entry.streetName))
-				.then((result) =>
-					result.filter((value, index, self) => self.indexOf(value) === index),
-				)
+				.then((result) => result.filter((value, index, self) => self.indexOf(value) === index))
 				.then((result) => result.filter(Boolean));
 
-			const [entry, previousStreetNames] = await Promise.all([
-				entryProm,
-				previousStreetNamesProm,
-			]);
+			const [entry, previousStreetNames] = await Promise.all([entryProm, previousStreetNamesProm]);
 
 			if (!entry) {
 				return new TRPCError({
@@ -541,22 +484,16 @@ export const logbookRouter = createTRPCRouter({
 				});
 			}
 			const entry = await ctx.db.query.logbookFeed.findFirst({
-				where: (logbookFeed, { eq, and, not }) =>
-					and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
+				where: (logbookFeed, { eq, and, not }) => and(eq(logbookFeed.id, input.id), not(eq(logbookFeed.deleted, true))),
 			});
 			if (!entry) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message:
-						"Es wurde kein eintrag mit dieser ID gefunden. (Es könnte bereits gelöscht sein.)",
+					message: "Es wurde kein eintrag mit dieser ID gefunden. (Es könnte bereits gelöscht sein.)",
 				});
 			}
 
-			await ctx.db
-				.update(logbookFeed)
-				.set({ deleted: true })
-				.where(eq(logbookFeed.id, input.id))
-				.execute();
+			await ctx.db.update(logbookFeed).set({ deleted: true }).where(eq(logbookFeed.id, input.id)).execute();
 
 			return {
 				success: true,
@@ -573,11 +510,7 @@ export const logbookRouter = createTRPCRouter({
 		const lastKmState = await ctx.db.query.logbookFeed.findFirst({
 			where: (logbookFeed, { eq, or, and, not }) =>
 				and(
-					or(
-						eq(logbookFeed.type, "entry"),
-						eq(logbookFeed.type, "start"),
-						eq(logbookFeed.type, "end"),
-					),
+					or(eq(logbookFeed.type, "entry"), eq(logbookFeed.type, "start"), eq(logbookFeed.type, "end")),
 					not(eq(logbookFeed.deleted, true)),
 				),
 			orderBy: (logbookFeed, { desc }) => desc(logbookFeed.createdAt),
@@ -627,11 +560,7 @@ export const logbookRouter = createTRPCRouter({
 				where: (logbookFeed, { eq, between, and, not, or }) =>
 					and(
 						between(logbookFeed.date, monthStart, monthEnd),
-						or(
-							eq(logbookFeed.type, "holiday"),
-							eq(logbookFeed.type, "vacation"),
-							eq(logbookFeed.type, "sick"),
-						),
+						or(eq(logbookFeed.type, "holiday"), eq(logbookFeed.type, "vacation"), eq(logbookFeed.type, "sick")),
 						not(eq(logbookFeed.deleted, true)),
 					),
 			});
@@ -695,16 +624,8 @@ export const logbookRouter = createTRPCRouter({
 					if (!startEntry?.startTime || !endEntry?.endTime) return "Error";
 
 					const dayTime = timeDifference(
-						startEntry.startTime
-							?.toLocaleTimeString("de-DE")
-							.split(":")
-							.slice(0, 2)
-							.join(":"),
-						endEntry.endTime
-							?.toLocaleTimeString("de-DE")
-							.split(":")
-							.slice(0, 2)
-							.join(":"),
+						startEntry.startTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
+						endEntry.endTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
 					);
 
 					return timeSubtraction(dayTime, unpaidBreaksTime);
@@ -747,10 +668,7 @@ export const logbookRouter = createTRPCRouter({
 			// Fetch all entries for the month
 			const entries = await ctx.db.query.logbookFeed.findMany({
 				where: (logbookFeed, { eq, between, and, not }) =>
-					and(
-						between(logbookFeed.date, monthStart, monthEnd),
-						not(eq(logbookFeed.deleted, true)),
-					),
+					and(between(logbookFeed.date, monthStart, monthEnd), not(eq(logbookFeed.deleted, true))),
 				orderBy: [asc(logbookFeed.date), asc(logbookFeed.type)],
 			});
 
@@ -785,8 +703,7 @@ export const logbookRouter = createTRPCRouter({
 			});
 
 			// Add underline
-			const xStart =
-				(doc.internal.pageSize.width - textWidth) / 2 + nameTextWidth / 2;
+			const xStart = (doc.internal.pageSize.width - textWidth) / 2 + nameTextWidth / 2;
 			const xEnd = xStart + textWidth;
 			doc.line(xStart, 14, xEnd, 14);
 
@@ -854,16 +771,8 @@ export const logbookRouter = createTRPCRouter({
 
 				// Calculate day time from first start to last end (ignoring breaks)
 				const dayTime = timeDifference(
-					startEntry.startTime
-						?.toLocaleTimeString("de-DE")
-						.split(":")
-						.slice(0, 2)
-						.join(":"),
-					endEntry.endTime
-						?.toLocaleTimeString("de-DE")
-						.split(":")
-						.slice(0, 2)
-						.join(":"),
+					startEntry.startTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
+					endEntry.endTime?.toLocaleTimeString("de-DE").split(":").slice(0, 2).join(":"),
 				);
 
 				return timeToDecimalHours(dayTime);
@@ -880,19 +789,11 @@ export const logbookRouter = createTRPCRouter({
 				const dayEntries = entriesByDate[dateKey] ?? [];
 
 				// Check for holiday or vacation entry
-				const specialEntry = dayEntries.find(
-					(e) => e.type === "holiday" || e.type === "vacation" || e.type === "sick",
-				);
+				const specialEntry = dayEntries.find((e) => e.type === "holiday" || e.type === "vacation" || e.type === "sick");
 				if (specialEntry) {
 					return [
 						index + 1,
-						`${
-							specialEntry.type === "holiday"
-								? "Feiertag"
-								: specialEntry.type === "vacation"
-									? "Urlaub"
-									: "Krank"
-						}`,
+						`${specialEntry.type === "holiday" ? "Feiertag" : specialEntry.type === "vacation" ? "Urlaub" : "Krank"}`,
 						"",
 						"---",
 						"",
@@ -979,18 +880,9 @@ export const logbookRouter = createTRPCRouter({
 					return text;
 				};
 
-				const kmDiff =
-					endEntry && startEntry
-						? Number(endEntry.kmState) - Number(startEntry.kmState)
-						: "";
+				const kmDiff = endEntry && startEntry ? Number(endEntry.kmState) - Number(startEntry.kmState) : "";
 
-				return [
-					`${index + 1}.`,
-					workTime,
-					totalWorkHours,
-					workTimeString(formattedEntries),
-					kmDiff.toString(),
-				];
+				return [`${index + 1}.`, workTime, totalWorkHours, workTimeString(formattedEntries), kmDiff.toString()];
 			}).filter(Boolean); // Remove null entries for invalid dates
 
 			// console.log("tableData", tableData);
@@ -1173,11 +1065,7 @@ export const logbookRouter = createTRPCRouter({
 			const tableStartX = margin; // 15
 			const spaceBetweenTotals = 80; // Space between the two totals
 			totalSection("Gesamtstunden: ", `${totalHours} Stunden`, tableStartX);
-			totalSection(
-				"Gesamtkilometer: ",
-				`${totalKm} km`,
-				tableStartX + spaceBetweenTotals,
-			);
+			totalSection("Gesamtkilometer: ", `${totalKm} km`, tableStartX + spaceBetweenTotals);
 
 			// Add footer with evenly spaced items
 			const footerY = doc.internal.pageSize.height - 25;
@@ -1205,63 +1093,56 @@ export const logbookRouter = createTRPCRouter({
 				streetName: logbookFeed.streetName,
 			})
 			.from(logbookFeed)
-			.where(
-				and(eq(logbookFeed.type, "entry"), not(eq(logbookFeed.deleted, true))),
-			);
+			.where(and(eq(logbookFeed.type, "entry"), not(eq(logbookFeed.deleted, true))));
 
 		return clients
 			.map((client) => client.streetName.trim())
 			.filter((value, index, self) => self.indexOf(value) === index)
 			.sort((a, b) => a.localeCompare(b));
 	}),
-	getClientData: protectedProcedure
-		.input(z.string().optional())
-		.query(async ({ ctx, input }) => {
-			if (!(await hasPermission("viewLogbookFeed"))) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "You are not authorized to perform this action.",
-				});
-			}
-
-			if (!input) {
-				return new Map<string, EntryWithWorkTime[]>();
-			}
-
-			const startDate = subDays(new Date(), 365);
-			const endDate = new Date();
-			const data = await ctx.db.query.logbookFeed.findMany({
-				where: (logbook, { eq, like, and, not, between }) =>
-					and(
-						like(logbook.streetName, `%${input}%`),
-						not(eq(logbook.deleted, true)),
-						eq(logbook.type, "entry"),
-						between(logbook.createdAt, startDate, endDate),
-					),
-				orderBy: asc(logbookFeed.startTime),
+	getClientData: protectedProcedure.input(z.string().optional()).query(async ({ ctx, input }) => {
+		if (!(await hasPermission("viewLogbookFeed"))) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "You are not authorized to perform this action.",
 			});
+		}
 
-			/**
-			 * key: month
-			 * value: Array of entries with workTime
-			 */
-			type EntryWithWorkTime = (typeof data)[number] & { workTime: string };
-			const clientData = new Map<string, EntryWithWorkTime[]>();
+		if (!input) {
+			return new Map<string, EntryWithWorkTime[]>();
+		}
 
-			for (const entry of data) {
-				const month = format(entry.createdAt, "MM", { locale: de });
-				if (!clientData.has(month)) {
-					clientData.set(month, []);
-				}
-				clientData.get(month)?.push({
-					...entry,
-					workTime:
-						entry.endTime && entry.startTime
-							? differenceInMinutes(entry.endTime, entry.startTime).toString()
-							: "0",
-				});
+		const startDate = subDays(new Date(), 365);
+		const endDate = new Date();
+		const data = await ctx.db.query.logbookFeed.findMany({
+			where: (logbook, { eq, like, and, not, between }) =>
+				and(
+					like(logbook.streetName, `%${input}%`),
+					not(eq(logbook.deleted, true)),
+					eq(logbook.type, "entry"),
+					between(logbook.createdAt, startDate, endDate),
+				),
+			orderBy: asc(logbookFeed.startTime),
+		});
+
+		/**
+		 * key: month
+		 * value: Array of entries with workTime
+		 */
+		type EntryWithWorkTime = (typeof data)[number] & { workTime: string };
+		const clientData = new Map<string, EntryWithWorkTime[]>();
+
+		for (const entry of data) {
+			const month = format(entry.createdAt, "MM", { locale: de });
+			if (!clientData.has(month)) {
+				clientData.set(month, []);
 			}
+			clientData.get(month)?.push({
+				...entry,
+				workTime: entry.endTime && entry.startTime ? differenceInMinutes(entry.endTime, entry.startTime).toString() : "0",
+			});
+		}
 
-			return clientData;
-		}),
+		return clientData;
+	}),
 });

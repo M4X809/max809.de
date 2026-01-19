@@ -103,15 +103,15 @@ export default async function ErrorPage({
 					/>
 					<Center>
 						<Stack>
-							<Button
-								size="compact-sm"
-								component={Link}
-								href={"/api/auth/signin"}
-								className="bg-white/10 text-white hover:bg-white/20"
-								leftSection={<FontAwesomeIcon fixedWidth icon={faArrowLeft} />}
-							>
-								Back to Login
-							</Button>
+							<Link href={"/api/auth/signin"}>
+								<Button
+									size="compact-sm"
+									className="bg-white/10 text-white hover:bg-white/20"
+									leftSection={<FontAwesomeIcon fixedWidth icon={faArrowLeft} />}
+								>
+									Back to Login
+								</Button>
+							</Link>
 						</Stack>
 					</Center>
 					<Box />

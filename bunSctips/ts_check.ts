@@ -1,4 +1,4 @@
-import { $, type ShellError } from "bun";
+import { $ } from "bun";
 import { createLogger } from "./logger";
 import chalk from "chalk";
 
@@ -21,13 +21,9 @@ async function check(project: (typeof projects)[number]): Promise<Result> {
 	$.cwd(project.path);
 	$.throws(true);
 	try {
-		logger.await(
-			chalk.blue(`Running typecheck for project: ${chalk.bold(project.name)}`),
-		);
+		logger.await(chalk.blue(`Running typecheck for project: ${chalk.bold(project.name)}`));
 		await $`bun run ${project.command}`.quiet();
-		logger.success(
-			chalk.green(`typecheck completed for project: ${chalk.bold(project.name)}`),
-		);
+		logger.success(chalk.green(`typecheck completed for project: ${chalk.bold(project.name)}`));
 		logger.divider();
 		return {
 			name: project.name,
@@ -35,19 +31,12 @@ async function check(project: (typeof projects)[number]): Promise<Result> {
 			success: true,
 		};
 	} catch (_err: any) {
-		const err = _err as ShellError;
+		const err = _err;
 
-		logger.error(
-			chalk.red(`typecheck failed for project: ${chalk.bold(project.name)}\n`),
-		);
+		logger.error(chalk.red(`typecheck failed for project: ${chalk.bold(project.name)}\n`));
 		const logLines = err?.stdout?.toString()?.split("\n");
-		const errorLines = logLines.filter((line: string) =>
-			line.includes("error TS"),
-		);
-		const maxPathLength =
-			Math.max(
-				...errorLines.map((line: string) => line.split(":").at(0)?.length ?? 0),
-			) + 5;
+		const errorLines = logLines.filter((line: string) => line.includes("error TS"));
+		const maxPathLength = Math.max(...errorLines.map((line: string) => line.split(":").at(0)?.length ?? 0)) + 5;
 
 		const output = errorLines.map((line: string) => {
 			const parts = line.split(":");
@@ -81,9 +70,7 @@ async function check(project: (typeof projects)[number]): Promise<Result> {
 
 async function run() {
 	const results: Result[] = [];
-	const maxNameLength = Math.max(
-		...projects.map((project) => project.name.length + 5),
-	);
+	const maxNameLength = Math.max(...projects.map((project) => project.name.length + 5));
 
 	for (const project of projects) {
 		const result = await check(project);
@@ -91,9 +78,7 @@ async function run() {
 			results.push(result);
 		}
 	}
-	const maxErrorLength = Math.max(
-		...results.map((result) => result.errorCount.toString().length + 2),
-	);
+	const maxErrorLength = Math.max(...results.map((result) => result.errorCount.toString().length + 2));
 
 	for (const result of results) {
 		const nameString = `"${result.name}"`;

@@ -1,20 +1,20 @@
+import type { NextConfig } from "next";
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-await import("./src/env.js");
+import { env } from "./src/env";
 
-/** @type {import("next").NextConfig} */
+env;
+
 const config = {
 	output: "standalone",
 	experimental: {
 		optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
 		// reactCompiler: true,
 	},
-	eslint: {
-		ignoreDuringBuilds: true,
-		dirs: ["./public"],
-	},
+
 	typescript: {
 		ignoreBuildErrors: true,
 	},
@@ -37,6 +37,6 @@ const config = {
 			},
 		],
 	},
-};
+} satisfies NextConfig;
 
 export default config;
