@@ -66,12 +66,10 @@ export async function hasPermission(
 	if (session.user.admin && !ignoreAdmin) return true;
 	if (Array.isArray(permission)) {
 		if (haveAllPermissions) {
-			if (permission.every((perm) => session.user.permissions?.includes(perm)))
-				return true;
+			if (permission.every((perm) => session.user.permissions?.includes(perm))) return true;
 			return false;
 		}
-		if (permission.some((perm) => session.user.permissions?.includes(perm)))
-			return true;
+		if (permission.some((perm) => session.user.permissions?.includes(perm))) return true;
 		return false;
 	}
 
@@ -135,11 +133,7 @@ export async function onPageAllowed(
 	);
 }
 // MARK: Set Nested Value
-export function setNestedValue<T extends object>(
-	obj: T,
-	path: string,
-	value: any,
-): T {
+export function setNestedValue<T extends object>(obj: T, path: string, value: any): T {
 	const keys = path.split(".");
 	const lastKey = keys.pop()!;
 	const current: any = { ...obj };
@@ -178,11 +172,7 @@ export function checkConf(config: object | undefined | null) {
 		.safeParse(config);
 }
 
-export const checkWhitelist = async ({
-	user,
-}: {
-	user: Pick<User, "id">;
-}): Promise<void> => {
+export const checkWhitelist = async ({ user }: { user: Pick<User, "id"> }): Promise<void> => {
 	const dbUser = await db.query.users.findFirst({
 		where: (users, { eq }) => eq(users.id, user.id),
 	});

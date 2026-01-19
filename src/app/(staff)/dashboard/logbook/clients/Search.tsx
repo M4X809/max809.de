@@ -9,17 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/pro-duotone-svg-icons";
 import { useRefreshState } from "~/lib/cUtils";
 
-export function Search({
-	streetNames,
-	initialValues,
-}: {
-	streetNames: string[];
-	initialValues: string;
-}) {
-	const [search, setSearch] = useQueryState(
-		"s",
-		parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
-	);
+export function Search({ streetNames, initialValues }: { streetNames: string[]; initialValues: string }) {
+	const [search, setSearch] = useQueryState("s", parseAsString.withDefault("").withOptions({ clearOnDefault: true }));
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -92,13 +83,7 @@ export function Search({
 					form.getInputProps("streetName").onChange(value);
 				}}
 				rightSection={
-					<ActionIcon
-						disabled={isLoading}
-						loading={isLoading}
-						type="submit"
-						variant="transparent"
-						color="gray.2"
-					>
+					<ActionIcon disabled={isLoading} loading={isLoading} type="submit" variant="transparent" color="gray.2">
 						{<FontAwesomeIcon swapOpacity icon={faSearch} />}
 					</ActionIcon>
 				}

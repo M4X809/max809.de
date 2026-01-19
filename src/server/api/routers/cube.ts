@@ -1,11 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { cubeTimes } from "~/server/db/schema";
 
@@ -46,10 +42,7 @@ export const cubeRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			const history = await ctx.db.query.cubeTimes.findMany({
 				where: (cubeTimes, { eq, and }) =>
-					and(
-						eq(cubeTimes.cubeSize, input.cubeSize),
-						eq(cubeTimes.createdById, ctx.session.user.id),
-					),
+					and(eq(cubeTimes.cubeSize, input.cubeSize), eq(cubeTimes.createdById, ctx.session.user.id)),
 				orderBy: (cubeTimes, { desc }) => desc(cubeTimes.createdAt),
 				columns: {
 					id: true,
@@ -64,10 +57,7 @@ export const cubeRouter = createTRPCRouter({
 
 			const total = await ctx.db.query.cubeTimes.findMany({
 				where: (cubeTimes, { eq, and }) =>
-					and(
-						eq(cubeTimes.cubeSize, input.cubeSize),
-						eq(cubeTimes.createdById, ctx.session.user.id),
-					),
+					and(eq(cubeTimes.cubeSize, input.cubeSize), eq(cubeTimes.createdById, ctx.session.user.id)),
 				columns: { id: true },
 			});
 
@@ -87,7 +77,10 @@ export const cubeRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
-			const code = await ctx.db.delete(cubeTimes).where(and(eq(cubeTimes.id, input.id), eq(cubeTimes.createdById, ctx.session.user.id))).execute();
+			const code = await ctx.db
+				.delete(cubeTimes)
+				.where(and(eq(cubeTimes.id, input.id), eq(cubeTimes.createdById, ctx.session.user.id)))
+				.execute();
 			if (!code) {
 				throw new TRPCError({
 					code: "NOT_FOUND",

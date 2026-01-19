@@ -219,11 +219,7 @@ export const allPerms: PermissionsType[] = [
 	},
 ];
 
-export const perms = async ({
-	session,
-}: {
-	session: Session | null;
-}): Promise<PermissionsType[]> => {
+export const perms = async ({ session }: { session: Session | null }): Promise<PermissionsType[]> => {
 	// const calculatePermsAndChildrenCount = (item: { perms: string | any[] }) => {
 	// 	const permsCount = item.perms ? item.perms.length : 0;
 	// 	let childrenCount = 0;
@@ -253,11 +249,7 @@ export const perms = async ({
 	return filteredPerms(session, allPerms, userPerms);
 };
 
-const filteredPerms = (
-	session: Session | null,
-	allPerms: PermissionsType[],
-	userPerms: string[],
-) => {
+const filteredPerms = (session: Session | null, allPerms: PermissionsType[], userPerms: string[]) => {
 	// Deep copy of allPerms array
 	const permsCopy = JSON.parse(JSON.stringify(allPerms));
 
@@ -304,35 +296,26 @@ const filteredPerms = (
 							}>;
 						}) => {
 							const children = subPerm?.children
-								?.map(
-									(child: {
-										name: string;
-										perm: string;
-										icon: string;
-										danger: boolean;
-										disabled: boolean;
-									}) => {
-										if (!userPerms?.includes(child.perm)) return undefined;
-										if (child.danger && !userPerms?.includes("dangerousPermissions")) {
-											return undefined;
-										}
+								?.map((child: { name: string; perm: string; icon: string; danger: boolean; disabled: boolean }) => {
+									if (!userPerms?.includes(child.perm)) return undefined;
+									if (child.danger && !userPerms?.includes("dangerousPermissions")) {
+										return undefined;
+									}
 
-										if (blockedPerms.includes(child.perm)) return undefined;
+									if (blockedPerms.includes(child.perm)) return undefined;
 
-										return {
-											name: child.name,
-											perm: child.perm,
-											icon: child.icon,
-											danger: child.danger,
-											disabled: child.disabled,
-										};
-									},
-								)
+									return {
+										name: child.name,
+										perm: child.perm,
+										icon: child.icon,
+										danger: child.danger,
+										disabled: child.disabled,
+									};
+								})
 								.filter(Boolean);
 
 							if (subPerm.children && !children?.length) return undefined;
-							if (!subPerm.children && !userPerms?.includes(subPerm.perm))
-								return undefined;
+							if (!subPerm.children && !userPerms?.includes(subPerm.perm)) return undefined;
 							if (subPerm.danger && !userPerms?.includes("dangerousPermissions")) {
 								return undefined;
 							}
@@ -384,9 +367,7 @@ const getAllDangerousPerms = (perms: Perm[]): string[] => {
 	return result;
 };
 
-export const dangerPerms = allPerms.flatMap((section) =>
-	getAllDangerousPerms(section.perms),
-);
+export const dangerPerms = allPerms.flatMap((section) => getAllDangerousPerms(section.perms));
 
 const getAllDisabledPerms = (perms: Perm[]): string[] => {
 	let result: string[] = [];
@@ -406,9 +387,7 @@ const getAllDisabledPerms = (perms: Perm[]): string[] => {
 	return result;
 };
 
-export const disabledPerms = allPerms.flatMap((section) =>
-	getAllDisabledPerms(section.perms),
-);
+export const disabledPerms = allPerms.flatMap((section) => getAllDisabledPerms(section.perms));
 
 const getAllBlockedPerms = (perms: Perm[]): string[] => {
 	let result: string[] = [];
@@ -428,6 +407,4 @@ const getAllBlockedPerms = (perms: Perm[]): string[] => {
 	return result;
 };
 
-export const blockedPerms = allPerms.flatMap((section) =>
-	getAllBlockedPerms(section.perms),
-);
+export const blockedPerms = allPerms.flatMap((section) => getAllBlockedPerms(section.perms));

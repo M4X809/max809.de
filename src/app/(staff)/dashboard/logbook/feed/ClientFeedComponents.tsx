@@ -158,15 +158,14 @@ export const DayPagination = () => {
 
 export const EntryButtons = ({ id }: { id: string }) => {
 	return (
-		<ActionIcon
-			variant="filled"
-			className="bg-[rgba(255,255,255,0.1)] text-white hover:bg-[rgba(255,255,255,0.12)]"
-			component={Link}
-			href={`/dashboard/logbook/feed/${id}`}
-			prefetch={false}
-		>
-			<FontAwesomeIcon icon={faEdit} />
-		</ActionIcon>
+		<Link href={`/dashboard/logbook/feed/${id}`} prefetch={false}>
+			<ActionIcon
+				variant="filled"
+				className="bg-[rgba(255,255,255,0.1)] text-white hover:bg-[rgba(255,255,255,0.12)]"
+			>
+				<FontAwesomeIcon icon={faEdit} />
+			</ActionIcon>
+		</Link>
 	);
 };
 

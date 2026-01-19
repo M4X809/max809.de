@@ -15,9 +15,7 @@ export type ManagementStore = {
 	setPermissionsChanged: (permissionsChanged: boolean) => void;
 
 	userPermissions: string[];
-	setUserPermissions: (
-		userPermissions: string[] | ((prev: string[]) => string[]),
-	) => void;
+	setUserPermissions: (userPermissions: string[] | ((prev: string[]) => string[])) => void;
 
 	staffChanged: boolean;
 	setStaffChanged: (staffChanged: boolean) => void;
@@ -40,9 +38,7 @@ export type ManagementStore = {
 	setLimit: (limit: number | null | string) => void;
 
 	waitingForInput: boolean;
-	setWaitingForInput: (
-		waitingForInput: boolean | ((prev: boolean) => boolean),
-	) => void;
+	setWaitingForInput: (waitingForInput: boolean | ((prev: boolean) => boolean)) => void;
 
 	loginWithEmailChanged: boolean;
 	setLoginWithEmailChanged: (loginWithEmailChanged: boolean) => void;
@@ -61,25 +57,18 @@ export const createManagementStore = () => {
 		setRefreshing: (refreshing) => set(() => ({ refreshing })),
 
 		saveUserCounter: 0,
-		increaseSaveUserCounter: () =>
-			set((state) => ({ saveUserCounter: state.saveUserCounter + 1 })),
+		increaseSaveUserCounter: () => set((state) => ({ saveUserCounter: state.saveUserCounter + 1 })),
 
 		saveDisabled: true,
 		setSaveDisabled: (saveDisabled) => set(() => ({ saveDisabled })),
 
 		permissionsChanged: false,
-		setPermissionsChanged: (permissionsChanged: boolean) =>
-			set(() => ({ permissionsChanged })),
+		setPermissionsChanged: (permissionsChanged: boolean) => set(() => ({ permissionsChanged })),
 
 		userPermissions: [],
-		setUserPermissions: (
-			userPermissions: string[] | ((prev: string[]) => string[]),
-		) => {
+		setUserPermissions: (userPermissions: string[] | ((prev: string[]) => string[])) => {
 			set(() => ({
-				userPermissions:
-					typeof userPermissions === "function"
-						? userPermissions(get().userPermissions)
-						: userPermissions,
+				userPermissions: typeof userPermissions === "function" ? userPermissions(get().userPermissions) : userPermissions,
 			}));
 		},
 
@@ -116,22 +105,17 @@ export const createManagementStore = () => {
 		waitingForInput: false,
 		setWaitingForInput: (waitingForInput) => {
 			set(() => ({
-				waitingForInput:
-					typeof waitingForInput === "function"
-						? waitingForInput(get().waitingForInput)
-						: waitingForInput,
+				waitingForInput: typeof waitingForInput === "function" ? waitingForInput(get().waitingForInput) : waitingForInput,
 			}));
 		},
 
 		loginWithEmailChanged: false,
-		setLoginWithEmailChanged: (loginWithEmailChanged) =>
-			set(() => ({ loginWithEmailChanged })),
+		setLoginWithEmailChanged: (loginWithEmailChanged) => set(() => ({ loginWithEmailChanged })),
 		loginWithEmail: false,
 		setLoginWithEmail: (loginWithEmail) => set(() => ({ loginWithEmail })),
 
 		openCommandKeyChanged: false,
-		setOpenCommandKeyChanged: (openCommandKeyChanged) =>
-			set(() => ({ openCommandKeyChanged })),
+		setOpenCommandKeyChanged: (openCommandKeyChanged) => set(() => ({ openCommandKeyChanged })),
 		openCommandKey: "",
 		setOpenCommandKey: (openCommandKey) => set(() => ({ openCommandKey })),
 	}));

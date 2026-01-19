@@ -2,14 +2,7 @@ import { Card } from "./Card";
 import { createProgressNode } from "../_createProgressNode";
 import type { TopLangOptions } from "../_types";
 // import { I18n } from "../common/I18n.js";
-import {
-	chunkArray,
-	clampValue,
-	flexLayout,
-	getCardColors,
-	lowercaseTrim,
-	measureText,
-} from "../utils";
+import { chunkArray, clampValue, flexLayout, getCardColors, lowercaseTrim, measureText } from "../utils";
 import type { TopLangData } from "../top-lang/route";
 // import { langCardLocales } from "../translations.js";
 
@@ -34,26 +27,22 @@ type Lang = {
 /**
  * Retrieves the programming language whose name is the longest.
  */
-const getLongestLang = (
-	arr: Lang[],
-): { name: string; size: number; color: string } =>
-	arr.reduce(
-		(savedLang, lang) =>
-			lang.name.length > savedLang.name.length ? lang : savedLang,
-		{ name: "", size: 0, color: "" },
-	);
+const getLongestLang = (arr: Lang[]): { name: string; size: number; color: string } =>
+	arr.reduce((savedLang, lang) => (lang.name.length > savedLang.name.length ? lang : savedLang), {
+		name: "",
+		size: 0,
+		color: "",
+	});
 
 /**
  * Convert degrees to radians.
  */
-const degreesToRadians = (angleInDegrees: number): number =>
-	angleInDegrees * (Math.PI / 180.0);
+const degreesToRadians = (angleInDegrees: number): number => angleInDegrees * (Math.PI / 180.0);
 
 /**
  * Convert radians to degrees.
  */
-const radiansToDegrees = (angleInRadians: number): number =>
-	angleInRadians / (Math.PI / 180.0);
+const radiansToDegrees = (angleInRadians: number): number => angleInRadians / (Math.PI / 180.0);
 
 /**
  * Convert polar coordinates to cartesian coordinates.
@@ -279,13 +268,7 @@ const createLanguageTextNode = ({
 /**
  * Create donut languages text items for all programming languages.
  */
-const createDonutLanguagesNode = ({
-	langs,
-	totalSize,
-}: {
-	langs: Lang[];
-	totalSize: number;
-}): string => {
+const createDonutLanguagesNode = ({ langs, totalSize }: { langs: Lang[]; totalSize: number }): string => {
 	return flexLayout({
 		items: langs.map((lang, index) => {
 			return createCompactLangNode({
@@ -303,20 +286,14 @@ const createDonutLanguagesNode = ({
 /**
  * Renders the default language card layout.
  */
-const renderNormalLayout = (
-	langs: Lang[],
-	width: number,
-	totalLanguageSize: number,
-): string => {
+const renderNormalLayout = (langs: Lang[], width: number, totalLanguageSize: number): string => {
 	return flexLayout({
 		items: langs.map((lang, index) => {
 			return createProgressTextNode({
 				width,
 				name: lang.name,
 				color: lang.color || DEFAULT_LANG_COLOR,
-				progress: Number.parseFloat(
-					((lang.size / totalLanguageSize) * 100).toFixed(2),
-				),
+				progress: Number.parseFloat(((lang.size / totalLanguageSize) * 100).toFixed(2)),
 				index,
 			});
 		}),
@@ -347,9 +324,7 @@ const renderCompactLayout = (
 	let progressOffset = 0;
 	const compactProgressBar = langs
 		.map((lang) => {
-			const percentage = Number.parseFloat(
-				((lang.size / totalLanguageSize) * offsetWidth).toFixed(2),
-			);
+			const percentage = Number.parseFloat(((lang.size / totalLanguageSize) * offsetWidth).toFixed(2));
 
 			const progress = percentage < 10 ? percentage + 10 : percentage;
 
@@ -397,10 +372,7 @@ const renderCompactLayout = (
  * @param {number} totalLanguageSize Total size of all languages.
  * @returns {string} Compact layout card SVG object.
  */
-const renderDonutVerticalLayout = (
-	langs: Lang[],
-	totalLanguageSize: number,
-): string => {
+const renderDonutVerticalLayout = (langs: Lang[], totalLanguageSize: number): string => {
 	// Donut vertical chart radius and total length
 	const radius = 80;
 	const totalCircleLength = getCircleLength(radius);
@@ -581,9 +553,7 @@ const createDonutPaths = (
 	for (let i = 0; i < percentages.length; i++) {
 		const tmpPath: { percent: number; d: string } = { percent: 0, d: "" };
 
-		const percent = Number.parseFloat(
-			(((percentages[i] ?? 10) / totalPercent) * 100).toFixed(2),
-		);
+		const percent = Number.parseFloat((((percentages[i] ?? 10) / totalPercent) * 100).toFixed(2));
 
 		endAngle = 3.6 * percent + startAngle;
 		const startPoint = polarToCartesian(cx, cy, radius, endAngle - 90); // rotate donut 90 degrees counter-clockwise.
@@ -608,20 +578,14 @@ const createDonutPaths = (
  * @param {number} totalLanguageSize Total size of all languages.
  * @returns {string} Donut layout card SVG object.
  */
-const renderDonutLayout = (
-	langs: Lang[],
-	width: number,
-	totalLanguageSize: number,
-): string => {
+const renderDonutLayout = (langs: Lang[], width: number, totalLanguageSize: number): string => {
 	const centerX = width / 3;
 	const centerY = width / 3;
 	const radius = centerX - 60;
 	const strokeWidth = 12;
 
 	const colors = langs.map((lang) => lang.color);
-	const langsPercents = langs.map((lang) =>
-		Number.parseFloat(((lang.size / totalLanguageSize) * 100).toFixed(2)),
-	);
+	const langsPercents = langs.map((lang) => Number.parseFloat(((lang.size / totalLanguageSize) * 100).toFixed(2)));
 
 	const langPaths = createDonutPaths(centerX, centerY, radius, langsPercents);
 
@@ -725,10 +689,7 @@ const getDefaultLanguagesCountByLayout = ({
  * @param {Partial<TopLangOptions>} options Card options.
  * @returns {string} Language card SVG object.
  */
-const renderTopLanguages = (
-	topLangs: TopLangData,
-	options: Partial<TopLangOptions> = {},
-): string => {
+const renderTopLanguages = (topLangs: TopLangData, options: Partial<TopLangOptions> = {}): string => {
 	const {
 		hide_title = false,
 		hide_border = false,
@@ -753,11 +714,7 @@ const renderTopLanguages = (
 	// 	translations: langCardLocales,
 	// });
 
-	const { langs, totalLanguageSize } = trimTopLanguages(
-		topLangs,
-		langs_count,
-		hide,
-	);
+	const { langs, totalLanguageSize } = trimTopLanguages(topLangs, langs_count, hide);
 
 	let width = card_width
 		? Number.isNaN(card_width)
@@ -792,15 +749,9 @@ const renderTopLanguages = (
 		height = calculateDonutVerticalLayoutHeight(langs.length);
 		finalLayout = renderDonutVerticalLayout(langs, totalLanguageSize);
 	} else if (layout === "compact" || hide_progress === true) {
-		height =
-			calculateCompactLayoutHeight(langs.length) + (hide_progress ? -25 : 0);
+		height = calculateCompactLayoutHeight(langs.length) + (hide_progress ? -25 : 0);
 
-		finalLayout = renderCompactLayout(
-			langs,
-			width,
-			totalLanguageSize,
-			hide_progress,
-		);
+		finalLayout = renderCompactLayout(langs, width, totalLanguageSize, hide_progress);
 	} else if (layout === "donut") {
 		height = calculateDonutLayoutHeight(langs.length);
 		width = width + 50; // padding

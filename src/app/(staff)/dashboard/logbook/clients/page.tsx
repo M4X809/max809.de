@@ -106,26 +106,16 @@ export default async function LogbookClients({
 							<TableTbody>
 								{month?.entries?.map((entry) => (
 									<TableTr key={entry.id} className="text-xs md:text-base">
-										{entry.date && (
-											<TableTd className="text-nowrap text-xs">
-												{format(entry.date, "dd.MM.yy")}
-											</TableTd>
-										)}
+										{entry.date && <TableTd className="text-nowrap text-xs">{format(entry.date, "dd.MM.yy")}</TableTd>}
 										{entry.startTime && entry.endTime ? (
 											<TableTd className="text-center text-[10px]">
-												<Text className="text-nowrap text-xs">
-													Von: {format(entry.startTime, "HH:mm")}
-												</Text>
-												<Text className="text-nowrap text-xs">
-													Bis: {format(entry.endTime, "HH:mm")}
-												</Text>
+												<Text className="text-nowrap text-xs">Von: {format(entry.startTime, "HH:mm")}</Text>
+												<Text className="text-nowrap text-xs">Bis: {format(entry.endTime, "HH:mm")}</Text>
 											</TableTd>
 										) : (
 											"N/A"
 										)}
-										<TableTd className="text-nowrap text-xs">
-											{entry.workTime} min
-										</TableTd>
+										<TableTd className="text-nowrap text-xs">{entry.workTime} min</TableTd>
 										<TableTd className="text-pretty">{entry.streetName}</TableTd>
 									</TableTr>
 								))}

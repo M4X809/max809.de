@@ -31,9 +31,7 @@ export const metadata: Metadata = {
 
 new Intl.DateTimeFormat("de-DE", { dateStyle: "full", timeStyle: "full" });
 
-export default async function RootLayout({
-	children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	const session = await getServerAuthSession();
 
 	return (
@@ -48,21 +46,14 @@ export default async function RootLayout({
 			>
 				<CSPostHogProvider>
 					<TRPCReactProvider>
-						<MantineProvider
-							defaultColorScheme="dark"
-							forceColorScheme="dark"
-							theme={theme}
-						>
+						<MantineProvider defaultColorScheme="dark" forceColorScheme="dark" theme={theme}>
 							<AppStoreProvider>
 								<QrCodeStoreProvider>
 									<ManagementStoreProvider>
 										<ModalsProvider>
 											<Toaster closeButton visibleToasts={5} pauseWhenPageIsHidden />
 											{(await hasPermission("mainCommandWindow")) && (
-												<CommandHandler
-													session={session}
-													keys={session?.user?.config?.global?.openCommandKey}
-												/>
+												<CommandHandler session={session} keys={session?.user?.config?.global?.openCommandKey} />
 											)}
 											<NuqsAdapter>{children}</NuqsAdapter>
 										</ModalsProvider>

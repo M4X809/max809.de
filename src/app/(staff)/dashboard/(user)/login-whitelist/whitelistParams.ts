@@ -1,8 +1,4 @@
-import {
-	createSearchParamsCache,
-	parseAsInteger,
-	parseAsString,
-} from "nuqs/server";
+import { createSearchParamsCache, parseAsInteger, parseAsString } from "nuqs/server";
 // Note: import from 'nuqs/server' to avoid the "use client" directive
 
 export const whitelistParser = {

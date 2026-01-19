@@ -52,14 +52,8 @@ interface CalendarProps {
 	baseUrl: string;
 }
 
-export function FullScreenCalendarComponent({
-	dayData,
-	currentMonth: initialCurrentMonth,
-	baseUrl,
-}: CalendarProps) {
-	const [currentMonth, setCurrentMonth] = React.useState(
-		initialCurrentMonth ?? new Date(),
-	);
+export function FullScreenCalendarComponent({ dayData, currentMonth: initialCurrentMonth, baseUrl }: CalendarProps) {
+	const [currentMonth, setCurrentMonth] = React.useState(initialCurrentMonth ?? new Date());
 
 	const router = useRouter();
 	const os = useOs();
@@ -124,17 +118,11 @@ export function FullScreenCalendarComponent({
 							</Group>
 						</Link>
 						<Group className="flex-nowrap">
-							<Button
-								onClick={prevMonth}
-								className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
-							>
+							<Button onClick={prevMonth} className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15">
 								<ChevronLeft className="h-4 w-4" />
 								<span className="sr-only">Previous month</span>
 							</Button>
-							<Button
-								onClick={nextMonth}
-								className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
-							>
+							<Button onClick={nextMonth} className="h-auto w-[50%] bg-[rgba(255,255,255,0.1)] hover:bg-white/15">
 								<ChevronRight className="h-4 w-4" />
 								<span className="sr-only">Next month</span>
 							</Button>
@@ -144,9 +132,7 @@ export function FullScreenCalendarComponent({
 				{!isMobile && (
 					<div className="flex flex-col rounded-lg bg-[rgba(255,255,255,0.1)] text-white backdrop-blur-lg">
 						<header className="flex items-center justify-between border-b border-b-[rgba(255,255,255,0.1)] p-4">
-							<h2 className="text-2xl font-bold">
-								{format(currentMonth, "MMMM yyyy", { locale: de })}
-							</h2>
+							<h2 className="text-2xl font-bold">{format(currentMonth, "MMMM yyyy", { locale: de })}</h2>
 							<div className="flex space-x-2">
 								<Link
 									className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-[rgba(255,255,255,0.1)] px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
@@ -156,17 +142,11 @@ export function FullScreenCalendarComponent({
 								>
 									<FontAwesomeIcon icon={faPrint} />
 								</Link>
-								<Button
-									onClick={prevMonth}
-									className="bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
-								>
+								<Button onClick={prevMonth} className="bg-[rgba(255,255,255,0.1)] hover:bg-white/15">
 									<ChevronLeft className="h-4 w-4" />
 									<span className="sr-only">Previous month</span>
 								</Button>
-								<Button
-									onClick={nextMonth}
-									className="bg-[rgba(255,255,255,0.1)] hover:bg-white/15"
-								>
+								<Button onClick={nextMonth} className="bg-[rgba(255,255,255,0.1)] hover:bg-white/15">
 									<ChevronRight className="h-4 w-4" />
 									<span className="sr-only">Next month</span>
 								</Button>
@@ -189,8 +169,7 @@ export function FullScreenCalendarComponent({
 										key={day.toString()}
 										className={cn(
 											"flex h-[120px] flex-col overflow-hidden border border-[rgba(255,255,255,0.1)] p-2",
-											!isSameMonth(day, currentMonth) &&
-												"bg-[rgba(0,0,0,0.35)] text-white/50 opacity-0",
+											!isSameMonth(day, currentMonth) && "bg-[rgba(0,0,0,0.35)] text-white/50 opacity-0",
 											(isMonday(day) || isWednesday(day) || isFriday(day)) &&
 												isSameMonth(day, currentMonth) &&
 												"bg-[rgba(255,255,255,0.05)]",
@@ -203,19 +182,14 @@ export function FullScreenCalendarComponent({
 										{dayInfo?.holiday ? (
 											<div className="mt-1 flex-grow overflow-hidden text-xs">
 												<Text fz={14} fw={500}>
-													{dayInfo.type === "holiday"
-														? "Feiertag"
-														: dayInfo.type === "vacation"
-															? "Urlaub"
-															: "Krank"}
+													{dayInfo.type === "holiday" ? "Feiertag" : dayInfo.type === "vacation" ? "Urlaub" : "Krank"}
 												</Text>
 											</div>
 										) : (
 											dayInfo && (
 												<div className="mt-1 flex-grow overflow-hidden text-xs">
 													<Text fz={14}>
-														{format(dayInfo.startTime, "HH:mm", { locale: de })}-
-														{format(dayInfo.endTime, "HH:mm", { locale: de })}
+														{format(dayInfo.startTime, "HH:mm", { locale: de })}-{format(dayInfo.endTime, "HH:mm", { locale: de })}
 													</Text>
 													<Text fz={14}>Total: {dayInfo.totalWorkTime}</Text>
 													<Text fz={14}>Tageskilometer: {dayInfo.kmDifference}km</Text>

@@ -45,15 +45,13 @@ export const createCubeStore = () => {
 				setScramble: (scramble: string) => set(() => ({ scramble })),
 
 				newScrambleCounter: 0,
-				increaseNewScrambleCounter: () =>
-					set((state) => ({ newScrambleCounter: state.newScrambleCounter + 1 })),
+				increaseNewScrambleCounter: () => set((state) => ({ newScrambleCounter: state.newScrambleCounter + 1 })),
 
 				scrambleType: "333",
 				setScrambleType: (scrambleType: string) => set(() => ({ scrambleType })),
 
 				refetchCounter: 0,
-				increaseRefetchCounter: () =>
-					set((state) => ({ refetchCounter: state.refetchCounter + 1 })),
+				increaseRefetchCounter: () => set((state) => ({ refetchCounter: state.refetchCounter + 1 })),
 			}),
 			{
 				name: "cube-timer-store",

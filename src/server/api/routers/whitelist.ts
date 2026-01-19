@@ -49,19 +49,13 @@ export const whitelistRouter = createTRPCRouter({
 									ilike(loginWhitelist.oAuthProvider, `%${input.search}%`),
 								)
 							: undefined,
-					orderBy: (loginWhitelist, { desc }) => [
-						desc(loginWhitelist.lastLogin),
-						desc(loginWhitelist.allowed),
-					],
+					orderBy: (loginWhitelist, { desc }) => [desc(loginWhitelist.lastLogin), desc(loginWhitelist.allowed)],
 					offset: (input.page - 1) * input.limit,
 					limit: input.limit,
 				})
 				.execute();
 
-			const [whitelist, totalRows] = await Promise.all([
-				whitelistProm,
-				totalRowsProm,
-			]);
+			const [whitelist, totalRows] = await Promise.all([whitelistProm, totalRowsProm]);
 
 			return {
 				data: whitelist,
@@ -86,8 +80,7 @@ export const whitelistRouter = createTRPCRouter({
 			}
 
 			const whitelist = await ctx.db.query.loginWhitelist.findFirst({
-				where: (loginWhitelist, { eq }) =>
-					eq(loginWhitelist.whiteListId, input.whiteListId),
+				where: (loginWhitelist, { eq }) => eq(loginWhitelist.whiteListId, input.whiteListId),
 			});
 
 			if (!whitelist) {
@@ -110,10 +103,7 @@ export const whitelistRouter = createTRPCRouter({
 				});
 
 				if (!dbUser?.admin) {
-					await ctx.db
-						.delete(sessions)
-						.where(eq(sessions.userId, whitelist.userId))
-						.execute();
+					await ctx.db.delete(sessions).where(eq(sessions.userId, whitelist.userId)).execute();
 				}
 			}
 

@@ -26,11 +26,7 @@ export type Lang = {
 export type TopLangData = Record<string, Lang>;
 import { unstable_cache } from "next/cache";
 
-const fetcher = (
-	variables: Record<string, string>,
-	token?: string,
-	retries?: number,
-): Promise<Fetcher> => {
+const fetcher = (variables: Record<string, string>, token?: string, retries?: number): Promise<Fetcher> => {
 	return request(
 		{
 			query: `
@@ -62,12 +58,7 @@ const fetcher = (
 	);
 };
 
-const fetchTopLanguages = async (
-	username: string,
-	exclude_repo = [],
-	size_weight = 1,
-	count_weight = 0,
-) => {
+const fetchTopLanguages = async (username: string, exclude_repo = [], size_weight = 1, count_weight = 0) => {
 	if (!username) {
 		throw new MissingParamError(["username"]);
 	}
@@ -80,15 +71,10 @@ const fetchTopLanguages = async (
 	if (res.data.errors) {
 		logger.error(res.data.errors);
 		if (res.data.errors[0].type === "NOT_FOUND") {
-			throw new CustomError(
-				res.data.errors[0].message || "Could not fetch user.",
-				CustomError.USER_NOT_FOUND,
-			);
+			throw new CustomError(res.data.errors[0].message || "Could not fetch user.", CustomError.USER_NOT_FOUND);
 		}
 		if (res.data.errors[0].message) {
-			throw new CustomError(
-				wrapTextMultiline(res.data.errors[0].message, 90, 1)[0],
-			);
+			throw new CustomError(wrapTextMultiline(res.data.errors[0].message, 90, 1)[0]);
 		}
 		throw new CustomError(
 			"Something went wrong while trying to retrieve the language data using the GraphQL API.",
@@ -108,9 +94,7 @@ const fetchTopLanguages = async (
 	}
 
 	// filter out repositories to be hidden
-	repoNodes = repoNodes
-		.sort((a, b) => b.size - a.size)
-		.filter((name) => !repoToHide[name.name]);
+	repoNodes = repoNodes.sort((a, b) => b.size - a.size).filter((name) => !repoToHide[name.name]);
 
 	let repoCount = 0;
 
@@ -166,9 +150,7 @@ const fetchTopLanguages = async (
 			const sizeB = repoNodes[b as keyof typeof repoNodes]?.size;
 			return (sizeB ?? 0) - (sizeA ?? 0);
 		})
-		.reduce<
-			Record<string, NonNullable<(typeof repoNodes)[keyof typeof repoNodes]>>
-		>((result, key) => {
+		.reduce<Record<string, NonNullable<(typeof repoNodes)[keyof typeof repoNodes]>>>((result, key) => {
 			const node = repoNodes[key as keyof typeof repoNodes];
 			if (node) {
 				result[key] = node;
@@ -179,11 +161,10 @@ const fetchTopLanguages = async (
 	return topLangs;
 };
 
-const cachedTopLangs = unstable_cache(
-	async (username) => fetchTopLanguages(username),
-	["gh-stats"],
-	{ revalidate: 60, tags: ["gh-stats"] },
-);
+const cachedTopLangs = unstable_cache(async (username) => fetchTopLanguages(username), ["gh-stats"], {
+	revalidate: 60,
+	tags: ["gh-stats"],
+});
 
 export async function GET(req: NextRequest) {
 	const params = req.nextUrl.searchParams;
@@ -194,13 +175,9 @@ export async function GET(req: NextRequest) {
 	const theme = params.get("theme");
 	if (!username)
 		return new Response(
-			renderError(
-				"Missing username",
-				"Please provide a username. like ?username=m4x809",
-				{
-					theme: theme as unknown as TopLangOptions["theme"],
-				},
-			),
+			renderError("Missing username", "Please provide a username. like ?username=m4x809", {
+				theme: theme as unknown as TopLangOptions["theme"],
+			}),
 			{
 				status: 400,
 				headers: {
@@ -210,13 +187,9 @@ export async function GET(req: NextRequest) {
 		);
 	if (!usernameWhitelist.includes(username.toLowerCase()))
 		return new Response(
-			renderError(
-				"Invalid username",
-				`The username "${username}" is not whitelisted!`,
-				{
-					theme: theme as unknown as TopLangOptions["theme"],
-				},
-			),
+			renderError("Invalid username", `The username "${username}" is not whitelisted!`, {
+				theme: theme as unknown as TopLangOptions["theme"],
+			}),
 			{
 				status: 400,
 				headers: {
@@ -257,9 +230,7 @@ export async function GET(req: NextRequest) {
 				bg_color: bg_color ?? undefined,
 				layout: layout as unknown as TopLangOptions["layout"],
 				langs_count: langs_count ? Number.parseInt(langs_count, 10) : undefined,
-				border_radius: border_radius
-					? Number.parseInt(border_radius, 10)
-					: undefined,
+				border_radius: border_radius ? Number.parseInt(border_radius, 10) : undefined,
 				border_color: border_color ?? undefined,
 				locale: locale ? locale.toLowerCase() : undefined,
 				disable_animations: parseBoolean(!!disable_animations),

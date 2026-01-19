@@ -1,31 +1,12 @@
-import {
-	Box,
-	Card,
-	Container,
-	Divider,
-	Group,
-	Stack,
-	Text,
-	Textarea,
-	Title,
-} from "@mantine/core";
+import { Box, Card, Container, Divider, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { twMerge } from "tailwind-merge";
 import { onPageAllowed, timeDifference } from "~/lib/sUtils";
 import { api } from "~/trpc/server";
 import React from "react";
-import {
-	DayPagination,
-	EntryButtons,
-	CreateEntry,
-	ResetErrorCount,
-} from "./ClientFeedComponents";
+import { DayPagination, EntryButtons, CreateEntry, ResetErrorCount } from "./ClientFeedComponents";
 import { redirect } from "next/navigation";
 import ErrorBox from "~/app/_components/ErrorBox";
-import {
-	createSearchParamsCache,
-	parseAsInteger,
-	parseAsString,
-} from "nuqs/server";
+import { createSearchParamsCache, parseAsInteger, parseAsString } from "nuqs/server";
 
 export type FeedEntry = {
 	date: Date | null;
@@ -65,12 +46,8 @@ export default async function LogbookFeed({
 	let data: FeedData = undefined;
 
 	const feedSearchParamsParser = {
-		day: parseAsString
-			.withDefault(new Date().toLocaleDateString("de-DE"))
-			.withOptions({ clearOnDefault: true }),
-		errorCount: parseAsInteger
-			.withDefault(0)
-			.withOptions({ clearOnDefault: true }),
+		day: parseAsString.withDefault(new Date().toLocaleDateString("de-DE")).withOptions({ clearOnDefault: true }),
+		errorCount: parseAsInteger.withDefault(0).withOptions({ clearOnDefault: true }),
 	};
 
 	const feedSearchParamsCache = createSearchParamsCache(feedSearchParamsParser);
@@ -122,10 +99,7 @@ export default async function LogbookFeed({
 		<Container size={"lg"}>
 			<Stack>
 				<Card className={twMerge(cardClassName)}>
-					<CreateEntry
-						streetNames={streetNames ?? []}
-						lastKmState={lastKmState?.toString()}
-					/>
+					<CreateEntry streetNames={streetNames ?? []} lastKmState={lastKmState?.toString()} />
 				</Card>
 				<Card className={twMerge(cardClassName)} p={"sm"} withBorder radius={"md"}>
 					<Stack gap={4}>
@@ -143,11 +117,7 @@ export default async function LogbookFeed({
 						{holiday && (
 							<Group className="justify-between" wrap="nowrap" gap={0}>
 								<Title order={3} fz={{ base: 15, md: 18 }}>
-									{holiday.type === "holiday"
-										? "Feiertag"
-										: holiday.type === "vacation"
-											? "Urlaub"
-											: "Krank"}
+									{holiday.type === "holiday" ? "Feiertag" : holiday.type === "vacation" ? "Urlaub" : "Krank"}
 								</Title>
 								<EntryButtons id={holiday.id} />
 							</Group>
@@ -162,19 +132,8 @@ export default async function LogbookFeed({
 									<EntryButtons id={startTime.id} />
 								</Group>
 								<Group className="justify-between gap-0 md:justify-start md:gap-2">
-									<Text fz={15}>
-										Uhrzeit:{" "}
-										{startTime.startTime
-											?.toLocaleTimeString()
-											.split(":")
-											.slice(0, 2)
-											.join(":")}
-									</Text>{" "}
-									<Text fz={15}>
-										Kilometerstand:{" "}
-										{Number.parseInt(startTime.kmState, 10).toLocaleString("de-DE", {})}{" "}
-										km
-									</Text>
+									<Text fz={15}>Uhrzeit: {startTime.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>{" "}
+									<Text fz={15}>Kilometerstand: {Number.parseInt(startTime.kmState, 10).toLocaleString("de-DE", {})} km</Text>
 								</Group>
 								{!!startTime?.note && (
 									<Stack gap={3}>
@@ -187,8 +146,7 @@ export default async function LogbookFeed({
 											maxRows={4}
 											value={startTime.note}
 											classNames={{
-												input:
-													"focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
+												input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
 											}}
 											className="w-full"
 										/>
@@ -201,11 +159,8 @@ export default async function LogbookFeed({
 							entries?.map((entry, index) => {
 								const prevEntry = entries[index - 1] ?? startTime; // Get the previous entry
 								const currentKmState = Number.parseInt(entry.kmState, 10);
-								const prevKmState = prevEntry
-									? Number.parseInt(prevEntry.kmState, 10)
-									: null;
-								const kmDifference =
-									prevKmState !== null ? currentKmState - prevKmState : null;
+								const prevKmState = prevEntry ? Number.parseInt(prevEntry.kmState, 10) : null;
+								const kmDifference = prevKmState !== null ? currentKmState - prevKmState : null;
 
 								if (entry.type === "pause")
 									return (
@@ -218,34 +173,12 @@ export default async function LogbookFeed({
 													<EntryButtons id={entry.id} />
 												</Group>
 												<Group className="justify-between gap-0 md:justify-start md:gap-2">
-													<Text fz={15}>
-														Von:{" "}
-														{entry.startTime
-															?.toLocaleTimeString()
-															.split(":")
-															.slice(0, 2)
-															.join(":")}
-													</Text>
-													<Text fz={15}>
-														Bis:{" "}
-														{entry.endTime
-															?.toLocaleTimeString()
-															.split(":")
-															.slice(0, 2)
-															.join(":")}
-													</Text>
+													<Text fz={15}>Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>
+													<Text fz={15}>Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>
 												</Group>
 												<Group className="justify-between gap-0 md:justify-start md:gap-2">
-													<Text fz={15}>
-														Kilometerstand:{" "}
-														{Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {})}{" "}
-														km
-													</Text>
-													{kmDifference !== null && (
-														<Text fz={15}>
-															Differenz: {kmDifference.toLocaleString("de-DE", {})} km
-														</Text>
-													)}
+													<Text fz={15}>Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {})} km</Text>
+													{kmDifference !== null && <Text fz={15}>Differenz: {kmDifference.toLocaleString("de-DE", {})} km</Text>}
 												</Group>
 												{!!entry?.note && (
 													<Stack gap={3}>
@@ -258,8 +191,7 @@ export default async function LogbookFeed({
 															maxRows={4}
 															value={entry.note}
 															classNames={{
-																input:
-																	"focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
+																input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
 															}}
 															className="w-full"
 														/>
@@ -281,41 +213,16 @@ export default async function LogbookFeed({
 												</Group>
 												<Group className="justify-between gap-0 md:justify-start md:gap-2">
 													<Group gap={2}>
-														<Text fz={15}>
-															Von:{" "}
-															{entry.startTime
-																?.toLocaleTimeString()
-																.split(":")
-																.slice(0, 2)
-																.join(":")}
-														</Text>
-														<Text fz={15}>
-															Bis:{" "}
-															{entry.endTime
-																?.toLocaleTimeString()
-																.split(":")
-																.slice(0, 2)
-																.join(":")}
-														</Text>
+														<Text fz={15}>Von: {entry.startTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>
+														<Text fz={15}>Bis: {entry.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>
 													</Group>
 													<Text fw={500}>
 														Gesamt:{" "}
-														{timeDifference(
-															entry.startTime?.toLocaleTimeString() ?? "",
-															entry.endTime?.toLocaleTimeString() ?? "",
-														)}{" "}
-														h
+														{timeDifference(entry.startTime?.toLocaleTimeString() ?? "", entry.endTime?.toLocaleTimeString() ?? "")} h
 													</Text>
 												</Group>
-												<Group
-													className="justify-between gap-0 md:justify-start md:gap-2"
-													gap={0}
-												>
-													<Text fz={15}>
-														Kilometerstand:{" "}
-														{Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {})}{" "}
-														km
-													</Text>
+												<Group className="justify-between gap-0 md:justify-start md:gap-2" gap={0}>
+													<Text fz={15}>Kilometerstand: {Number.parseInt(entry.kmState, 10).toLocaleString("de-DE", {})} km</Text>
 													{kmDifference !== null && (
 														<Text fz={15} fw={500}>
 															Differenz : {kmDifference.toLocaleString("de-DE", {})} km
@@ -333,8 +240,7 @@ export default async function LogbookFeed({
 															maxRows={4}
 															value={entry.note}
 															classNames={{
-																input:
-																	"focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
+																input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
 															}}
 															className="w-full"
 														/>
@@ -357,28 +263,15 @@ export default async function LogbookFeed({
 										<EntryButtons id={endTime.id} />
 									</Group>
 									<Group className="justify-between gap-0 md:justify-start md:gap-2">
-										<Text fz={15}>
-											Uhrzeit:{" "}
-											{endTime.endTime
-												?.toLocaleTimeString()
-												.split(":")
-												.slice(0, 2)
-												.join(":")}
-										</Text>
+										<Text fz={15}>Uhrzeit: {endTime.endTime?.toLocaleTimeString().split(":").slice(0, 2).join(":")}</Text>
 										{!!startTime?.startTime && !!endTime?.endTime && (
 											<Text fz={15} fw={500}>
 												Arbeitszeit: {data?.totalWorkTime}
 											</Text>
 										)}
 									</Group>
-									<Group
-										className="justify-between gap-0 md:justify-start md:gap-2"
-										gap={0}
-									>
-										<Text fz={15}>
-											Kilometerstand:{" "}
-											{Number.parseInt(endTime.kmState, 10).toLocaleString("de-DE", {})} km
-										</Text>
+									<Group className="justify-between gap-0 md:justify-start md:gap-2" gap={0}>
+										<Text fz={15}>Kilometerstand: {Number.parseInt(endTime.kmState, 10).toLocaleString("de-DE", {})} km</Text>
 										<Text fz={15} fw={500}>
 											Tages-Differenz: {endDifference()} km
 										</Text>
@@ -394,8 +287,7 @@ export default async function LogbookFeed({
 												maxRows={4}
 												value={endTime.note}
 												classNames={{
-													input:
-														"focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
+													input: "focus-within:outline-none focus-within:border-transparent border-transparent cursor-default",
 												}}
 												className="w-full"
 											/>

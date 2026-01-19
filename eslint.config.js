@@ -65,26 +65,25 @@ import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 // @ts-ignore
 import drizzlePlugin from "eslint-plugin-drizzle";
 // @ts-ignore
-import pluginNext from '@next/eslint-plugin-next'
-
+import pluginNext from "@next/eslint-plugin-next";
 
 export default [
-  {
-  files: [ "**/*.ts", "**/*.tsx", "env.js"],
-    
-    languageOptions: {
-        parser: tsParser
-    },
-    plugins: {
-      typescript: typescriptPlugin,
-      drizzle: drizzlePlugin,
-      '@next/next': pluginNext
-    },
-    rules: {
-      ...pluginNext.configs.recommended.rules,
-    },
-  },
-  {
-    ignores: [".next", "*.js", "*.mjs", "*.cjs", "env.js"],
-  }
-]
+	{
+		files: ["**/*.ts", "**/*.tsx", "env.js"],
+
+		languageOptions: {
+			parser: tsParser,
+		},
+		plugins: {
+			typescript: typescriptPlugin,
+			drizzle: drizzlePlugin,
+			"@next/next": pluginNext,
+		},
+		rules: {
+			...pluginNext.configs.recommended.rules,
+		},
+	},
+	{
+		ignores: [".next", "*.js", "*.mjs", "*.cjs", "env.js"],
+	},
+];

@@ -56,9 +56,7 @@ export type QrCodeStore = {
 	setDeleteToggle: () => void;
 
 	canvasRef: React.MutableRefObject<HTMLCanvasElement | null> | null;
-	setCanvasRef: (
-		canvasRef: React.MutableRefObject<HTMLCanvasElement | null>,
-	) => void;
+	setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) => void;
 
 	// DECODER
 
@@ -78,8 +76,7 @@ export const createQrCodeStore = () => {
 		setSaveTitle: (saveTitle: string) => set(() => ({ saveTitle })),
 
 		qrCode: "https://max809.de",
-		setQrCode: (qrCode: string) =>
-			set(() => ({ qrCode: qrCode, qrCodeLength: qrCode?.length })),
+		setQrCode: (qrCode: string) => set(() => ({ qrCode: qrCode, qrCodeLength: qrCode?.length })),
 		qrCodeLength: "https://max809.de".length,
 
 		setQrLvl: (qrLvl: string) => set(() => ({ qrLvl: Number(qrLvl) })),
@@ -97,8 +94,7 @@ export const createQrCodeStore = () => {
 		setColor: (color: string) => set(() => ({ color })),
 
 		backgroundColor: "rgba(0, 0, 0, 0)",
-		setBackgroundColor: (backgroundColor: string) =>
-			set(() => ({ backgroundColor })),
+		setBackgroundColor: (backgroundColor: string) => set(() => ({ backgroundColor })),
 
 		downloading: false,
 		setDownloading: (downloading: boolean) => set(() => ({ downloading })),
@@ -122,8 +118,7 @@ export const createQrCodeStore = () => {
 		setRefetchCodes: (refetchCodes: number) => set({ refetchCodes }),
 
 		deleteCodeId: null,
-		setDeleteCodeId: (deleteCodeId: string | null) =>
-			set(() => ({ deleteCodeId })),
+		setDeleteCodeId: (deleteCodeId: string | null) => set(() => ({ deleteCodeId })),
 
 		deleteName: null,
 		setDeleteName: (deleteName: string | null) => set(() => ({ deleteName })),
@@ -143,24 +138,20 @@ export const createQrCodeStore = () => {
 			})),
 
 		deleteToggle: false,
-		setDeleteToggle: () =>
-			set((state) => ({ deleteToggle: !state.deleteToggle })),
+		setDeleteToggle: () => set((state) => ({ deleteToggle: !state.deleteToggle })),
 
 		canvasRef: null,
-		setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) =>
-			set(() => ({ canvasRef })),
+		setCanvasRef: (canvasRef: React.MutableRefObject<HTMLCanvasElement | null>) => set(() => ({ canvasRef })),
 
 		// DECODER
 
 		QrcodeDecoder: null,
-		setQrcodeDecoder: (qrcodeDecoder: QrcodeDecoder | null) =>
-			set(() => ({ QrcodeDecoder: qrcodeDecoder })),
+		setQrcodeDecoder: (qrcodeDecoder: QrcodeDecoder | null) => set(() => ({ QrcodeDecoder: qrcodeDecoder })),
 
 		fileAccepted: false,
 		setFileAccepted: (fileAccepted: boolean) => set(() => ({ fileAccepted })),
 
 		fileRejected: "",
-		setFileRejected: (fileRejected: React.ReactNode) =>
-			set(() => ({ fileRejected })),
+		setFileRejected: (fileRejected: React.ReactNode) => set(() => ({ fileRejected })),
 	}));
 };

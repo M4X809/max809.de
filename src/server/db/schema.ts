@@ -37,18 +37,14 @@ export const qrCodes = createTable("codes", {
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-		() => new Date(),
-	),
+	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 	// data: varchar("data", { length: 500 }),
 	dataUrl: text("data_url"),
 	qrCode: varchar("qr_code", { length: 4096 }),
 	qrLvl: integer("qr_lvl").default(1),
 	size: integer("size").default(512),
 	color: varchar("color", { length: 255 }).default("#000000"),
-	backgroundColor: varchar("background_color", { length: 255 }).default(
-		"#ffffff",
-	),
+	backgroundColor: varchar("background_color", { length: 255 }).default("#ffffff"),
 	finderRadius: doublePrecision("finder_radius").default(0),
 	dotRadius: doublePrecision("dot_radius").default(0),
 	shareable: boolean("shareable").default(false),
@@ -88,9 +84,7 @@ export const accounts = createTable(
 		userId: varchar("user_id", { length: 255 })
 			.notNull()
 			.references(() => users.id),
-		type: varchar("type", { length: 255 })
-			.$type<AdapterAccount["type"]>()
-			.notNull(),
+		type: varchar("type", { length: 255 }).$type<AdapterAccount["type"]>().notNull(),
 		provider: varchar("provider", { length: 255 }).notNull(),
 		providerAccountId: varchar("provider_account_id", {
 			length: 255,
@@ -119,9 +113,7 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
 export const sessions = createTable(
 	"session",
 	{
-		sessionToken: varchar("session_token", { length: 255 })
-			.notNull()
-			.primaryKey(),
+		sessionToken: varchar("session_token", { length: 255 }).notNull().primaryKey(),
 		userId: varchar("user_id", { length: 255 })
 			.notNull()
 			.references(() => users.id),
@@ -211,9 +203,7 @@ export const logbookFeed = createTable("logbook_feed", {
 	type: varchar("type", { length: 255 })
 		.default("entry")
 		.notNull()
-		.$type<
-			"entry" | "start" | "end" | "pause" | "holiday" | "vacation" | "sick"
-		>(),
+		.$type<"entry" | "start" | "end" | "pause" | "holiday" | "vacation" | "sick">(),
 	streetName: varchar("street_name", { length: 255 }).default("").notNull(),
 	kmState: varchar("km_state", { length: 255 }).default("").notNull(),
 	startTime: timestamp("start_time", {

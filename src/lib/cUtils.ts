@@ -32,11 +32,7 @@ export function formatTime(msInput: number | string): string {
 	const mStr = m > 0 ? m.toString().padStart(2, "0") : "";
 	const hStr = h > 0 ? h.toString().padStart(2, "0") : "";
 
-	return h > 0
-		? `${hStr}:${mStr}:${sStr}.${msStr}`
-		: m > 0
-			? `${mStr}:${sStr}.${msStr}`
-			: `${sStr}.${msStr}`;
+	return h > 0 ? `${hStr}:${mStr}:${sStr}.${msStr}` : m > 0 ? `${mStr}:${sStr}.${msStr}` : `${sStr}.${msStr}`;
 }
 
 export function useIsStaff(session: SessionType) {
@@ -61,8 +57,7 @@ export function usePermission(session: SessionType) {
 		if (!session) return false;
 		if (session.user.admin) return true;
 		if (Array.isArray(permission)) {
-			if (permission.some((perm) => session.user.permissions?.includes(perm)))
-				return true;
+			if (permission.some((perm) => session.user.permissions?.includes(perm))) return true;
 			return false;
 		}
 		if (session.user.permissions?.includes(permission)) return true;
@@ -125,10 +120,7 @@ export function useRefreshState({
 				id: "reload-toast",
 				description: undefined,
 			});
-		} else if (
-			!isPending &&
-			(wasLoading || (!isMounted && removeToastOnUnmounted))
-		) {
+		} else if (!isPending && (wasLoading || (!isMounted && removeToastOnUnmounted))) {
 			if (withToast) toast.dismiss("reload-toast");
 			setWasLoading(false);
 		}
@@ -136,14 +128,7 @@ export function useRefreshState({
 			if (withToast) toast.dismiss("reload-toast");
 			setWasLoading(false);
 		};
-	}, [
-		isPending,
-		wasLoading,
-		withToast,
-		isMounted,
-		removeToastOnUnmounted,
-		setWasLoading,
-	]);
+	}, [isPending, wasLoading, withToast, isMounted, removeToastOnUnmounted, setWasLoading]);
 
 	return { isPending, wasLoading, handleRefresh };
 }

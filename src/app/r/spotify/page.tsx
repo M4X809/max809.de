@@ -7,8 +7,7 @@ export const metadata: Metadata = {
 	description: "Redirect to Spotify",
 	robots: "noindex",
 	icons: {
-		icon:
-			"https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green-300x300.png",
+		icon: "https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green-300x300.png",
 	},
 	openGraph: {
 		title: "Spotify Redirect",
