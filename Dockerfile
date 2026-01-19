@@ -117,6 +117,7 @@ ENV LC_ALL="de_DE.UTF-8"
 # Expose the port Next.js runs on
 EXPOSE 3000
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 # Run the Next.js application using npm
 # CMD ["npm", "run", "next", "start"]
